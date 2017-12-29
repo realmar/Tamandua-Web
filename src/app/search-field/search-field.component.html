@@ -1,0 +1,15 @@
+<mat-form-field>
+  <mat-select [(value)]="field">
+    <mat-option *ngFor="let field of fields" [value]="field">{{field}}</mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-form-field id="comparator">
+  <mat-select [(value)]="comparator">
+    <mat-option *ngFor="let comparator of comparatorTypes" [value]="comparator">{{comparator.toString()}}</mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-form-field>
+  <input matInput placeholder="Value" [(ngModel)]="value">
+</mat-form-field>
