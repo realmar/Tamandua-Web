@@ -6,7 +6,7 @@ import { SearchFieldData } from './search-field-data';
 @Component({
   selector: 'app-search-field',
   templateUrl: './search-field.component.html',
-  styleUrls: [ './search-field.component.css' ]
+  styleUrls: [ './search-field.component.scss' ]
 })
 export class SearchFieldComponent implements OnInit {
   private data: SearchFieldData;

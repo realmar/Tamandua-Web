@@ -1,23 +1,19 @@
 <h3 class="mat-subheading-2">Filters</h3>
 
-<mat-grid-list cols="2" rowHeight="2:1">
-  <mat-grid-tile>
-    <h4 class="mat-subheading-1">Fields</h4>
 
-    <mat-list>
-      <mat-list-item>
-        <app-search-field></app-search-field>
-      </mat-list-item>
-    </mat-list>
+<div>
+  <h4 class="mat-subheading-1">Fields</h4>
+  <app-search-field></app-search-field>
+</div>
 
-  </mat-grid-tile>
-  <mat-grid-tile>
-    <h4 class="mat-subheading-1">Date and Time</h4>
-  </mat-grid-tile>
-</mat-grid-list>
+<div>
+  <h4 class="mat-subheading-1">Date and Time</h4>
+  <app-search-datetime label="Start"></app-search-datetime>
+  <app-search-datetime label="End"></app-search-datetime>
+</div>
 
 <button mat-button>Search</button>
 
-<hr>
+<mat-divider></mat-divider>
 
 <h3 class="mat-subheading-2">Results</h3>

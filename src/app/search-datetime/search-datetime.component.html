@@ -1,0 +1,24 @@
+<div>
+  <p id="label" class="mat-body-2">{{label}}</p>
+
+  <mat-form-field id="datepicker">
+    <input matInput
+           [matDatepicker]="picker"
+           [(ngModel)]="date"
+           placeholder="Pick a date"
+           disabled>
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker disabled="false"></mat-datepicker>
+  </mat-form-field>
+
+  <div id="timepicker">
+    <mat-form-field>
+      <input matInput type="number" placeholder="H" [(ngModel)]="hours">
+    </mat-form-field>
+    :
+    <mat-form-field>
+      <input matInput type="number" placeholder="M" [(ngModel)]="minutes">
+    </mat-form-field>
+  </div>
+
+</div>
