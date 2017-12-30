@@ -26,8 +26,7 @@ export class SearchComponent implements OnInit {
   }
 
   ngOnInit () {
-    this._fields = [];
-    this._fields.push(new SearchFieldData());
+    this._fields = [ new SearchFieldData() ];
   }
 
   private anyFieldsEmpty (): boolean {

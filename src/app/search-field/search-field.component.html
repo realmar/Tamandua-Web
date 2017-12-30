@@ -6,7 +6,9 @@
 
 <mat-form-field id="comparator">
   <mat-select [(value)]="comparator">
-    <mat-option *ngFor="let comparator of comparatorTypes" [value]="comparator">{{comparator.toString()}}</mat-option>
+    <mat-option *ngFor="let comparator of comparators"
+                [value]="comparator">{{comparator.toString()}}
+    </mat-option>
   </mat-select>
 </mat-form-field>
 

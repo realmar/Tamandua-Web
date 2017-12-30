@@ -6,8 +6,8 @@
       <h4 class="mat-subheading-1">Fields</h4>
       <mat-list>
         <mat-list-item *ngFor="let field of fields; let i = index;">
-          <app-search-field (data)="fields[i]"></app-search-field>
-          <button mat-icon-button (click)="removeField(field)">
+          <app-search-field [(data)]="fields[i]"></app-search-field>
+          <button mat-icon-button (click)="removeField(fields[i])">
             <mat-icon>remove</mat-icon>
           </button>
         </mat-list-item>
@@ -21,8 +21,8 @@
 
     <div id="datetime">
       <h4 class="mat-subheading-1">Date and Time</h4>
-      <app-search-datetime (datetime)="startDateTime" label="Start"></app-search-datetime>
-      <app-search-datetime (datetime)="endDateTime" label="End"></app-search-datetime>
+      <app-search-datetime [(datetime)]="startDateTime" label="Start"></app-search-datetime>
+      <app-search-datetime [(datetime)]="endDateTime" label="End"></app-search-datetime>
     </div>
   </div>
 

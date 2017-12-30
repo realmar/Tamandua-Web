@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { isNullOrUndefined } from 'util';
 
 @Component({
   selector: 'app-search-datetime',
@@ -8,9 +9,17 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 export class SearchDatetimeComponent implements OnInit {
 
   @Input() label: string;
-  @Output() datetime = new EventEmitter<Date>();
 
-  private _date = new Date();
+  private _date: Date;
+
+  @Input() set datetime (value: Date) {
+    if (!isNullOrUndefined(value)) {
+      this._date = value;
+    }
+    this.datetimeChange.emit(this._date);
+  }
+
+  @Output() datetimeChange = new EventEmitter<Date>();
 
   get date (): Date {
     return this._date;
@@ -18,7 +27,7 @@ export class SearchDatetimeComponent implements OnInit {
 
   set date (value: Date) {
     this._date.setDate(value.getDate());
-    this.datetime.emit(this._date);
+    this.datetimeChange.emit(this._date);
   }
 
   get hours (): number {
@@ -27,7 +36,7 @@ export class SearchDatetimeComponent implements OnInit {
 
   set hours (value: number) {
     this._date.setHours(value);
-    this.datetime.emit(this._date);
+    this.datetimeChange.emit(this._date);
   }
 
   get minutes (): number {
@@ -36,13 +45,14 @@ export class SearchDatetimeComponent implements OnInit {
 
   set minutes (value: number) {
     this._date.setMinutes(value);
-    this.datetime.emit(this._date);
+    this.datetimeChange.emit(this._date);
   }
 
   constructor () {
   }
 
   ngOnInit () {
+    this._date = new Date();
+    this._date.setSeconds(0);
   }
-
 }
