@@ -1,19 +1,36 @@
-<h3 class="mat-subheading-2">Filters</h3>
-
-
 <div>
-  <h4 class="mat-subheading-1">Fields</h4>
-  <app-search-field></app-search-field>
-</div>
+  <h3 class="mat-subheading-2">Filters</h3>
 
-<div>
-  <h4 class="mat-subheading-1">Date and Time</h4>
-  <app-search-datetime label="Start"></app-search-datetime>
-  <app-search-datetime label="End"></app-search-datetime>
-</div>
+  <div>
+    <div id="fields">
+      <h4 class="mat-subheading-1">Fields</h4>
+      <mat-list>
+        <mat-list-item *ngFor="let field of fields; let i = index;">
+          <app-search-field (data)="fields[i]"></app-search-field>
+          <button mat-icon-button (click)="removeField(field)">
+            <mat-icon>remove</mat-icon>
+          </button>
+        </mat-list-item>
+        <mat-list-item id="add-button">
+          <button mat-icon-button (click)="addField()">
+            <mat-icon>add</mat-icon>
+          </button>
+        </mat-list-item>
+      </mat-list>
+    </div>
 
-<button mat-button>Search</button>
+    <div id="datetime">
+      <h4 class="mat-subheading-1">Date and Time</h4>
+      <app-search-datetime (datetime)="startDateTime" label="Start"></app-search-datetime>
+      <app-search-datetime (datetime)="endDateTime" label="End"></app-search-datetime>
+    </div>
+  </div>
+
+  <button mat-button>Search</button>
+</div>
 
 <mat-divider></mat-divider>
 
-<h3 class="mat-subheading-2">Results</h3>
+<div>
+  <h3 class="mat-subheading-2">Results</h3>
+</div>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Comparator, ComparatorType } from '../expression/comparator';
 import { ApiService } from '../tamandua-service/api-service';
 import { SearchFieldData } from './search-field-data';
@@ -9,38 +9,38 @@ import { SearchFieldData } from './search-field-data';
   styleUrls: [ './search-field.component.scss' ]
 })
 export class SearchFieldComponent implements OnInit {
-  private data: SearchFieldData;
+  private _data: SearchFieldData;
 
-  @Output() dataChange = new EventEmitter<SearchFieldData>();
+  @Output() data = new EventEmitter<SearchFieldData>();
 
   get field (): string {
-    return this.data.field;
+    return this._data.field;
   }
 
   set field (value: string) {
-    this.data.field = value;
-    this.dataChange.emit(this.data);
+    this._data.field = value;
+    this.data.emit(this._data);
   }
 
   get comparator (): Comparator {
-    return this.data.comparator;
+    return this._data.comparator;
   }
 
   set comparator (value: Comparator) {
-    this.data.comparator = value;
-    this.dataChange.emit(this.data);
+    this._data.comparator = value;
+    this.data.emit(this._data);
   }
 
   get value (): string {
-    return this.data.value;
+    return this._data.value;
   }
 
   set value (v: string) {
-    this.data.value = v;
-    this.dataChange.emit(this.data);
+    this._data.value = v;
+    this.data.emit(this._data);
   }
 
-  get comparatorTypes (): Array<ComparatorType> {
+  get comparatorTypes (): Array<Comparator> {
     return Object.keys(ComparatorType).map(key => ComparatorType[ key ]);
   }
 
@@ -52,6 +52,8 @@ export class SearchFieldComponent implements OnInit {
   }
 
   ngOnInit () {
-    this.data = new SearchFieldData();
+    this._data = new SearchFieldData();
+    this._data.comparator = this.comparatorTypes[ 0 ];
+    this._data.field = this.fields[ 0 ];
   }
 }
