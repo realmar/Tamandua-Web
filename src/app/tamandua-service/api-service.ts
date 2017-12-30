@@ -1,4 +1,3 @@
-// abstract api service
-export class ApiService {
-  getFields: () => Array<string>;
+export abstract class ApiService {
+  abstract getFields (): Array<string>;
 }
