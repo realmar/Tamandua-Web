@@ -7,7 +7,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import {
   MatButtonModule, MatCardModule, MatDatepickerModule, MatFormFieldModule, MatGridListModule, MatIconModule, MatInputModule, MatListModule,
   MatNativeDateModule,
-  MatSelectModule
+  MatSelectModule, MatToolbarModule
 } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationComponent } from './navigation/navigation.component';
@@ -43,7 +43,8 @@ import { SearchDatetimeComponent } from './search-datetime/search-datetime.compo
     MatListModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatIconModule
+    MatIconModule,
+    MatToolbarModule
   ],
   providers: [
     { provide: ApiService, useClass: TamanduaMockService }
