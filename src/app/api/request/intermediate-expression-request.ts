@@ -1,5 +1,6 @@
 import { Request } from './request';
 import { ApiService } from '../api-service';
+import { Endpoint } from './endpoints/endpoint';
 
 export class IntermediateExpressionRequest implements Request {
   private _dataObject: object;
@@ -11,8 +12,14 @@ export class IntermediateExpressionRequest implements Request {
     return JSON.stringify(this._dataObject);
   }
 
-  constructor (dataObject: object) {
+  private _endpoint: Endpoint;
+  get endpoint (): Endpoint {
+    return this._endpoint;
+  }
+
+  constructor (dataObject: object, endpoint: Endpoint) {
     this._dataObject = dataObject;
+    this._endpoint = endpoint;
   }
 
   public accept (apiService: ApiService): void {

@@ -3,6 +3,8 @@ import { Comparator } from '../../expression/comparator';
 import { IntermediateExpressionRequest } from './intermediate-expression-request';
 import { Request } from './request';
 import { isNullOrUndefined } from 'util';
+import { Endpoint } from './endpoints/endpoint';
+import { EndpointIsUndefinedError } from './endpoint-is-undefined-error';
 
 class Field {
   private _comparator: Comparator;
@@ -44,6 +46,7 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
   private fields: Array<Field>;
   private startDatetime: Date;
   private endDatetime: Date;
+  private endpoint: Endpoint;
 
   constructor () {
     this.fields = [];
@@ -69,6 +72,10 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
     this.endDatetime = undefined;
   }
 
+  setEndpoint (endpoint: Endpoint): void {
+    this.endpoint = endpoint;
+  }
+
   private formatDatetime (datetime: Date): string {
     const dt = IntermediateExpressionRequestBuilder.datetimeFormat;
 
@@ -83,7 +90,17 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
     return dt;
   }
 
+  /**
+   * Build request.
+   *
+   * @throws {EndpointIsUndefinedError} thrown when the endpoint has not been set.
+   * @returns {Request} Assembled request object.
+   */
   public build (): Request {
+    if (isNullOrUndefined(this.endpoint)) {
+      throw new EndpointIsUndefinedError();
+    }
+
     const data = {
       fields: [],
       datetime: {}
@@ -101,6 +118,6 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
       data.datetime[ 'end' ] = this.formatDatetime(this.endDatetime);
     }
 
-    return new IntermediateExpressionRequest(data);
+    return new IntermediateExpressionRequest(data, this.endpoint);
   }
 }

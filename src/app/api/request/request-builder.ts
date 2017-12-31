@@ -1,5 +1,6 @@
 import { Comparator } from '../../expression/comparator';
 import { Request } from './request';
+import { Endpoint } from './endpoints/endpoint';
 
 export interface RequestBuilder {
   addField (name: string, value: string, comparator: Comparator): void;
@@ -11,6 +12,8 @@ export interface RequestBuilder {
   removeStartDatetime (): void;
 
   removeEndDatetime (): void;
+
+  setEndpoint(endpoint: Endpoint): void;
 
   build(): Request;
 }
