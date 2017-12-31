@@ -13,8 +13,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationComponent } from './navigation/navigation.component';
 import { SearchComponent } from './search/search.component';
 import { SearchFieldComponent } from './search-field/search-field.component';
-import { ApiService } from './tamandua-service/api-service';
-import { TamanduaMockService } from './tamandua-service/tamandua-mock.service';
+import { ApiService } from './api/api-service';
+import { TamanduaMockService } from './api/tamandua-mock.service';
 import { FormsModule } from '@angular/forms';
 import { SearchDatetimeComponent } from './search-datetime/search-datetime.component';
 
