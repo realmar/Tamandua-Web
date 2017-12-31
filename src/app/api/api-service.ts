@@ -2,7 +2,11 @@ import { IntermediateExpressionRequest } from './request/intermediate-expression
 import { RequestBuilder } from './request/request-builder';
 
 export abstract class ApiService {
-  abstract getFields (): Array<string>;
+  abstract getColumns (): Promise<Array<string>>;
+
+  abstract getTags (): Promise<Array<string>>;
+
+  abstract getFieldChoices (field: string, limit: number): Promise<Array<string>>;
 
   abstract getRequestBuilder (): RequestBuilder;
 

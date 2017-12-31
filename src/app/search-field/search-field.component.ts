@@ -61,11 +61,17 @@ export class SearchFieldComponent implements OnInit {
       key => ComparatorType[ key ]);
   }
 
+  private _fields: Array<string>;
   get fields (): Array<string> {
-    return this.apiService.getFields();
+    return this._fields;
   }
 
   constructor (private apiService: ApiService) {
+    this._fields = [ 'loading ...' ];
+    this.apiService.getColumns().then(data => {
+      this._fields = data;
+      this._data.field = this._fields[ 0 ];
+    });
   }
 
   ngOnInit () {
