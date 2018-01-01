@@ -15,5 +15,7 @@ export interface RequestBuilder {
 
   setEndpoint(endpoint: Endpoint): void;
 
+  setCallback(callback: (object) => void): void;
+
   build(): Request;
 }

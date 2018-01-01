@@ -47,6 +47,7 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
   private startDatetime: Date;
   private endDatetime: Date;
   private endpoint: Endpoint;
+  private callback: (object) => void;
 
   constructor () {
     this.fields = [];
@@ -72,8 +73,12 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
     this.endDatetime = undefined;
   }
 
-  setEndpoint (endpoint: Endpoint): void {
+  public setEndpoint (endpoint: Endpoint): void {
     this.endpoint = endpoint;
+  }
+
+  setCallback (callback: (object) => void): void {
+    this.callback = callback;
   }
 
   private formatDatetime (datetime: Date): string {
@@ -118,6 +123,6 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
       data.datetime[ 'end' ] = this.formatDatetime(this.endDatetime);
     }
 
-    return new IntermediateExpressionRequest(data, this.endpoint);
+    return new IntermediateExpressionRequest(data, this.endpoint, this.callback);
   }
 }
