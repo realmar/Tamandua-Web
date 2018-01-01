@@ -1,4 +1,4 @@
-import { Comparator } from '../expression/comparator';
+import { Comparator } from '../api/request/comparator';
 
 export class SearchFieldData {
   public field: string;

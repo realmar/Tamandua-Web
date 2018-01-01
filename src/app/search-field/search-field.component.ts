@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Comparator, ComparatorType } from '../expression/comparator';
+import { Comparator, ComparatorType } from '../api/request/comparator';
 import { ApiService } from '../api/api-service';
 import { SearchFieldData } from './search-field-data';
 import { isNullOrUndefined } from 'util';

@@ -1,4 +1,4 @@
-import { Comparator } from '../../expression/comparator';
+import { Comparator } from './comparator';
 import { Request } from './request';
 import { Endpoint } from './endpoints/endpoint';
 

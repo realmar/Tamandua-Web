@@ -1,5 +1,5 @@
 import { RequestBuilder } from './request-builder';
-import { Comparator } from '../../expression/comparator';
+import { Comparator } from './comparator';
 import { IntermediateExpressionRequest } from './intermediate-expression-request';
 import { Request } from './request';
 import { isNullOrUndefined } from 'util';
