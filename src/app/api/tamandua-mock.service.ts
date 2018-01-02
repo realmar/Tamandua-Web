@@ -31,8 +31,40 @@ export class TamanduaMockService extends ApiService {
 
   public getColumns (): Promise<ColumnsResponse> {
     return of([
+      'action',
+      'connectclient',
+      'connectip',
+      'deliverymessage',
+      'deliveryrelay',
+      'deliverystatus',
+      'holdreason',
+      'lmtpmsg',
+      'lmtpstatus',
+      'loglines',
+      'messageid',
+      'orig_recipient',
+      'phdimap_qid',
+      'phdimap_time',
+      'phdmailscan_qid',
+      'phdmxin_qid',
+      'phdmxin_time',
+      'recipient',
+      'rejectreason',
+      'rejectstage',
+      'saslmethod',
+      'saslusername',
       'sender',
-      'recipient'
+      'size',
+      'spamdesc',
+      'spamrequiredscore',
+      'spamscantime',
+      'spamscore',
+      'statuscode',
+      'tags',
+      'uid',
+      'username',
+      'virusaction',
+      'virusresult'
     ]).toPromise();
   }
 
@@ -67,6 +99,17 @@ export class TamanduaMockService extends ApiService {
   }
 
   public search (queryData: string, endpoint: SearchEndpoint): Promise<SearchResponse> {
+    /*return of({
+      'total_rows': 0,
+      'rows': [
+        {
+          'phdmxin_time': '2017/12/14 10:40:57',
+          'sender': 'scott@example.com',
+          'recipient': 'john@example.com',
+        },
+      ]
+    }).toPromise();*/
+
     return of({
       'total_rows': 0,
       'rows': [

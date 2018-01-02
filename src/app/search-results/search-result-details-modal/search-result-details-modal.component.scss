@@ -1,0 +1,38 @@
+pre {
+  display: block;
+  font-family: monospace;
+  white-space: pre;
+  margin: 1em 0;
+  background-color: #ECEFF1;
+  border-radius: 5px;
+  border: solid #546E7A 1px;
+  padding: .5rem;
+}
+
+.table {
+  display: table;
+  width: 100%;
+}
+
+.row {
+  display: table-row;
+  border: solid black 1px;
+}
+
+.cell {
+  display: table-cell;
+}
+
+.left-cell {
+  font-weight: bold;
+  width: 4rem;
+  vertical-align: top;
+}
+
+.right-cell {
+  padding-left: 1rem;
+}
+
+#close-button {
+  float: right
+}

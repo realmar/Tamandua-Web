@@ -1,0 +1,27 @@
+<mat-table [dataSource]="rows" matSort>
+
+  <ng-container matColumnDef="details">
+    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <button mat-icon-button (click)="showDetails(element)">
+        <mat-icon>zoom_in</mat-icon>
+      </button>
+    </mat-cell>
+  </ng-container>
+
+  <ng-container *ngFor="let row of visibleColumns" [matColumnDef]="row">
+    <mat-header-cell *matHeaderCellDef mat-sort-header>
+      <p class="column-header mat-subheading-1">{{row}}</p>
+      <mat-form-field>
+        <input matInput placeholder="Filter">
+      </mat-form-field>
+    </mat-header-cell>
+    <mat-cell class="table-cell" *matCellDef="let element">{{element[row]}}</mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="visibleColumnsWithMetadata"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: visibleColumnsWithMetadata;"></mat-row>
+
+</mat-table>
+<mat-paginator [length]="rows.data.length"
+               [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>

@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>Details</h2>
+<mat-dialog-content>
+  <div class="table mat-body-1">
+    <div class="row" *ngFor="let key of rowKeys">
+      <div class="cell left-cell">{{key}}</div>
+      <div class="cell right-cell">
+        <ng-container *ngIf="key !== 'loglines'">
+          {{rowData[key]}}
+        </ng-container>
+        <pre *ngIf="key === 'loglines'"><code>{{rowData[key]}}</code></pre>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button id="close-button" mat-button [mat-dialog-close]="true">Close</button>
+</mat-dialog-actions>
