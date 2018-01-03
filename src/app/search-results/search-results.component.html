@@ -13,7 +13,9 @@
     <mat-header-cell *matHeaderCellDef mat-sort-header>
       <p class="column-header mat-subheading-1">{{row}}</p>
       <mat-form-field>
-        <input matInput placeholder="Filter">
+        <input matInput
+               placeholder="Filter"
+               (input)="applyFilter($event.target.value, row)">
       </mat-form-field>
     </mat-header-cell>
     <mat-cell class="table-cell" *matCellDef="let element">{{element[row]}}</mat-cell>
