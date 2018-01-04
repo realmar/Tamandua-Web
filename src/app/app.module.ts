@@ -8,7 +8,7 @@ import {
   MatButtonModule, MatCardModule, MatDatepickerModule, MatDialogModule, MatFormFieldModule, MatGridListModule, MatIconModule,
   MatInputModule, MatListModule,
   MatNativeDateModule, MatPaginatorModule,
-  MatSelectModule, MatTableModule, MatToolbarModule
+  MatSelectModule, MatSortModule, MatTableModule, MatToolbarModule
 } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationComponent } from './navigation/navigation.component';
@@ -51,6 +51,7 @@ import { SearchResultDetailsModalComponent } from './search-results/search-resul
     MatIconModule,
     MatToolbarModule,
     MatTableModule,
+    MatSortModule,
     MatPaginatorModule,
     MatDialogModule
   ],

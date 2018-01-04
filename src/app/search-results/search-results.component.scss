@@ -1,3 +1,9 @@
+
+.column-header > div:first-child {
+  display: flex !important;
+  align-items: baseline !important;
+}
+
 .column-header {
   margin: 0 !important;
 }

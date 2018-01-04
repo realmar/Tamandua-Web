@@ -1,4 +1,6 @@
-<mat-table [dataSource]="rows" matSort>
+<mat-table [dataSource]="rows"
+           matSort
+           (sortChange)="sortData($event)">
 
   <ng-container matColumnDef="details">
     <mat-header-cell *matHeaderCellDef></mat-header-cell>
@@ -10,8 +12,8 @@
   </ng-container>
 
   <ng-container *ngFor="let row of visibleColumns" [matColumnDef]="row">
-    <mat-header-cell *matHeaderCellDef mat-sort-header>
-      <p class="column-header mat-subheading-1">{{row}}</p>
+    <mat-header-cell *matHeaderCellDef>
+      <p class="column-header mat-subheading-1" mat-sort-header>{{row}}</p>
       <mat-form-field>
         <input matInput
                placeholder="Filter"

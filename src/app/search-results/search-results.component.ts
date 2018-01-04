@@ -3,7 +3,7 @@ import { ApiService } from '../api/api-service';
 import { ColumnsResponse } from '../api/response/columns-response';
 import { SearchResponse, SearchRow } from '../api/response/search-reponse';
 import { SearchEndpoint } from '../api/request/endpoints/search-endpoint';
-import { MatDialog, MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { MatDialog, MatPaginator, MatSort, MatTableDataSource, Sort } from '@angular/material';
 import { SearchResultDetailsModalComponent } from './search-result-details-modal/search-result-details-modal.component';
 import { Converter } from '../converter';
 
@@ -16,7 +16,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) private paginator: MatPaginator;
   @ViewChild(MatSort) private sort: MatSort;
 
-  private _rows = new MatTableDataSource<SearchRow>();
+  private _rows: MatTableDataSource<SearchRow>;
 
   public get rows (): MatTableDataSource<SearchRow> {
     return this._rows;
@@ -66,6 +66,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
   constructor (private apiService: ApiService,
                private dialog: MatDialog) {
+    this._rows = new MatTableDataSource<SearchRow>();
     this.filter = new Map<string, string>();
   }
 
@@ -110,6 +111,23 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
       this.filterAsRegex[ key ] = new RegExp(this.filter[ key ], 'i'));
 
     this.updateFilter();
+  }
+
+  public sortData (sort: Sort): void {
+    if (!sort.active || sort.direction === '') {
+      return;
+    }
+
+    let sortFunction: <T>(a: T, b: T) => number;
+    const isAsc = sort.direction === 'asc';
+
+    if (sort.active.slice(sort.active.length - 4, sort.active.length) === 'time') {
+      sortFunction = (a, b) => (Converter.stringToDate(a.toString()) < Converter.stringToDate(b.toString()) ? -1 : 1) * (isAsc ? 1 : -1);
+    } else {
+      sortFunction = (a, b) => (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+    }
+
+    this._rows.data = this._rows.data.sort((a, b) => sortFunction(a[ sort.active ], b[ sort.active ]));
   }
 
   private compareNumber (value: number, filter: string, regexFilter: RegExp): boolean {
@@ -157,6 +175,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
       'datetime': this.compareDatetime
     };
 
+    let counter = 0;
     for (let i = 0; i < this.allRows.length; ++i) {
       let isValid = true;
 
@@ -175,7 +194,9 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
       }
 
       if (isValid) {
-        rows.push(this.allRows[ i ]);
+        // .push( ... ) is slow:
+        // https://jsperf.com/push-allocated-vs-dynamic
+        rows[ counter++ ] = this.allRows[ i ];
       }
     }
 
