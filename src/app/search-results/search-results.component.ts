@@ -5,6 +5,7 @@ import { SearchResponse, SearchRow } from '../api/response/search-reponse';
 import { SearchEndpoint } from '../api/request/endpoints/search-endpoint';
 import { MatDialog, MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { SearchResultDetailsModalComponent } from './search-result-details-modal/search-result-details-modal.component';
+import { Converter } from '../converter';
 
 @Component({
   selector: 'app-search-results',
@@ -39,7 +40,29 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   private totalRows: number;
   private allColumns: Array<string>;
   private allRows: Array<SearchRow>;
+
   private filter: Map<string, string>;
+  private filterAsRegex: Map<string, RegExp>;
+
+  private static genericCompare (value: any, filter: string, filterTransformLambda: (string) => any): boolean {
+    if (filter.startsWith('>=')) {
+      return value >= filterTransformLambda(filter.slice(2, filter.length));
+    }
+
+    if (filter.startsWith('<=')) {
+      return value <= filterTransformLambda(filter.slice(2, filter.length));
+    }
+
+    if (filter.startsWith('>')) {
+      return value > filterTransformLambda(filter.slice(1, filter.length));
+    }
+
+    if (filter.startsWith('<')) {
+      return value < filterTransformLambda(filter.slice(1, filter.length));
+    }
+
+    return value === filterTransformLambda(filter);
+  }
 
   constructor (private apiService: ApiService,
                private dialog: MatDialog) {
@@ -82,6 +105,10 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
       this.filter[ column ] = filterValue.trim();
     }
 
+    this.filterAsRegex = new Map<string, RegExp>();
+    Object.keys(this.filter).map(key =>
+      this.filterAsRegex[ key ] = new RegExp(this.filter[ key ], 'i'));
+
     this.updateFilter();
   }
 
@@ -93,33 +120,11 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     // prevent dereference array every iteration
     const filterKeyLength = filterKeys.length;
 
-    const filterAsRegex = new Map<string, string>();
-
-    filterKeys.map(key =>
-      filterAsRegex[ key ] = new RegExp(this.filter[ key ], 'i'));
-
     const rows = new Array<SearchRow>();
 
     const typeCompareFunctions = {
       'number': function (value: number, filter: string, regexFilter: RegExp): boolean {
-
-        if (filter.startsWith('>=')) {
-          return value >= parseFloat(filter.slice(2, filter.length));
-        }
-
-        if (filter.startsWith('<=')) {
-          return value <= parseFloat(filter.slice(2, filter.length));
-        }
-
-        if (filter.startsWith('>')) {
-          return value > parseFloat(filter.slice(1, filter.length));
-        }
-
-        if (filter.startsWith('<')) {
-          return value < parseFloat(filter.slice(1, filter.length));
-        }
-
-        return value === parseFloat(filter);
+        return SearchResultsComponent.genericCompare(value, filter, parseFloat);
       },
 
       'string': function (value: string, filter: string, regexFilter: RegExp): boolean {
@@ -128,7 +133,11 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
       'object': function (value: object, filter: string, regexFilter: RegExp): boolean {
         return !value;
-      }
+      },
+
+      'datetime': function (value: string, filter: string, regexFilter: RegExp): boolean {
+        return SearchResultsComponent.genericCompare(Converter.stringToDate(value), filter, f => Converter.stringToDate(f));
+      },
     };
 
     for (let i = 0; i < this.allRows.length; ++i) {
@@ -138,10 +147,10 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
         const key = filterKeys[ j ];
         const value = this.allRows[ i ][ filterKeys[ j ] ];
 
-        if (!typeCompareFunctions[ typeof(value) ](
+        if (!typeCompareFunctions[ key.slice(key.length - 4, key.length) === 'time' ? 'datetime' : typeof(value) ](
             value,
             this.filter[ key ],
-            filterAsRegex[ key ])) {
+            this.filterAsRegex[ key ])) {
 
           isValid = false;
           break;

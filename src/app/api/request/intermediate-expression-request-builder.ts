@@ -5,6 +5,7 @@ import { Request } from './request';
 import { isNullOrUndefined } from 'util';
 import { Endpoint } from './endpoints/endpoint';
 import { EndpointIsUndefinedError } from './endpoint-is-undefined-error';
+import { Converter } from '../../converter';
 
 class Field {
   private _comparator: Comparator;
@@ -41,8 +42,6 @@ class Field {
 }
 
 export class IntermediateExpressionRequestBuilder implements RequestBuilder {
-  static readonly datetimeFormat = 'YYYY/MM/DD HH:mm:ss';
-
   private fields: Array<Field>;
   private startDatetime: Date;
   private endDatetime: Date;
@@ -81,20 +80,6 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
     this.callback = callback;
   }
 
-  private formatDatetime (datetime: Date): string {
-    const dt = IntermediateExpressionRequestBuilder.datetimeFormat;
-
-    dt.replace('YYYY', datetime.getFullYear().toString());
-    dt.replace('MM', datetime.getMonth().toString());
-    dt.replace('DD', datetime.getDay().toString());
-
-    dt.replace('HH', datetime.getHours().toString());
-    dt.replace('mm', datetime.getMinutes().toString());
-    dt.replace('ss', datetime.getSeconds().toString());
-
-    return dt;
-  }
-
   /**
    * Build request.
    *
@@ -116,11 +101,11 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
     }
 
     if (!isNullOrUndefined(this.startDatetime)) {
-      data.datetime[ 'start' ] = this.formatDatetime(this.startDatetime);
+      data.datetime[ 'start' ] = Converter.dateToString(this.startDatetime);
     }
 
     if (!isNullOrUndefined(this.endDatetime)) {
-      data.datetime[ 'end' ] = this.formatDatetime(this.endDatetime);
+      data.datetime[ 'end' ] = Converter.dateToString(this.endDatetime);
     }
 
     return new IntermediateExpressionRequest(data, this.endpoint, this.callback);
