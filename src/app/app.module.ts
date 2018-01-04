@@ -5,7 +5,8 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import {
-  MatButtonModule, MatCardModule, MatCheckboxModule, MatDatepickerModule, MatDialogModule, MatFormFieldModule, MatGridListModule,
+  MatButtonModule, MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatDatepickerModule, MatDialogModule, MatFormFieldModule,
+  MatGridListModule,
   MatIconModule,
   MatInputModule, MatListModule,
   MatNativeDateModule, MatPaginatorModule,
@@ -22,6 +23,7 @@ import { SearchDatetimeComponent } from './search-datetime/search-datetime.compo
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { SearchResultDetailsModalComponent } from './search-results/search-result-details-modal/search-result-details-modal.component';
 import { SearchResultAddColumnsModalComponent } from './search-results/search-result-add-columns/search-result-add-columns-modal.component';
+import { SearchResultTagsSelectionComponent } from './search-results/search-result-tags-selection/search-result-tags-selection.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,8 @@ import { SearchResultAddColumnsModalComponent } from './search-results/search-re
     SearchDatetimeComponent,
     SearchResultsComponent,
     SearchResultDetailsModalComponent,
-    SearchResultAddColumnsModalComponent
+    SearchResultAddColumnsModalComponent,
+    SearchResultTagsSelectionComponent
   ],
   imports: [
     BrowserModule,
@@ -57,7 +60,8 @@ import { SearchResultAddColumnsModalComponent } from './search-results/search-re
     MatSortModule,
     MatPaginatorModule,
     MatDialogModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatButtonToggleModule
   ],
   providers: [
     { provide: ApiService, useClass: TamanduaMockService }
