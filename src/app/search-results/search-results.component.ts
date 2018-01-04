@@ -28,8 +28,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   private _visibleColumns = [
     'phdmxin_time',
     'sender',
-    'recipient',
-    'spamscore'
+    'recipient'
   ];
 
   public get visibleColumns (): Array<string> {
@@ -126,9 +125,6 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public sortData (sort: Sort): void {
-
-    console.log(sort.direction);
-
     if (!sort.active || sort.direction === '') {
       return;
     }

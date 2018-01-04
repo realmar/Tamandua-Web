@@ -1,12 +1,12 @@
 export enum ComparatorType {
+  Regex = 're',
+  RegexCaseInsensitive = 're_i',
   Equals = '=',
   NotEquals = '!=',
   Greater = '>',
   GreaterOrEqual = '>=',
   Less = '<',
-  LessOrEqual = '<=',
-  Regex = 're',
-  RegexCaseInsensitive = 're_i'
+  LessOrEqual = '<='
 }
 
 export class Comparator {
