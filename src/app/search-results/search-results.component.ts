@@ -44,7 +44,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   private filter: Map<string, string>;
   private filterAsRegex: Map<string, RegExp>;
 
-  private static genericCompare (value: any, filter: string, filterTransformLambda: (string) => any): boolean {
+  private static genericCompare<T> (value: T, filter: string, filterTransformLambda: (string) => T): boolean {
     if (filter.startsWith('>=')) {
       return value >= filterTransformLambda(filter.slice(2, filter.length));
     }
@@ -112,6 +112,34 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this.updateFilter();
   }
 
+  private compareNumber (value: number, filter: string, regexFilter: RegExp): boolean {
+    return SearchResultsComponent.genericCompare<number>(value, filter, parseFloat);
+  }
+
+  private compareString (value: string, filter: string, regexFilter: RegExp): boolean {
+    return regexFilter.test(value);
+  }
+
+  private compareObject (value: object, filter: string, regexFilter: RegExp): boolean {
+    return !value;
+  }
+
+  private compareDatetime (value: string, filter: string, regexFilter: RegExp): boolean {
+    let finalValue = value;
+    const stripedFilter = filter.replace(/^(>=|<=|<|>)/, '');
+
+    if (Converter.isStringTimeOnly(stripedFilter)) {
+      finalValue = value.substring(value.indexOf(' ') + 1, value.length);
+    } else if (Converter.isStringDateOnly(stripedFilter)) {
+      finalValue = value.substring(0, value.indexOf(' '));
+    }
+
+    return SearchResultsComponent.genericCompare<number>(
+      Converter.stringToDate(finalValue).getTime(),
+      filter,
+      f => Converter.stringToDate(f).getTime());
+  }
+
   private updateFilter (): void {
     // This needs to be ultra fast ... needs further investigation
 
@@ -123,33 +151,10 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     const rows = new Array<SearchRow>();
 
     const typeCompareFunctions = {
-      'number': function (value: number, filter: string, regexFilter: RegExp): boolean {
-        return SearchResultsComponent.genericCompare(value, filter, parseFloat);
-      },
-
-      'string': function (value: string, filter: string, regexFilter: RegExp): boolean {
-        return regexFilter.test(value);
-      },
-
-      'object': function (value: object, filter: string, regexFilter: RegExp): boolean {
-        return !value;
-      },
-
-      'datetime': function (value: string, filter: string, regexFilter: RegExp): boolean {
-        let finalValue = value;
-        const stripedFilter = filter.replace(/^(>=|<=|<|>)/, '');
-
-        if (Converter.isStringTimeOnly(stripedFilter)) {
-          finalValue = value.substring(value.indexOf(' ') + 1, value.length);
-        } else if (Converter.isStringDateOnly(stripedFilter)) {
-          finalValue = value.substring(0, value.indexOf(' '));
-        }
-
-        return SearchResultsComponent.genericCompare(
-          Converter.stringToDate(finalValue).getTime(),
-          filter,
-          f => Converter.stringToDate(f).getTime());
-      },
+      'number': this.compareNumber,
+      'string': this.compareString,
+      'object': this.compareObject,
+      'datetime': this.compareDatetime
     };
 
     for (let i = 0; i < this.allRows.length; ++i) {
