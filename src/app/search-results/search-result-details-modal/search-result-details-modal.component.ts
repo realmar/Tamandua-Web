@@ -19,8 +19,6 @@ export class SearchResultDetailsModalComponent implements OnInit {
 
   constructor (private dialogRef: MatDialogRef<SearchResultDetailsModalComponent>,
                @Inject(MAT_DIALOG_DATA) private _rowData: SearchRow) {
-
-    console.log(this.rowData);
   }
 
   ngOnInit () {

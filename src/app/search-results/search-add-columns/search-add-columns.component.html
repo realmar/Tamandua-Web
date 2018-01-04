@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>Displayed Columns</h2>
+<mat-dialog-content>
+  <ng-container *ngFor="let column of columns">
+    <mat-checkbox [checked]="isDisplayed(column)"
+                  (change)="changeDisplayState($event, column)">{{column}}
+    </mat-checkbox>
+    <br>
+  </ng-container>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button id="close-button" mat-button [mat-dialog-close]="true">Done</button>
+</mat-dialog-actions>

@@ -3,7 +3,13 @@
            (sortChange)="sortData($event)">
 
   <ng-container matColumnDef="details">
-    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>
+      <button mat-icon-button
+              (click)="addColumns()"
+              class="add-columns-button">
+        <mat-icon>tune</mat-icon>
+      </button>
+    </mat-header-cell>
     <mat-cell *matCellDef="let element">
       <button mat-icon-button (click)="showDetails(element)">
         <mat-icon>zoom_in</mat-icon>

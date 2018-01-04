@@ -6,6 +6,8 @@ import { SearchEndpoint } from '../api/request/endpoints/search-endpoint';
 import { MatDialog, MatPaginator, MatSort, MatTableDataSource, Sort } from '@angular/material';
 import { SearchResultDetailsModalComponent } from './search-result-details-modal/search-result-details-modal.component';
 import { Converter } from '../converter';
+import { SearchAddColumnsComponent } from './search-add-columns/search-add-columns.component';
+import { AddColumnsModalData } from './search-add-columns/add-columns-modal-data';
 
 @Component({
   selector: 'app-search-results',
@@ -85,7 +87,16 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this.rows.sort = this.sort;
   }
 
-  public showDetails (row: any) {
+  public addColumns (): void {
+    this.dialog.open(SearchAddColumnsComponent, {
+      data: {
+        allColumns: this.allColumns,
+        displayedColumns: this._visibleColumns
+      } as AddColumnsModalData
+    });
+  }
+
+  public showDetails (row: SearchRow) {
     this.dialog.open(SearchResultDetailsModalComponent, {
       width: '80%',
       data: row
