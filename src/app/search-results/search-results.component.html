@@ -1,6 +1,6 @@
 <mat-table [dataSource]="rows"
            matSort
-           (sortChange)="sortData($event)">
+           (matSortChange)="sortData($event)">
 
   <ng-container matColumnDef="details">
     <mat-header-cell *matHeaderCellDef>

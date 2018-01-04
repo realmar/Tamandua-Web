@@ -8,6 +8,7 @@ import { SearchResultDetailsModalComponent } from './search-result-details-modal
 import { Converter } from '../converter';
 import { SearchAddColumnsComponent } from './search-add-columns/search-add-columns.component';
 import { AddColumnsModalData } from './search-add-columns/add-columns-modal-data';
+import { isNullOrUndefined } from 'util';
 
 @Component({
   selector: 'app-search-results',
@@ -125,6 +126,9 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public sortData (sort: Sort): void {
+
+    console.log(sort.direction);
+
     if (!sort.active || sort.direction === '') {
       return;
     }
@@ -133,9 +137,9 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     const isAsc = sort.direction === 'asc';
 
     if (sort.active.slice(sort.active.length - 4, sort.active.length) === 'time') {
-      sortFunction = (a, b) => (Converter.stringToDate(a.toString()) < Converter.stringToDate(b.toString()) ? -1 : 1) * (isAsc ? 1 : -1);
+      sortFunction = (a, b) => Converter.stringToDate(a.toString()).getTime() - Converter.stringToDate(b.toString()).getTime();
     } else {
-      sortFunction = (a, b) => (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+      sortFunction = (a, b) => a === b ? 0 : (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
 
     this._rows.data = this._rows.data.sort((a, b) => sortFunction(a[ sort.active ], b[ sort.active ]));
@@ -223,5 +227,11 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this.allRows = result.rows;
 
     this.updateFilter();
+
+    const sortable = this.rows.sort.sortables.get('phdmxin_time');
+    if (!isNullOrUndefined(sortable)) {
+      sortable.start = 'desc';
+      this.rows.sort.sort(sortable);
+    }
   }
 }
