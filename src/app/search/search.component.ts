@@ -29,7 +29,7 @@ export class SearchComponent implements OnInit {
     this._fields = [ new SearchFieldData() ];
   }
 
-  private anyFieldsEmpty (): boolean {
+  public anyFieldsEmpty (): boolean {
     return this._fields.some(element => element.value.trim().length === 0);
   }
 
@@ -41,8 +41,12 @@ export class SearchComponent implements OnInit {
     this._fields.push(new SearchFieldData());
   }
 
+  public isOnlyField (): boolean {
+    return this._fields.length < 2;
+  }
+
   public removeField (field: SearchFieldData): void {
-    if (this._fields.length < 2) {
+    if (this.isOnlyField()) {
       return;
     }
 

@@ -7,12 +7,12 @@
       <mat-list>
         <mat-list-item *ngFor="let field of fields; let i = index;">
           <app-search-field [(data)]="fields[i]"></app-search-field>
-          <button mat-icon-button (click)="removeField(fields[i])">
+          <button mat-icon-button (click)="removeField(fields[i])" [disabled]="isOnlyField()">
             <mat-icon>remove</mat-icon>
           </button>
         </mat-list-item>
         <mat-list-item id="add-button">
-          <button mat-icon-button (click)="addField()">
+          <button mat-icon-button (click)="addField()" [disabled]="anyFieldsEmpty()">
             <mat-icon>add</mat-icon>
           </button>
         </mat-list-item>
