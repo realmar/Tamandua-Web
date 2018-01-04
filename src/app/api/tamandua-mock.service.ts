@@ -153,6 +153,46 @@ export class TamanduaMockService extends ApiService {
             'line2',
           ]
         },
+        {
+          'phdimap_time': '2017/12/14 10:40:57',
+          'size': [
+            2292,
+            2784,
+            2872
+          ],
+          'username': 'john',
+          'spamrequiredscore': 5.0,
+          'phdmxin_time': '2016/12/14 10:20:57',
+          'deliverystatus': 'sent',
+          'spamscore': -1,
+          'spamscantime': 0.6,
+          'sender': 'jennifer@example.com',
+          'deliverymessage': 'delivered to command: /usr/bin/procmail -t',
+          'virusaction': 'RelayedInternal',
+          'deliveryrelay': 'local',
+          'phdimap_qid': '3yy7px65DlzXKh',
+          'tags': [
+            'intern'
+          ],
+          'messageid': '42de1b6c5acd8eb35b0241c3fe1e098b@example.com',
+          'connectip': [
+            '192.168.0.2',
+            '192.168.0.3'
+          ],
+          'spamdesc': 'ALL_TRUSTED,BAYES_00,T_RP_MATCHES_RCVD',
+          'virusresult': 'Passed CLEAN',
+          'phdmxin_qid': '3yy7px5By3zQ4f',
+          'uid': 1893,
+          'connectclient': [
+            'imap.example.com',
+            'mailscan.example.com'
+          ],
+          'recipient': 'tiffany@example.com',
+          'loglines': [
+            'line1',
+            'line2',
+          ]
+        }
       ]
     }).toPromise();
   }

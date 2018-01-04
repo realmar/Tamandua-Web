@@ -136,7 +136,19 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
       },
 
       'datetime': function (value: string, filter: string, regexFilter: RegExp): boolean {
-        return SearchResultsComponent.genericCompare(Converter.stringToDate(value), filter, f => Converter.stringToDate(f));
+        let finalValue = value;
+        const stripedFilter = filter.replace(/^(>=|<=|<|>)/, '');
+
+        if (Converter.isStringTimeOnly(stripedFilter)) {
+          finalValue = value.substring(value.indexOf(' ') + 1, value.length);
+        } else if (Converter.isStringDateOnly(stripedFilter)) {
+          finalValue = value.substring(0, value.indexOf(' '));
+        }
+
+        return SearchResultsComponent.genericCompare(
+          Converter.stringToDate(finalValue).getTime(),
+          filter,
+          f => Converter.stringToDate(f).getTime());
       },
     };
 

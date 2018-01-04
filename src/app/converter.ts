@@ -3,6 +3,14 @@ export class Converter {
    * static readonly datetimeFormat = 'YYYY/MM/DD HH:mm:ss';
    */
 
+  public static isStringTimeOnly (time: string): boolean {
+    return time[ 2 ] === ':';
+  }
+
+  public static isStringDateOnly (date: string): boolean {
+    return date[ 4 ] === '/' && date.length === 10;
+  }
+
   // pure
   public static dateToString (datetime: Date): string {
 
@@ -39,7 +47,7 @@ export class Converter {
       time = dtSplit[ 1 ];
     }
 
-    let year = 1970, month = 1, day = 1, hours = 0, minutes = 0, seconds = 0;
+    let year = 1970, month = 0, day = 1, hours = 0, minutes = 0, seconds = 0;
 
     if (date !== undefined) {
       year = parseInt(date.substring(0, 4), 10);
