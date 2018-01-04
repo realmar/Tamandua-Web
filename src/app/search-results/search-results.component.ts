@@ -6,8 +6,8 @@ import { SearchEndpoint } from '../api/request/endpoints/search-endpoint';
 import { MatDialog, MatPaginator, MatSort, MatTableDataSource, Sort } from '@angular/material';
 import { SearchResultDetailsModalComponent } from './search-result-details-modal/search-result-details-modal.component';
 import { Converter } from '../converter';
-import { SearchAddColumnsComponent } from './search-add-columns/search-add-columns.component';
-import { AddColumnsModalData } from './search-add-columns/add-columns-modal-data';
+import { SearchResultAddColumnsModalComponent } from './search-result-add-columns/search-result-add-columns-modal.component';
+import { AddColumnsModalData } from './search-result-add-columns/add-columns-modal-data';
 import { isNullOrUndefined } from 'util';
 
 @Component({
@@ -88,7 +88,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public addColumns (): void {
-    this.dialog.open(SearchAddColumnsComponent, {
+    this.dialog.open(SearchResultAddColumnsModalComponent, {
       data: {
         allColumns: this.allColumns,
         displayedColumns: this._visibleColumns

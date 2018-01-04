@@ -5,10 +5,10 @@ import { AddColumnsModalData } from './add-columns-modal-data';
 
 @Component({
   selector: 'app-search-add-columns',
-  templateUrl: './search-add-columns.component.html',
-  styleUrls: [ './search-add-columns.component.scss' ]
+  templateUrl: './search-result-add-columns-modal.component.html',
+  styleUrls: [ './search-result-add-columns-modal.component.scss' ]
 })
-export class SearchAddColumnsComponent implements OnInit {
+export class SearchResultAddColumnsModalComponent implements OnInit {
 
   private sortedColumns: Array<string>;
 

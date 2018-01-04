@@ -21,7 +21,7 @@ import { FormsModule } from '@angular/forms';
 import { SearchDatetimeComponent } from './search-datetime/search-datetime.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { SearchResultDetailsModalComponent } from './search-results/search-result-details-modal/search-result-details-modal.component';
-import { SearchAddColumnsComponent } from './search-results/search-add-columns/search-add-columns.component';
+import { SearchResultAddColumnsModalComponent } from './search-results/search-result-add-columns/search-result-add-columns-modal.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +33,7 @@ import { SearchAddColumnsComponent } from './search-results/search-add-columns/s
     SearchDatetimeComponent,
     SearchResultsComponent,
     SearchResultDetailsModalComponent,
-    SearchAddColumnsComponent
+    SearchResultAddColumnsModalComponent
   ],
   imports: [
     BrowserModule,
@@ -65,7 +65,7 @@ import { SearchAddColumnsComponent } from './search-results/search-add-columns/s
   bootstrap: [ AppComponent ],
   entryComponents: [
     SearchResultDetailsModalComponent,
-    SearchAddColumnsComponent
+    SearchResultAddColumnsModalComponent
   ]
 })
 export class AppModule {
