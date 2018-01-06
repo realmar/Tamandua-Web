@@ -13,16 +13,16 @@ export class SearchResultTagsSelectionComponent implements OnInit {
     'incomplete'
   ];
 
-  @Output() selectedTagsChange: EventEmitter<SelectedTags>;
+  @Output() selectedTags: EventEmitter<SelectedTags>;
 
-  private _selectedTags: SelectedTags;
-  public get selectedTags (): SelectedTags {
-    return this._selectedTags;
+  private _selTags: SelectedTags;
+  public get selTags (): SelectedTags {
+    return this._selTags;
   }
 
   constructor (private apiService: ApiService) {
-    this.selectedTagsChange = new EventEmitter<SelectedTags>();
-    this._selectedTags = [];
+    this.selectedTags = new EventEmitter<SelectedTags>();
+    this._selTags = [];
   }
 
   ngOnInit () {
@@ -30,7 +30,7 @@ export class SearchResultTagsSelectionComponent implements OnInit {
   }
 
   private buildSelectedTags (tags: TagsResponse): void {
-    this._selectedTags = tags.sort().map(tag => {
+    this._selTags = tags.sort().map(tag => {
       return {
         tag: tag,
         selected: this.defaultNotSelectedTags.indexOf(tag) === -1

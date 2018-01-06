@@ -172,7 +172,9 @@ export class TamanduaMockService extends ApiService {
           'deliveryrelay': 'local',
           'phdimap_qid': '3yy7px65DlzXKh',
           'tags': [
-            'intern'
+            'intern',
+            'incoming',
+            'hold'
           ],
           'messageid': '42de1b6c5acd8eb35b0241c3fe1e098b@example.com',
           'connectip': [

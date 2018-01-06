@@ -9,6 +9,8 @@ import { Converter } from '../converter';
 import { SearchResultAddColumnsModalComponent } from './search-result-add-columns/search-result-add-columns-modal.component';
 import { AddColumnsModalData } from './search-result-add-columns/add-columns-modal-data';
 import { isNullOrUndefined } from 'util';
+import { SelectedTags } from './search-result-tags-selection/selected-tags';
+import { TamanduaMockService } from '../api/tamandua-mock.service';
 
 @Component({
   selector: 'app-search-results',
@@ -19,8 +21,12 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) private paginator: MatPaginator;
   @ViewChild(MatSort) private sort: MatSort;
 
-  private _rows: MatTableDataSource<SearchRow>;
+  private _selectedTags: SelectedTags;
+  public set selectedTags (value: SelectedTags) {
+    this._selectedTags = value;
+  }
 
+  private _rows: MatTableDataSource<SearchRow>;
   public get rows (): MatTableDataSource<SearchRow> {
     return this._rows;
   }
@@ -28,7 +34,8 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   private _visibleColumns = [
     'phdmxin_time',
     'sender',
-    'recipient'
+    'recipient',
+    'tags'
   ];
 
   public get visibleColumns (): Array<string> {
@@ -45,6 +52,14 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
   private filter: Map<string, string>;
   private filterAsRegex: Map<string, RegExp>;
+
+  private readonly typeCompareFunctionMap = {
+    'number': this.compareNumber.bind(this),
+    'string': this.compareString.bind(this),
+    'object': this.compareObject.bind(this),
+    'datetime': this.compareDatetime.bind(this),
+    'array': this.compareArray.bind(this)
+  };
 
   private static genericCompare<T> (value: T, filter: string, filterTransformLambda: (string) => T): boolean {
     if (filter.startsWith('>=')) {
@@ -149,7 +164,38 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     return regexFilter.test(value);
   }
 
+  private compareArray (values: Array<string>, filter: string, regexFilter: RegExp): boolean {
+    // only | connective is supported atm
+
+    let isValid = false;
+
+    const expressionParts = filter.split('|');
+    for (let i = 0; i < expressionParts.length; i++) {
+      let isMatch = false;
+
+      for (let j = 0; j < values.length; j++) {
+        const part = expressionParts[ i ].trim();
+
+        isMatch = this.typeCompareFunctionMap[ this.isKeyDatetime(values[ j ]) ? 'datetime' : typeof(values[ j ]) ](
+          values[ j ],
+          part,
+          new RegExp(part));
+
+        if (isMatch) {
+          break;
+        }
+      }
+
+      isValid = isValid || isMatch;
+    }
+
+    return isValid;
+  }
+
   private compareObject (value: object, filter: string, regexFilter: RegExp): boolean {
+    console.warn('The type ' + value.constructor.name + ' does not have a specific compare function. ' +
+      'You should implement one. (Otherwise the object cannot be compared --> as long as it is ' +
+      'not null or undefined, true is returned.)');
     return !value;
   }
 
@@ -169,6 +215,10 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
       f => Converter.stringToDate(f).getTime());
   }
 
+  private isKeyDatetime (key: string): boolean {
+    return key.slice(key.length - 4, key.length) === 'time';
+  }
+
   private updateFilter (): void {
     // This needs to be ultra fast ... needs further investigation
 
@@ -177,28 +227,31 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     // prevent dereference array every iteration
     const filterKeyLength = filterKeys.length;
 
-    const rows = new Array<SearchRow>();
+    const rows = [];
 
-    const typeCompareFunctions = {
-      'number': this.compareNumber,
-      'string': this.compareString,
-      'object': this.compareObject,
-      'datetime': this.compareDatetime
-    };
-
+    // This loop here is probably slow, however it should be fast ...
     let counter = 0;
     for (let i = 0; i < this.allRows.length; ++i) {
       let isValid = true;
 
+      // Check all filters. All filters need to match.
       for (let j = 0; j < filterKeyLength; ++j) {
         const key = filterKeys[ j ];
         const value = this.allRows[ i ][ filterKeys[ j ] ];
+        let typeStr: string;
 
-        if (!typeCompareFunctions[ key.slice(key.length - 4, key.length) === 'time' ? 'datetime' : typeof(value) ](
+        if (this.isKeyDatetime(key)) {
+          typeStr = 'datetime';
+        } else if (value instanceof Array) {
+          typeStr = 'array';
+        } else {
+          typeStr = typeof(value);
+        }
+
+        if (!this.typeCompareFunctionMap[ typeStr ](
             value,
             this.filter[ key ],
             this.filterAsRegex[ key ])) {
-
           isValid = false;
           break;
         }
@@ -225,6 +278,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this.updateFilter();
 
     const sortable = this.rows.sort.sortables.get('phdmxin_time');
+
     if (!isNullOrUndefined(sortable)) {
       sortable.start = 'desc';
       this.rows.sort.sort(sortable);
