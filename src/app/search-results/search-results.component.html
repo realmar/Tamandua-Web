@@ -1,5 +1,5 @@
 <app-search-result-tags-selection id="tags-selection"
-                                  (selectedTags)="selectedTags"></app-search-result-tags-selection>
+                                  (selectedTagsChange)="setSelectedTags($event)"></app-search-result-tags-selection>
 
 <mat-table [dataSource]="rows"
            matSort

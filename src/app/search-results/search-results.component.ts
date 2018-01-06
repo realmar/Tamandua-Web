@@ -21,11 +21,6 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) private paginator: MatPaginator;
   @ViewChild(MatSort) private sort: MatSort;
 
-  private _selectedTags: SelectedTags;
-  public set selectedTags (value: SelectedTags) {
-    this._selectedTags = value;
-  }
-
   private _rows: MatTableDataSource<SearchRow>;
   public get rows (): MatTableDataSource<SearchRow> {
     return this._rows;
@@ -100,6 +95,18 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   ngAfterViewInit () {
     this.rows.paginator = this.paginator;
     this.rows.sort = this.sort;
+  }
+
+  public setSelectedTags (values: SelectedTags) {
+    const newFilter = [];
+    for (const value of values) {
+      if (value.selected) {
+        newFilter.push(value.tag, '|');
+      }
+    }
+    newFilter.splice(newFilter.length - 1, 1);
+
+    this.applyFilter(newFilter.join(''), 'tags');
   }
 
   public addColumns (): void {

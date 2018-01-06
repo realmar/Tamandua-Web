@@ -1,7 +1,8 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ApiService } from '../../api/api-service';
 import { TagsResponse } from '../../api/response/tags-response';
 import { SelectedTags } from './selected-tags';
+import { MatButtonToggleChange } from '@angular/material/button-toggle/typings/button-toggle';
 
 @Component({
   selector: 'app-search-result-tags-selection',
@@ -13,7 +14,7 @@ export class SearchResultTagsSelectionComponent implements OnInit {
     'incomplete'
   ];
 
-  @Output() selectedTags: EventEmitter<SelectedTags>;
+  @Output() selectedTagsChange: EventEmitter<SelectedTags>;
 
   private _selTags: SelectedTags;
   public get selTags (): SelectedTags {
@@ -21,12 +22,17 @@ export class SearchResultTagsSelectionComponent implements OnInit {
   }
 
   constructor (private apiService: ApiService) {
-    this.selectedTags = new EventEmitter<SelectedTags>();
+    this.selectedTagsChange = new EventEmitter<SelectedTags>();
     this._selTags = [];
   }
 
   ngOnInit () {
     this.apiService.getTags().then(this.buildSelectedTags.bind(this));
+  }
+
+  public onSelectionChange (event: MatButtonToggleChange, tagIndex: number): void {
+    this.selTags[ tagIndex ].selected = event.source.checked;
+    this.selectedTagsChange.emit(this._selTags);
   }
 
   private buildSelectedTags (tags: TagsResponse): void {
