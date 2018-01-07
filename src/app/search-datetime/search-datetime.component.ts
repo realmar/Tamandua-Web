@@ -9,6 +9,7 @@ import { isNullOrUndefined } from 'util';
 export class SearchDatetimeComponent implements OnInit {
 
   @Input() label: string;
+  @Input() initalHasDateTime: boolean;
 
   private _date: Date;
 
@@ -57,6 +58,10 @@ export class SearchDatetimeComponent implements OnInit {
   }
 
   ngOnInit () {
+    if (this.initalHasDateTime) {
+      this._hasDateTime = true;
+    }
+
     if (isNullOrUndefined(this._date)) {
       this._date = new Date();
     }

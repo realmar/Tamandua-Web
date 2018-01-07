@@ -21,8 +21,12 @@
 
     <div id="datetime">
       <h4 class="mat-subheading-1">Date and Time</h4>
-      <app-search-datetime [(datetime)]="startDateTime" label="Start"></app-search-datetime>
-      <app-search-datetime [(datetime)]="endDateTime" label="End"></app-search-datetime>
+      <app-search-datetime [(datetime)]="startDateTime"
+                           label="Start"
+                           [initalHasDateTime]="startDateTime !== undefined"></app-search-datetime>
+      <app-search-datetime [(datetime)]="endDateTime"
+                           label="End"
+                           [initalHasDateTime]="endDateTime !== undefined"></app-search-datetime>
     </div>
   </div>
 
