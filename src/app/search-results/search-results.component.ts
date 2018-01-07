@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../api/api-service';
 import { ColumnsResponse } from '../api/response/columns-response';
 import { SearchResponse, SearchRow } from '../api/response/search-reponse';
@@ -20,6 +20,11 @@ import { SearchStateService } from '../search-state-service/search-state.service
 export class SearchResultsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) private paginator: MatPaginator;
   @ViewChild(MatSort) private sort: MatSort;
+
+  @Input()
+  public set searchResult (value: SearchResponse) {
+    this.processRows(value);
+  }
 
   private _rows: MatTableDataSource<SearchRow>;
   public get rows (): MatTableDataSource<SearchRow> {
@@ -80,6 +85,8 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
                private searchState: SearchStateService,
                private dialog: MatDialog) {
     this._rows = new MatTableDataSource<SearchRow>();
+    this.allRows = [];
+    this.allColumns = [];
 
     this.filter = this.searchState.resultFilter;
     this.filterAsRegex = this.searchState.resultFilterAsRegex;
@@ -97,14 +104,6 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     if (!isNullOrUndefined(this.searchState.visibleColumns)) {
       this._visibleColumns = this.searchState.visibleColumns;
     }
-
-    this.apiService.getColumns().then(this.processColumns.bind(this));
-
-    const builder = this.apiService.getRequestBuilder();
-    builder.setEndpoint(new SearchEndpoint(0, 1000));
-    builder.setCallback(this.processRows.bind(this));
-
-    this.apiService.SubmitRequest(builder.build());
 
     this.processRows(this.searchState.searchResults);
   }

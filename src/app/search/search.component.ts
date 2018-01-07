@@ -5,6 +5,7 @@ import { SearchEndpoint } from '../api/request/endpoints/search-endpoint';
 import { ActivatedRoute } from '@angular/router';
 import { isNullOrUndefined } from 'util';
 import { SearchStateService } from '../search-state-service/search-state.service';
+import { SearchResponse, SearchRow } from '../api/response/search-reponse';
 
 /*
  * Design: query parameters for search query:
@@ -22,7 +23,7 @@ import { SearchStateService } from '../search-state-service/search-state.service
   templateUrl: './search.component.html',
   styleUrls: [ './search.component.scss' ]
 })
-export class SearchComponent implements OnInit, AfterViewInit, AfterContentInit {
+export class SearchComponent implements OnInit {
   private _startDateTime: Date;
   set startDateTime (value: Date) {
     this._startDateTime = value;
@@ -51,6 +52,11 @@ export class SearchComponent implements OnInit, AfterViewInit, AfterContentInit 
   private _initStartDateTime: Date;
   private _initEndDateTime: Date;
 
+  private _searchResult: SearchResponse;
+  public get searchResult (): SearchResponse {
+    return this._searchResult;
+  }
+
   constructor (private apiService: ApiService,
                private searchState: SearchStateService,
                private route: ActivatedRoute) {
@@ -74,14 +80,6 @@ export class SearchComponent implements OnInit, AfterViewInit, AfterContentInit 
 
       console.log(JSON.parse(params.data));
     });
-  }
-
-  ngAfterViewInit () {
-
-  }
-
-  ngAfterContentInit () {
-    this.applyIntialDatetime();
   }
 
   public anyFieldsEmpty (): boolean {
@@ -114,7 +112,7 @@ export class SearchComponent implements OnInit, AfterViewInit, AfterContentInit 
 
     const builder = this.apiService.getRequestBuilder();
 
-    builder.setCallback(result => console.log(result));
+    builder.setCallback(this.processSearchResult.bind(this));
     builder.setEndpoint(new SearchEndpoint(0, 1000));
     builder.setStartDatetime(this._startDateTime);
     builder.setEndDatetime(this._endDateTime);
@@ -129,5 +127,9 @@ export class SearchComponent implements OnInit, AfterViewInit, AfterContentInit 
   private applyIntialDatetime (): void {
     this.startDateTime = this._initStartDateTime;
     this.endDateTime = this._initEndDateTime;
+  }
+
+  private processSearchResult (result: SearchResponse): void {
+    this._searchResult = result;
   }
 }
