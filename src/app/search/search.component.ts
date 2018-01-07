@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { isNullOrUndefined } from 'util';
 import { SearchStateService } from '../search-state-service/search-state.service';
 import { SearchResponse, SearchRow } from '../api/response/search-reponse';
+import { IntermediateExpressionRequest } from '../api/request/intermediate-expression-request';
 
 /*
  * Design: query parameters for search query:

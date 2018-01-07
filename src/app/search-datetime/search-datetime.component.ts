@@ -13,11 +13,18 @@ export class SearchDatetimeComponent implements OnInit {
   private _date: Date;
 
   @Input() set datetime (value: Date) {
-    this._date = value;
-    this.datetimeChange.emit(this._date);
+    if (!isNullOrUndefined(value)) {
+      this._date = value;
+    }
+    this.emitDatetimeChange();
   }
 
   @Output() datetimeChange = new EventEmitter<Date>();
+
+  private _hasDateTime: boolean;
+  get hasDateTime (): boolean {
+    return this._hasDateTime;
+  }
 
   get date (): Date {
     return this._date;
@@ -25,7 +32,7 @@ export class SearchDatetimeComponent implements OnInit {
 
   set date (value: Date) {
     this._date.setDate(value.getDate());
-    this.datetimeChange.emit(this._date);
+    this.emitDatetimeChange();
   }
 
   get hours (): number {
@@ -34,7 +41,7 @@ export class SearchDatetimeComponent implements OnInit {
 
   set hours (value: number) {
     this._date.setHours(value);
-    this.datetimeChange.emit(this._date);
+    this.emitDatetimeChange();
   }
 
   get minutes (): number {
@@ -43,7 +50,7 @@ export class SearchDatetimeComponent implements OnInit {
 
   set minutes (value: number) {
     this._date.setMinutes(value);
-    this.datetimeChange.emit(this._date);
+    this.emitDatetimeChange();
   }
 
   constructor () {
@@ -54,5 +61,15 @@ export class SearchDatetimeComponent implements OnInit {
       this._date = new Date();
     }
     this._date.setSeconds(0);
+    this.emitDatetimeChange();
+  }
+
+  private emitDatetimeChange (): void {
+    this.datetimeChange.emit(this.hasDateTime ? this._date : undefined);
+  }
+
+  public toggleHasDatetime (): void {
+    this._hasDateTime = !this._hasDateTime;
+    this.emitDatetimeChange();
   }
 }
