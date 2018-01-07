@@ -13,9 +13,7 @@ export class SearchDatetimeComponent implements OnInit {
   private _date: Date;
 
   @Input() set datetime (value: Date) {
-    if (!isNullOrUndefined(value)) {
-      this._date = value;
-    }
+    this._date = value;
     this.datetimeChange.emit(this._date);
   }
 
@@ -48,11 +46,16 @@ export class SearchDatetimeComponent implements OnInit {
     this.datetimeChange.emit(this._date);
   }
 
+  private hashcode: string;
+
   constructor () {
+    this.hashcode = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   }
 
   ngOnInit () {
-    this._date = new Date();
+    if (isNullOrUndefined(this._date)) {
+      this._date = new Date();
+    }
     this._date.setSeconds(0);
   }
 }

@@ -1,8 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { ApiService } from '../../api/api-service';
 import { TagsResponse } from '../../api/response/tags-response';
 import { SelectedTags } from './selected-tags';
 import { MatButtonToggleChange } from '@angular/material/button-toggle/typings/button-toggle';
+import { isNullOrUndefined } from 'util';
+import { SearchStateService } from '../../search-state-service/search-state.service';
 
 @Component({
   selector: 'app-search-result-tags-selection',
@@ -14,29 +16,36 @@ export class SearchResultTagsSelectionComponent implements OnInit {
     'incomplete'
   ];
 
-  @Output() selectedTagsChange: EventEmitter<SelectedTags>;
-
-  private _selTags: SelectedTags;
-  public get selTags (): SelectedTags {
-    return this._selTags;
+  private _selectedTags: SelectedTags;
+  public get selectedTags (): SelectedTags {
+    return this._selectedTags;
   }
 
-  constructor (private apiService: ApiService) {
+  @Output() selectedTagsChange: EventEmitter<SelectedTags>;
+
+  constructor (private apiService: ApiService,
+               private searchState: SearchStateService) {
     this.selectedTagsChange = new EventEmitter<SelectedTags>();
-    this._selTags = [];
+    this._selectedTags = this.searchState.selectedTags;
   }
 
   ngOnInit () {
-    this.apiService.getTags().then(this.buildSelectedTags.bind(this));
+    if (isNullOrUndefined(this._selectedTags)) {
+      this._selectedTags = [];
+      this.apiService.getTags().then(this.buildSelectedTags.bind(this));
+    }
+    this.selectedTagsChange.emit(this._selectedTags);
   }
 
   public onSelectionChange (event: MatButtonToggleChange, tagIndex: number): void {
-    this.selTags[ tagIndex ].selected = event.source.checked;
-    this.selectedTagsChange.emit(this._selTags);
+    this.selectedTags[ tagIndex ].selected = event.source.checked;
+    this.selectedTagsChange.emit(this._selectedTags);
+
+    this.searchState.selectedTags = this._selectedTags;
   }
 
   private buildSelectedTags (tags: TagsResponse): void {
-    this._selTags = tags.sort().map(tag => {
+    this._selectedTags = tags.sort().map(tag => {
       return {
         tag: tag,
         selected: this.defaultNotSelectedTags.indexOf(tag) === -1

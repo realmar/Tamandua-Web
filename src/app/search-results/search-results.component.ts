@@ -10,7 +10,7 @@ import { SearchResultAddColumnsModalComponent } from './search-result-add-column
 import { AddColumnsModalData } from './search-result-add-columns/add-columns-modal-data';
 import { isNullOrUndefined } from 'util';
 import { SelectedTags } from './search-result-tags-selection/selected-tags';
-import { TamanduaMockService } from '../api/tamandua-mock.service';
+import { SearchStateService } from '../search-state-service/search-state.service';
 
 @Component({
   selector: 'app-search-results',
@@ -77,12 +77,16 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   constructor (private apiService: ApiService,
+               private searchState: SearchStateService,
                private dialog: MatDialog) {
     this._rows = new MatTableDataSource<SearchRow>();
     this.filter = new Map<string, string>();
   }
 
   ngOnInit () {
+    if (!isNullOrUndefined(this.searchState.visibleColumns)) {
+      this._visibleColumns = this.searchState.visibleColumns;
+    }
     this.apiService.getColumns().then(this.processColumns.bind(this));
 
     const builder = this.apiService.getRequestBuilder();
@@ -90,6 +94,8 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     builder.setCallback(this.processRows.bind(this));
 
     this.apiService.SubmitRequest(builder.build());
+
+    this.processRows(this.searchState.searchResults);
   }
 
   ngAfterViewInit () {
@@ -279,10 +285,24 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   private processRows (result: SearchResponse): void {
+    if (isNullOrUndefined(result)) {
+      return;
+    }
+
+    // save state
+
+    this.searchState.searchResults = result;
+
+    // process result
+
     this.totalRows = result.total_rows;
     this.allRows = result.rows;
 
     this.updateFilter();
+
+    if (isNullOrUndefined(this.rows.sort)) {
+      return;
+    }
 
     const sortable = this.rows.sort.sortables.get('phdmxin_time');
 

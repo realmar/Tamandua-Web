@@ -24,6 +24,7 @@ import { SearchResultsComponent } from './search-results/search-results.componen
 import { SearchResultDetailsModalComponent } from './search-results/search-result-details-modal/search-result-details-modal.component';
 import { SearchResultAddColumnsModalComponent } from './search-results/search-result-add-columns/search-result-add-columns-modal.component';
 import { SearchResultTagsSelectionComponent } from './search-results/search-result-tags-selection/search-result-tags-selection.component';
+import { SearchStateService } from './search-state-service/search-state.service';
 
 @NgModule({
   declarations: [
@@ -64,7 +65,8 @@ import { SearchResultTagsSelectionComponent } from './search-results/search-resu
     MatButtonToggleModule
   ],
   providers: [
-    { provide: ApiService, useClass: TamanduaMockService }
+    { provide: ApiService, useClass: TamanduaMockService },
+    SearchStateService
   ],
   bootstrap: [ AppComponent ],
   entryComponents: [

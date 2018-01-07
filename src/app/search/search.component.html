@@ -26,7 +26,12 @@
     </div>
   </div>
 
-  <button mat-button>Search</button>
+  <div id="search-button-container">
+    <button mat-button
+            (click)="search()"
+            id="search-button">Search
+    </button>
+  </div>
 </div>
 
 <mat-divider></mat-divider>

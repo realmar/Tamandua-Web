@@ -1,7 +1,7 @@
 <mat-button-toggle-group id="toggle-group" multiple>
   <!-- mat-button-toggle does not support ngModel. See:
      https://stackoverflow.com/questions/47083164/how-to-bind-to-model-with-angular-material-mat-button-toggle -->
-  <mat-button-toggle *ngFor="let selectedTag of selTags; let i = index;"
+  <mat-button-toggle *ngFor="let selectedTag of selectedTags; let i = index;"
                      [checked]="selectedTag.selected"
                      (change)="onSelectionChange($event, i)">
     {{selectedTag.tag}}
