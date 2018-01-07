@@ -80,13 +80,24 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
                private searchState: SearchStateService,
                private dialog: MatDialog) {
     this._rows = new MatTableDataSource<SearchRow>();
-    this.filter = new Map<string, string>();
+
+    this.filter = this.searchState.resultFilter;
+    this.filterAsRegex = this.searchState.resultFilterAsRegex;
+
+    if (isNullOrUndefined(this.filter)) {
+      this.filter = new Map<string, string>();
+    }
+
+    if (isNullOrUndefined(this.filterAsRegex)) {
+      this.filterAsRegex = new Map<string, RegExp>();
+    }
   }
 
   ngOnInit () {
     if (!isNullOrUndefined(this.searchState.visibleColumns)) {
       this._visibleColumns = this.searchState.visibleColumns;
     }
+
     this.apiService.getColumns().then(this.processColumns.bind(this));
 
     const builder = this.apiService.getRequestBuilder();
@@ -112,7 +123,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     }
     newFilter.splice(newFilter.length - 1, 1);
 
-    this.applyFilter(newFilter.join(''), 'tags');
+    this.setFilter(newFilter.join(''), 'tags');
   }
 
   public addColumns (): void {
@@ -131,7 +142,12 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  public applyFilter (filterValue: string, column: string): void {
+  public getFilter (column: string): string {
+    const value = this.filter[ column ];
+    return isNullOrUndefined(value) ? '' : value;
+  }
+
+  public setFilter (filterValue: string, column: string): void {
     if (!filterValue) {
       // remove key `column`
       // delete this.filter[column] does not work (and may be slow on certain engines)
@@ -148,6 +164,9 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this.filterAsRegex = new Map<string, RegExp>();
     Object.keys(this.filter).map(key =>
       this.filterAsRegex[ key ] = new RegExp(this.filter[ key ], 'i'));
+
+    this.searchState.resultFilter = this.filter;
+    this.searchState.resultFilterAsRegex = this.filterAsRegex;
 
     this.updateFilter();
   }

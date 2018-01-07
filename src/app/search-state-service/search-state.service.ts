@@ -11,6 +11,8 @@ export class SearchStateService {
   private _endDatetime: Date;
   private _visibleColumns: Array<string>;
   private _selectedTags: SelectedTags;
+  private _resultFilter: Map<string, string>;
+  private _resultFilterAsRegex: Map<string, RegExp>;
 
   get searchResults (): SearchResponse {
     return this._searchResults;
@@ -58,5 +60,21 @@ export class SearchStateService {
 
   set selectedTags (value: SelectedTags) {
     this._selectedTags = value;
+  }
+
+  get resultFilter (): Map<string, string> {
+    return this._resultFilter;
+  }
+
+  set resultFilter (value: Map<string, string>) {
+    this._resultFilter = value;
+  }
+
+  get resultFilterAsRegex (): Map<string, RegExp> {
+    return this._resultFilterAsRegex;
+  }
+
+  set resultFilterAsRegex (value: Map<string, RegExp>) {
+    this._resultFilterAsRegex = value;
   }
 }

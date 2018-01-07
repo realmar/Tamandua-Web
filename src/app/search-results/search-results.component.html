@@ -26,7 +26,8 @@
       <mat-form-field>
         <input matInput
                placeholder="Filter"
-               (input)="applyFilter($event.target.value, row)">
+               (input)="setFilter($event.target.value, row)"
+               [value]="getFilter(row)">
       </mat-form-field>
     </mat-header-cell>
     <mat-cell class="table-cell" *matCellDef="let element">{{element[row]}}</mat-cell>

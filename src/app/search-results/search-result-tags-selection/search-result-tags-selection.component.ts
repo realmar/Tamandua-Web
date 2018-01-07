@@ -51,5 +51,6 @@ export class SearchResultTagsSelectionComponent implements OnInit {
         selected: this.defaultNotSelectedTags.indexOf(tag) === -1
       };
     });
+    this.selectedTagsChange.emit(this._selectedTags);
   }
 }
