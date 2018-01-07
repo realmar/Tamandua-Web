@@ -46,10 +46,7 @@ export class SearchDatetimeComponent implements OnInit {
     this.datetimeChange.emit(this._date);
   }
 
-  private hashcode: string;
-
   constructor () {
-    this.hashcode = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   }
 
   ngOnInit () {
