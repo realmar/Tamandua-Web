@@ -31,9 +31,13 @@
   </div>
 
   <div id="search-button-container">
+
     <button mat-button
             (click)="search()"
-            id="search-button">Search
+            id="search-button">
+      <mat-spinner *ngIf="isLoading"
+                   [diameter]="25"></mat-spinner>
+      Search
     </button>
   </div>
 </div>

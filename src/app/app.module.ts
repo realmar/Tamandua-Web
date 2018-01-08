@@ -9,7 +9,7 @@ import {
   MatGridListModule,
   MatIconModule,
   MatInputModule, MatListModule,
-  MatNativeDateModule, MatPaginatorModule,
+  MatNativeDateModule, MatPaginatorModule, MatProgressSpinnerModule,
   MatSelectModule, MatSortModule, MatTableModule, MatToolbarModule
 } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -17,7 +17,6 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { SearchComponent } from './search/search.component';
 import { SearchFieldComponent } from './search-field/search-field.component';
 import { ApiService } from './api/api-service';
-import { TamanduaMockService } from './api/tamandua-mock.service';
 import { FormsModule } from '@angular/forms';
 import { SearchDatetimeComponent } from './search-datetime/search-datetime.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
@@ -66,7 +65,8 @@ import { HttpClientModule } from '@angular/common/http';
     MatPaginatorModule,
     MatDialogModule,
     MatCheckboxModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     { provide: ApiService, useClass: TamanduaService },

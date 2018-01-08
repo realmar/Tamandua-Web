@@ -55,6 +55,11 @@ export class SearchComponent implements OnInit {
     return this._searchResult;
   }
 
+  private _isLoading: boolean;
+  public get isLoading (): boolean {
+    return this._isLoading;
+  }
+
   constructor (private apiService: ApiService,
                private searchState: SearchStateService,
                private route: ActivatedRoute) {
@@ -119,10 +124,12 @@ export class SearchComponent implements OnInit {
       builder.addField(field.field, field.value, field.comparator);
     }
 
+    this._isLoading = true;
     this.apiService.SubmitRequest(builder.build());
   }
 
   private processSearchResult (result: SearchResponse): void {
+    this._isLoading = false;
     this._searchResult = result;
   }
 }
