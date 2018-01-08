@@ -1,18 +1,18 @@
 import { Endpoint } from './endpoint';
-import { EndpointEnum } from './endpoint.enum';
+import { EndpointMethod } from './endpoint-method.enum';
 
 export class AdvancedCountEndpoint implements Endpoint {
   private _length: number;
-
-  get length (): number {
-    return this._length;
-  }
 
   constructor (length: number) {
     this._length = length;
   }
 
-  getEnum (): EndpointEnum {
-    return EndpointEnum.AdvancedCount;
+  public get apiUrl (): string {
+    return `api/advcount/${this._length}`;
+  }
+
+  public get method (): EndpointMethod {
+    return EndpointMethod.Post;
   }
 }

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Comparator, ComparatorType } from '../api/request/comparator';
 import { ApiService } from '../api/api-service';
 import { SearchFieldData } from './search-field-data';
@@ -68,16 +68,16 @@ export class SearchFieldComponent implements OnInit {
 
   constructor (private apiService: ApiService) {
     this._fields = [ 'loading ...' ];
-    this.apiService.getColumns().then(data => {
-      this._fields = data;
-      this._data.field = this._fields[ 0 ];
-    });
-
     this._comparators = Object.keys(ComparatorType).map(
       key => new Comparator(ComparatorType[ key ] as ComparatorType));
   }
 
   ngOnInit () {
     this.comparator = this.comparators[ 0 ];
+    let c = this.apiService.getColumns();
+    c.subscribe(data => {
+      this._fields = data;
+      this._data.field = this._fields[ 0 ];
+    });
   }
 }

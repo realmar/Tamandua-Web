@@ -1,12 +1,12 @@
 import { Endpoint } from './endpoint';
 import { EndpointMethod } from './endpoint-method.enum';
 
-export class CountEndpoint implements Endpoint {
+export class TagsEndpoint implements Endpoint {
   public get apiUrl (): string {
-    return 'api/count';
+    return 'api/tags';
   }
 
   public get method (): EndpointMethod {
-    return EndpointMethod.Post;
+    return EndpointMethod.Get;
   }
 }

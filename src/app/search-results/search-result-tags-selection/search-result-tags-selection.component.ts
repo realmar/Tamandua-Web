@@ -32,7 +32,7 @@ export class SearchResultTagsSelectionComponent implements OnInit {
   ngOnInit () {
     if (isNullOrUndefined(this._selectedTags)) {
       this._selectedTags = [];
-      this.apiService.getTags().then(this.buildSelectedTags.bind(this));
+      this.apiService.getTags().subscribe(this.buildSelectedTags.bind(this));
     }
     this.selectedTagsChange.emit(this._selectedTags);
   }

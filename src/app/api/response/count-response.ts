@@ -1,3 +1,5 @@
-export interface CountResponse extends Number {
+import { ApiResponse } from './api-response';
+
+export interface CountResponse extends Number, ApiResponse {
 
 }

@@ -50,9 +50,6 @@ export class SearchComponent implements OnInit {
     return this._fields;
   }
 
-  private _initStartDateTime: Date;
-  private _initEndDateTime: Date;
-
   private _searchResult: SearchResponse;
   public get searchResult (): SearchResponse {
     return this._searchResult;
@@ -61,19 +58,19 @@ export class SearchComponent implements OnInit {
   constructor (private apiService: ApiService,
                private searchState: SearchStateService,
                private route: ActivatedRoute) {
-    this._initStartDateTime = this.searchState.startDatetime;
-    this._initEndDateTime = this.searchState.endDatetime;
-  }
 
-  ngOnInit () {
     // restore state
     if (isNullOrUndefined(this.searchState.fields)) {
       this.searchState.fields = [ new SearchFieldData() ];
     }
 
     this._fields = this.searchState.fields;
-    this.applyIntialDatetime();
 
+    this.startDateTime = this.searchState.startDatetime;
+    this.endDateTime = this.searchState.endDatetime;
+  }
+
+  ngOnInit () {
     this.route.queryParams.subscribe(params => {
       if (isNullOrUndefined(params.data)) {
         return;
@@ -123,11 +120,6 @@ export class SearchComponent implements OnInit {
     }
 
     this.apiService.SubmitRequest(builder.build());
-  }
-
-  private applyIntialDatetime (): void {
-    this.startDateTime = this._initStartDateTime;
-    this.endDateTime = this._initEndDateTime;
   }
 
   private processSearchResult (result: SearchResponse): void {

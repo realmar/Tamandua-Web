@@ -25,6 +25,8 @@ import { SearchResultDetailsModalComponent } from './search-results/search-resul
 import { SearchResultAddColumnsModalComponent } from './search-results/search-result-add-columns/search-result-add-columns-modal.component';
 import { SearchResultTagsSelectionComponent } from './search-results/search-result-tags-selection/search-result-tags-selection.component';
 import { SearchStateService } from './search-state-service/search-state.service';
+import { TamanduaService } from './api/tamandua.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -42,6 +44,8 @@ import { SearchStateService } from './search-state-service/search-state.service'
   imports: [
     BrowserModule,
     AppRoutingModule,
+
+    HttpClientModule,
 
     FormsModule,
     BrowserAnimationsModule,
@@ -65,8 +69,9 @@ import { SearchStateService } from './search-state-service/search-state.service'
     MatButtonToggleModule
   ],
   providers: [
-    { provide: ApiService, useClass: TamanduaMockService },
-    SearchStateService
+    { provide: ApiService, useClass: TamanduaService },
+    SearchStateService,
+    HttpClientModule
   ],
   bootstrap: [ AppComponent ],
   entryComponents: [

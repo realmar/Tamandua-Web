@@ -1,5 +1,5 @@
 import { Comparator } from './comparator';
-import { Request } from './request';
+import { ApiRequest } from './request';
 import { Endpoint } from './endpoints/endpoint';
 
 export interface RequestBuilder {
@@ -17,5 +17,5 @@ export interface RequestBuilder {
 
   setCallback(callback: (object) => void): void;
 
-  build(): Request;
+  build(): ApiRequest;
 }

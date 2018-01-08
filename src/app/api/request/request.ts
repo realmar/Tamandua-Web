@@ -1,7 +1,7 @@
 import { ApiService } from '../api-service';
 import { Endpoint } from './endpoints/endpoint';
 
-export interface Request {
+export interface ApiRequest {
   readonly callback: (object) => void;
   readonly endpoint: Endpoint;
 

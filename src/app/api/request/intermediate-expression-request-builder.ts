@@ -1,7 +1,7 @@
 import { RequestBuilder } from './request-builder';
 import { Comparator } from './comparator';
 import { IntermediateExpressionRequest } from './intermediate-expression-request';
-import { Request } from './request';
+import { ApiRequest } from './request';
 import { isNullOrUndefined } from 'util';
 import { Endpoint } from './endpoints/endpoint';
 import { EndpointIsUndefinedError } from './endpoint-is-undefined-error';
@@ -84,9 +84,9 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
    * Build request.
    *
    * @throws {EndpointIsUndefinedError} thrown when the endpoint has not been set.
-   * @returns {Request} Assembled request object.
+   * @returns {ApiRequest} Assembled request object.
    */
-  public build (): Request {
+  public build (): ApiRequest {
     if (isNullOrUndefined(this.endpoint)) {
       throw new EndpointIsUndefinedError();
     }

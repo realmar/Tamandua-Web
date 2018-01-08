@@ -3,9 +3,8 @@ import { ApiService } from './api-service';
 import { IntermediateExpressionRequestBuilder } from './request/intermediate-expression-request-builder';
 import { RequestBuilder } from './request/request-builder';
 import { of } from 'rxjs/observable/of';
-import { Request } from './request/request';
+import { ApiRequest } from './request/request';
 import { IntermediateExpressionRequest } from './request/intermediate-expression-request';
-import { EndpointEnum } from './request/endpoints/endpoint.enum';
 import { SearchResponse } from './response/search-reponse';
 import { CountResponse } from './response/count-response';
 import { AdvancedCountResponse } from './response/advanced-count-response';
@@ -15,21 +14,12 @@ import { FieldChoicesResponse } from './response/field-choices-response';
 import { SearchEndpoint } from './request/endpoints/search-endpoint';
 import { AdvancedCountEndpoint } from './request/endpoints/advanced-count-endpoint';
 import { CountEndpoint } from './request/endpoints/count-endpoint';
+import { Observable } from 'rxjs/Observable';
+import { Endpoint } from './request/endpoints/endpoint';
 
 @Injectable()
 export class TamanduaMockService extends ApiService {
-  private endpointMap: Map<EndpointEnum, any>;
-
-  constructor () {
-    super();
-
-    this.endpointMap = new Map<EndpointEnum, any>();
-    this.endpointMap[ EndpointEnum.Search ] = this.search;
-    this.endpointMap[ EndpointEnum.Count ] = this.count;
-    this.endpointMap[ EndpointEnum.AdvancedCount ] = this.advancedCount;
-  }
-
-  public getColumns (): Promise<ColumnsResponse> {
+  public getColumns (): Observable<ColumnsResponse> {
     return of([
       'action',
       'connectclient',
@@ -65,10 +55,10 @@ export class TamanduaMockService extends ApiService {
       'username',
       'virusaction',
       'virusresult'
-    ]).toPromise();
+    ]);
   }
 
-  public getTags (): Promise<TagsResponse> {
+  public getTags (): Observable<TagsResponse> {
     return of([
       'spam',
       'reject',
@@ -79,14 +69,14 @@ export class TamanduaMockService extends ApiService {
       'incomplete',
       'relaying',
       'incoming',
-      'hold' ]).toPromise();
+      'hold' ]);
   }
 
-  public getFieldChoices (field: string, limit: number): Promise<FieldChoicesResponse> {
-    return of([ 'a', 'b', 'c' ]).toPromise();
+  public getFieldChoices (field: string, limit: number): Observable<FieldChoicesResponse> {
+    return of([ 'a', 'b', 'c' ]);
   }
 
-  public SubmitRequest (request: Request): void {
+  public SubmitRequest (request: ApiRequest): void {
     request.accept(this);
   }
 
@@ -95,10 +85,16 @@ export class TamanduaMockService extends ApiService {
   }
 
   public visitIE (request: IntermediateExpressionRequest): void {
-    this.endpointMap[ request.endpoint.getEnum() ](request.data, request.endpoint).then(request.callback);
+    if (request instanceof SearchEndpoint) {
+      this.search(request.data, request.endpoint);
+    } else if (request instanceof CountEndpoint) {
+      this.count(request.data, request.endpoint);
+    } else if (request instanceof AdvancedCountEndpoint) {
+      this.advancedCount(request.data, request.endpoint);
+    }
   }
 
-  public search (queryData: string, endpoint: SearchEndpoint): Promise<SearchResponse> {
+  public search (queryData: string, endpoint: Endpoint): Observable<SearchResponse> {
     /*return of({
       'total_rows': 0,
       'rows': [
@@ -108,7 +104,7 @@ export class TamanduaMockService extends ApiService {
           'recipient': 'john@example.com',
         },
       ]
-    }).toPromise();*/
+    });*/
 
     return of({
       'total_rows': 0,
@@ -196,14 +192,14 @@ export class TamanduaMockService extends ApiService {
           ]
         }
       ]
-    }).toPromise();
+    });
   }
 
-  public count (queryData: string, endpoint: CountEndpoint): Promise<CountResponse> {
-    return of(2).toPromise();
+  public count (queryData: string, endpoint: Endpoint): Observable<CountResponse> {
+    return of(2);
   }
 
-  public advancedCount (queryData: string, endpoint: AdvancedCountEndpoint): Promise<AdvancedCountResponse> {
+  public advancedCount (queryData: string, endpoint: Endpoint): Observable<AdvancedCountResponse> {
     return of({
       'items': [
         {
@@ -212,6 +208,6 @@ export class TamanduaMockService extends ApiService {
         }
       ],
       'total': 2
-    }).toPromise();
+    });
   }
 }

@@ -1,8 +1,8 @@
-import { Request } from './request';
+import { ApiRequest } from './request';
 import { Endpoint } from './endpoints/endpoint';
 import { ApiService } from '../api-service';
 
-export class IntermediateExpressionRequest implements Request {
+export class IntermediateExpressionRequest implements ApiRequest {
   private _dataObject: object;
   get dataObject (): object {
     return this._dataObject;

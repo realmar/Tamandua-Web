@@ -1,5 +1,6 @@
-import { EndpointEnum } from './endpoint.enum';
+import { EndpointMethod } from './endpoint-method.enum';
 
 export interface Endpoint {
-  getEnum(): EndpointEnum;
+  readonly apiUrl: string;
+  readonly method: EndpointMethod;
 }
