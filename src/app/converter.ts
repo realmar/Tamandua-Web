@@ -1,3 +1,5 @@
+import { getLocaleDateTimeFormat } from '@angular/common';
+
 export class Converter {
   /* datetime format:
    * static readonly datetimeFormat = 'YYYY/MM/DD HH:mm:ss';
@@ -13,19 +15,20 @@ export class Converter {
 
   // pure
   public static dateToString (datetime: Date): string {
+    const fixStrLength = x => x.length === 2 ? x : '0' + x;
 
     return [
       datetime.getFullYear().toString(),
       '/',
-      datetime.getMonth().toString(),
+      fixStrLength((datetime.getMonth() + 1).toString()),
       '/',
-      datetime.getDay().toString(),
-      '/ ',
-      datetime.getHours().toString(),
+      fixStrLength(datetime.getDate().toString()),
+      ' ',
+      fixStrLength(datetime.getHours().toString()),
       ':',
-      datetime.getMinutes().toString(),
+      fixStrLength(datetime.getMinutes().toString()),
       ':',
-      datetime.getSeconds().toString()
+      fixStrLength(datetime.getSeconds().toString())
     ].join('');
   }
 
