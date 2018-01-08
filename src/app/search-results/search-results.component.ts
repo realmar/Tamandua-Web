@@ -2,7 +2,6 @@ import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/cor
 import { ApiService } from '../api/api-service';
 import { ColumnsResponse } from '../api/response/columns-response';
 import { SearchResponse, SearchRow } from '../api/response/search-reponse';
-import { SearchEndpoint } from '../api/request/endpoints/search-endpoint';
 import { MatDialog, MatPaginator, MatSort, MatTableDataSource, Sort } from '@angular/material';
 import { SearchResultDetailsModalComponent } from './search-result-details-modal/search-result-details-modal.component';
 import { Converter } from '../converter';
@@ -101,6 +100,8 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit () {
+    this.apiService.getColumns().subscribe(this.processColumns);
+
     if (!isNullOrUndefined(this.searchState.visibleColumns)) {
       this._visibleColumns = this.searchState.visibleColumns;
     }
