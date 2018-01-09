@@ -177,6 +177,16 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     }
 
     let sortFunction: <T>(a: T, b: T) => number;
+    const omitUndefinedOrSort = <T> (a: T, b: T) => {
+      if (isNullOrUndefined(a)) {
+        return -1;
+      } else if (isNullOrUndefined(b)) {
+        return 1;
+      } else {
+        return sortFunction(a, b);
+      }
+    };
+
     const isAsc = sort.direction === 'asc';
 
     if (sort.active.slice(sort.active.length - 4, sort.active.length) === 'time') {
@@ -185,7 +195,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
       sortFunction = (a, b) => a === b ? 0 : (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
 
-    this._rows.data = this._rows.data.sort((a, b) => sortFunction(a[ sort.active ], b[ sort.active ]));
+    this._rows.data = this._rows.data.sort((a, b) => omitUndefinedOrSort(a[ sort.active ], b[ sort.active ]));
   }
 
   private compareNumber (value: number, filter: string, regexFilter: RegExp): boolean {
