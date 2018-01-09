@@ -7,17 +7,7 @@ import { isNullOrUndefined } from 'util';
 import { SearchStateService } from '../search-state-service/search-state.service';
 import { SearchResponse, SearchRow } from '../api/response/search-reponse';
 import { IntermediateExpressionRequest } from '../api/request/intermediate-expression-request';
-
-/*
- * Design: query parameters for search query:
- * This is not really "scalable" as the url is limited to 2083 characters
- *
- * {
- *    data: <filter-as-json-string>
- * }
- *
- * where <filter-as-json-string> is a serialized intermediate expression
- */
+import { ApiRequest } from '../api/request/request';
 
 @Component({
   selector: 'app-search',
@@ -61,8 +51,7 @@ export class SearchComponent implements OnInit {
   }
 
   constructor (private apiService: ApiService,
-               private searchState: SearchStateService,
-               private route: ActivatedRoute) {
+               private searchState: SearchStateService) {
 
     // restore state
     if (isNullOrUndefined(this.searchState.fields)) {
@@ -76,13 +65,20 @@ export class SearchComponent implements OnInit {
   }
 
   ngOnInit () {
-    this.route.queryParams.subscribe(params => {
-      if (isNullOrUndefined(params.data)) {
-        return;
-      }
+    const request = this.searchState.retrieveRequest();
+    if (!isNullOrUndefined(request)) {
+      this.submitRequest(request);
+    }
+  }
 
-      console.log(JSON.parse(params.data));
-    });
+  private submitRequest (request: ApiRequest): void {
+    this._isLoading = true;
+    this.apiService.SubmitRequest(request);
+  }
+
+  private processSearchResult (result: SearchResponse): void {
+    this._isLoading = false;
+    this._searchResult = result;
   }
 
   public anyFieldsEmpty (): boolean {
@@ -124,12 +120,6 @@ export class SearchComponent implements OnInit {
       builder.addField(field.field, field.value, field.comparator);
     }
 
-    this._isLoading = true;
-    this.apiService.SubmitRequest(builder.build());
-  }
-
-  private processSearchResult (result: SearchResponse): void {
-    this._isLoading = false;
-    this._searchResult = result;
+    this.submitRequest(builder.build());
   }
 }
