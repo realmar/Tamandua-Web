@@ -1,5 +1,37 @@
+// The following .container directives are taken from the
+// bootstrap source see:
+// https://github.com/twbs/bootstrap/blob/5b8eaffc1216ef648aa50cda252269aa0a917229/dist/css/bootstrap-grid.css
+//
+// Bootstrap is licensed under MIT
+
 .container {
-  display: flex;
-  justify-content: center;
-  align-content: center
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
 }

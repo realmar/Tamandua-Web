@@ -26,6 +26,10 @@ import { SearchResultTagsSelectionComponent } from './search-results/search-resu
 import { SearchStateService } from './search-state-service/search-state.service';
 import { TamanduaService } from './api/tamandua.service';
 import { HttpClientModule } from '@angular/common/http';
+import { DashboardCardComponent } from './dashboard/dashboard-card/dashboard-card.component';
+import { DashboardCardItemComponent } from './dashboard/dashboard-card/dashboard-card-item/dashboard-card-item.component';
+import { TamanduaMockService } from './api/tamandua-mock.service';
+import { SettingsService } from './settings-service/settings.service';
 
 @NgModule({
   declarations: [
@@ -38,7 +42,9 @@ import { HttpClientModule } from '@angular/common/http';
     SearchResultsComponent,
     SearchResultDetailsModalComponent,
     SearchResultAddColumnsModalComponent,
-    SearchResultTagsSelectionComponent
+    SearchResultTagsSelectionComponent,
+    DashboardCardComponent,
+    DashboardCardItemComponent
   ],
   imports: [
     BrowserModule,
@@ -71,6 +77,7 @@ import { HttpClientModule } from '@angular/common/http';
   providers: [
     { provide: ApiService, useClass: TamanduaService },
     SearchStateService,
+    SettingsService,
     HttpClientModule
   ],
   bootstrap: [ AppComponent ],

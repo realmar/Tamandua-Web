@@ -1,15 +1,25 @@
 import { Endpoint } from './endpoint';
 import { EndpointMethod } from './endpoint-method.enum';
+import { isNullOrUndefined } from 'util';
 
 export class AdvancedCountEndpoint implements Endpoint {
+  private _field: string;
   private _length: number;
+  private _separator: string;
 
-  constructor (length: number) {
+  constructor (field: string, length: number, separator?: string) {
+    this._field = field;
     this._length = length;
+    this._separator = separator;
   }
 
   public get apiUrl (): string {
-    return `api/advcount/${this._length}`;
+    let url = `api/advcount/${this._field}/${this._length}`;
+    if (!isNullOrUndefined(this._separator)) {
+      url += `/${this._separator}`;
+    }
+
+    return url;
   }
 
   public get method (): EndpointMethod {

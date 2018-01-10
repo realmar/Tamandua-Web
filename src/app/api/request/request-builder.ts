@@ -3,7 +3,7 @@ import { ApiRequest } from './request';
 import { Endpoint } from './endpoints/endpoint';
 
 export interface RequestBuilder {
-  addField (name: string, value: string, comparator: Comparator): void;
+  addField (name: string, value: string | number, comparator: Comparator): void;
 
   setStartDatetime (datetime: Date): void;
 

@@ -1,0 +1,16 @@
+#item-container {
+  position: relative;
+
+  p {
+    position: relative;
+    margin: 0;
+
+    z-index: 100;
+  }
+
+  #color-bar {
+    position: absolute;
+    height: 100%;
+    z-index: 10;
+  }
+}

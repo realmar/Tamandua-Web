@@ -85,12 +85,12 @@ export class TamanduaMockService extends ApiService {
   }
 
   public visitIE (request: IntermediateExpressionRequest): void {
-    if (request instanceof SearchEndpoint) {
-      this.search(request.data, request.endpoint);
-    } else if (request instanceof CountEndpoint) {
-      this.count(request.data, request.endpoint);
-    } else if (request instanceof AdvancedCountEndpoint) {
-      this.advancedCount(request.data, request.endpoint);
+    if (request.endpoint instanceof SearchEndpoint) {
+      this.search(request.data, request.endpoint).subscribe(request.callback);
+    } else if (request.endpoint instanceof CountEndpoint) {
+      this.count(request.data, request.endpoint).subscribe(request.callback);
+    } else if (request.endpoint instanceof AdvancedCountEndpoint) {
+      this.advancedCount(request.data, request.endpoint).subscribe(request.callback);
     }
   }
 
@@ -205,9 +205,13 @@ export class TamanduaMockService extends ApiService {
         {
           'key': 'example.com',
           'value': 2
+        },
+        {
+          'key': 'another.example.com',
+          'value': 4
         }
       ],
-      'total': 2
+      'total': 6
     });
   }
 }

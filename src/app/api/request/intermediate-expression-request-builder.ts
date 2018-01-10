@@ -10,21 +10,9 @@ import { Converter } from '../../converter';
 class Field {
   private _comparator: Comparator;
   private _name: string;
-  private _value: string;
+  private _value: string | number;
 
-  get comparator (): Comparator {
-    return this._comparator;
-  }
-
-  get name (): string {
-    return this._name;
-  }
-
-  get value (): string {
-    return this._value;
-  }
-
-  constructor (name: string, value: string, comparator: Comparator) {
+  constructor (name: string, value: string | number, comparator: Comparator) {
     this._comparator = comparator;
     this._name = name;
     this._value = value;
@@ -32,7 +20,7 @@ class Field {
 
   public asObject (): object {
     const obj = {};
-    obj[ this.name ] = {
+    obj[ this._name ] = {
       comparator: this._comparator.toString(),
       value: this._value
     };
@@ -52,7 +40,7 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
     this.fields = [];
   }
 
-  public addField (name: string, value: string, comparator: Comparator): void {
+  public addField (name: string, value: string | number, comparator: Comparator): void {
     this.fields.push(new Field(name, value, comparator));
   }
 
