@@ -6,6 +6,10 @@
     margin: 0;
 
     z-index: 100;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   #color-bar {
