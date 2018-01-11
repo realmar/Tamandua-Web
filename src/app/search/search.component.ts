@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SearchFieldData } from '../search-field/search-field-data';
 import { ApiService } from '../api/api-service';
 import { SearchEndpoint } from '../api/request/endpoints/search-endpoint';
@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs/Subscription';
   templateUrl: './search.component.html',
   styleUrls: [ './search.component.scss' ]
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, OnDestroy {
   private _startDateTime: Date;
   set startDateTime (value: Date) {
     this._startDateTime = value;
@@ -75,6 +75,12 @@ export class SearchComponent implements OnInit {
         }
       }
     );
+  }
+
+  ngOnDestroy (): void {
+    if (!isNullOrUndefined(this._queryParameterSubscription)) {
+      this._queryParameterSubscription.unsubscribe();
+    }
   }
 
   private submitRequest (request: ApiRequest): void {
