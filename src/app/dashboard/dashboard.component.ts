@@ -5,6 +5,7 @@ import { Comparator, ComparatorType } from '../api/request/comparator';
 import { isNullOrUndefined } from 'util';
 import { SettingsService } from '../settings-service/settings.service';
 import { DashboardCardData } from './dashboard-card/dashboard-card-data';
+import { RequestBuilderField } from '../api/request/request-builder-field';
 
 interface CardRow {
   title: string;
@@ -90,6 +91,22 @@ export class DashboardComponent implements OnInit {
 
     let addFilterToBuilder: (RequestBuilder) => void;
 
+    const defaultOnItemClickFieldBuilder = (value: string | number) => {
+      return {
+        name: 'sender',
+        value: value,
+        comparator: new Comparator(ComparatorType.Equals)
+      };
+    };
+
+    const defaultOnItemClickFieldBuilderDomainOnly = (value: string | number) => {
+      return {
+        name: 'sender',
+        value: value + '$',
+        comparator: new Comparator(ComparatorType.Regex)
+      };
+    };
+
     /*
      * Top delivered senders
      */
@@ -105,6 +122,9 @@ export class DashboardComponent implements OnInit {
 
     this._requestBuilderMatrix[ 0 ].cardData[ 0 ].title = this.deliveredSenders;
     this._requestBuilderMatrix[ 0 ].cardData[ 1 ].title = this.deliveredSenderDomains;
+
+    this._requestBuilderMatrix[ 0 ].cardData[ 0 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilder;
+    this._requestBuilderMatrix[ 0 ].cardData[ 1 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilderDomainOnly;
 
     /*
      * Top greylisted
@@ -122,6 +142,9 @@ export class DashboardComponent implements OnInit {
     this._requestBuilderMatrix[ 1 ].cardData[ 0 ].title = this.greylisted;
     this._requestBuilderMatrix[ 1 ].cardData[ 1 ].title = this.greylistedDomains;
 
+    this._requestBuilderMatrix[ 1 ].cardData[ 0 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilder;
+    this._requestBuilderMatrix[ 1 ].cardData[ 1 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilderDomainOnly;
+
     /*
      * Top spam sender
      */
@@ -138,6 +161,9 @@ export class DashboardComponent implements OnInit {
     this._requestBuilderMatrix[ 2 ].cardData[ 0 ].title = this.spamSenders;
     this._requestBuilderMatrix[ 2 ].cardData[ 1 ].title = this.spamSenderDomains;
 
+    this._requestBuilderMatrix[ 2 ].cardData[ 0 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilder;
+    this._requestBuilderMatrix[ 2 ].cardData[ 1 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilderDomainOnly;
+
     /*
      * Top reject reasons
      */
@@ -153,6 +179,7 @@ export class DashboardComponent implements OnInit {
 
     // there is not a card for domain names only
     this._requestBuilderMatrix[ 3 ].cardData.splice(1, 1);
+    this._requestBuilderMatrix[ 3 ].cardData[ 0 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilder;
   }
 }
 

@@ -1,4 +1,5 @@
 <h2 class="mat-subheading-2">{{data.title}}</h2>
 
 <app-dashboard-card-item *ngFor="let item of resultData"
-                         [data]="item"></app-dashboard-card-item>
+                         [data]="item"
+                         (itemClick)="onItemClick($event)">

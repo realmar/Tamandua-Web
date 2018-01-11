@@ -6,11 +6,24 @@ import { isNullOrUndefined } from 'util';
 import { Endpoint } from './endpoints/endpoint';
 import { EndpointIsUndefinedError } from './endpoint-is-undefined-error';
 import { Converter } from '../../converter';
+import { RequestBuilderField } from './request-builder-field';
 
-class Field {
+class Field implements RequestBuilderField {
   private _comparator: Comparator;
   private _name: string;
   private _value: string | number;
+
+  get comparator (): Comparator {
+    return this._comparator;
+  }
+
+  get name (): string {
+    return this._name;
+  }
+
+  get value (): string | number {
+    return this._value;
+  }
 
   constructor (name: string, value: string | number, comparator: Comparator) {
     this._comparator = comparator;
@@ -44,12 +57,24 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
     this.fields.push(new Field(name, value, comparator));
   }
 
+  getFields (): Array<RequestBuilderField> {
+    return this.fields;
+  }
+
   public setStartDatetime (datetime: Date): void {
     this.startDatetime = datetime;
   }
 
+  getStartDatetime (): Date {
+    return this.startDatetime;
+  }
+
   public setEndDatetime (datetime: Date): void {
     this.endDatetime = datetime;
+  }
+
+  getEndDatetime (): Date {
+    return this.endDatetime;
   }
 
   public removeStartDatetime (): void {
@@ -62,6 +87,10 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
 
   public setEndpoint (endpoint: Endpoint): void {
     this.endpoint = endpoint;
+  }
+
+  getEndpoint (): Endpoint {
+    return this.endpoint;
   }
 
   setCallback (callback: (object) => void): void {

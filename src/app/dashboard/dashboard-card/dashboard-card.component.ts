@@ -8,6 +8,9 @@ import { SettingsService } from '../../settings-service/settings.service';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/interval';
 import { DashboardCardItemData } from './dashboard-card-item/dashboard-card-item-data';
+import { SearchStateService } from '../../search-state-service/search-state.service';
+import { Comparator, ComparatorType } from '../../api/request/comparator';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-card',
@@ -34,7 +37,9 @@ export class DashboardCardComponent implements OnInit {
   }
 
   constructor (private apiService: ApiService,
-               private settings: SettingsService) {
+               private settings: SettingsService,
+               private searchState: SearchStateService,
+               private router: Router) {
     this._interval = Observable.interval(this.settings.dashboard.refreshInterval);
     this._isDoingRequest = false;
     this._resultData = [];
@@ -61,5 +66,18 @@ export class DashboardCardComponent implements OnInit {
   private processApiResponse (data: AdvancedCountResponse): void {
     this._isDoingRequest = false;
     this._resultData = data.items.map(item => new DashboardCardItemData(item.key, item.value, data.total));
+  }
+
+  public onItemClick (data: DashboardCardItemData): void {
+    this.searchState.searchResults = undefined;
+
+    this.searchState.fields = this._data.requestBuilder.getFields();
+    this.searchState.fields.push(this._data.buildOnItemClickField(data.key));
+
+    this.searchState.startDatetime = this._data.requestBuilder.getStartDatetime();
+    this.searchState.endDatetime = this._data.requestBuilder.getEndDatetime();
+
+    this.router.navigate([ 'search' ], { queryParams: { doSearch: true } })
+      .then(result => result ? '' : console.log('Failed to navigate'));
   }
 }

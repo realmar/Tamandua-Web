@@ -16,12 +16,14 @@ export class SearchFieldComponent implements OnInit {
     this._data = value;
 
     // assign default values if they are not set
-    if (isNullOrUndefined(this._data.field)) {
-      this._data.field = this.fields[ 0 ];
+    if (isNullOrUndefined(this._data.name)) {
+      this._data.name = this.fields[ 0 ];
+    } else {
+      this._fields = [ this._data.name ];
     }
 
     if (isNullOrUndefined(this._data.comparator)) {
-      this._data.comparator = this.comparators[ 0 ];
+      this._data.comparator = new Comparator(this.comparators[ 0 ]);
     }
 
     this.dataChange.emit(this._data);
@@ -30,34 +32,34 @@ export class SearchFieldComponent implements OnInit {
   @Output() dataChange = new EventEmitter<SearchFieldData>();
 
   get field (): string {
-    return this._data.field;
+    return this._data.name;
   }
 
   set field (value: string) {
-    this._data.field = value;
+    this._data.name = value;
     this.dataChange.emit(this._data);
   }
 
-  get comparator (): Comparator {
-    return this._data.comparator;
+  get comparator (): ComparatorType {
+    return this._data.comparator.type;
   }
 
-  set comparator (value: Comparator) {
-    this._data.comparator = value;
+  set comparator (value: ComparatorType) {
+    this._data.comparator = new Comparator(value);
     this.dataChange.emit(this._data);
   }
 
-  get value (): string {
+  get value (): string | number {
     return this._data.value;
   }
 
-  set value (value: string) {
+  set value (value: string | number) {
     this._data.value = value;
     this.dataChange.emit(this._data);
   }
 
-  private _comparators: Array<Comparator>;
-  get comparators (): Array<Comparator> {
+  private _comparators: Array<ComparatorType>;
+  get comparators (): Array<ComparatorType> {
     return this._comparators;
   }
 
@@ -69,15 +71,16 @@ export class SearchFieldComponent implements OnInit {
   constructor (private apiService: ApiService) {
     this._fields = [ 'loading ...' ];
     this._comparators = Object.keys(ComparatorType).map(
-      key => new Comparator(ComparatorType[ key ] as ComparatorType));
+      key => ComparatorType[ key ] as ComparatorType);
   }
 
   ngOnInit () {
-    this.comparator = this.comparators[ 0 ];
-    let c = this.apiService.getColumns();
-    c.subscribe(data => {
+    this.apiService.getColumns().subscribe(data => {
+      const reassignName = this._fields[ 0 ].startsWith('loading');
       this._fields = data;
-      this._data.field = this._fields[ 0 ];
+      if (reassignName) {
+        this._data.name = this._fields[ 0 ];
+      }
     });
   }
 }

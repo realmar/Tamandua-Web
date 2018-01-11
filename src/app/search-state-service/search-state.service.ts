@@ -1,23 +1,20 @@
 import { Injectable } from '@angular/core';
 import { SearchResponse } from '../api/response/search-reponse';
-import { SearchFieldData } from '../search-field/search-field-data';
 import { SelectedTags } from '../search-results/search-result-tags-selection/selected-tags';
-import { ApiRequest } from '../api/request/request';
+import { RequestBuilderField } from '../api/request/request-builder-field';
 
 @Injectable()
 export class SearchStateService {
   // region Fields
 
   private _searchResults: SearchResponse;
-  private _fields: Array<SearchFieldData>;
+  private _fields: Array<RequestBuilderField>;
   private _startDatetime: Date;
   private _endDatetime: Date;
   private _visibleColumns: Array<string>;
   private _selectedTags: SelectedTags;
   private _resultFilter: Map<string, string>;
   private _resultFilterAsRegex: Map<string, RegExp>;
-
-  private _request: ApiRequest;
 
   // endregion
 
@@ -31,11 +28,11 @@ export class SearchStateService {
     this._searchResults = value;
   }
 
-  public get fields (): Array<SearchFieldData> {
+  public get fields (): Array<RequestBuilderField> {
     return this._fields;
   }
 
-  public set fields (value: Array<SearchFieldData>) {
+  public set fields (value: Array<RequestBuilderField>) {
     this._fields = value;
   }
 
@@ -85,22 +82,6 @@ export class SearchStateService {
 
   public set resultFilterAsRegex (value: Map<string, RegExp>) {
     this._resultFilterAsRegex = value;
-  }
-
-  /**
-   * Return the stored request and public set it to undefined.
-   *
-   * @returns {ApiRequest}
-   */
-  public retrieveRequest (): ApiRequest {
-    const request = this._request;
-    this._request = undefined;
-
-    return request;
-  }
-
-  public set request (value: ApiRequest) {
-    this._request = value;
   }
 
 // endregion

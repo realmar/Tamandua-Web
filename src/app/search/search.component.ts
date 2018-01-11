@@ -1,13 +1,13 @@
-import { AfterContentChecked, AfterContentInit, AfterViewInit, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SearchFieldData } from '../search-field/search-field-data';
 import { ApiService } from '../api/api-service';
 import { SearchEndpoint } from '../api/request/endpoints/search-endpoint';
 import { ActivatedRoute } from '@angular/router';
 import { isNullOrUndefined } from 'util';
 import { SearchStateService } from '../search-state-service/search-state.service';
-import { SearchResponse, SearchRow } from '../api/response/search-reponse';
-import { IntermediateExpressionRequest } from '../api/request/intermediate-expression-request';
+import { SearchResponse } from '../api/response/search-reponse';
 import { ApiRequest } from '../api/request/request';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-search',
@@ -50,25 +50,31 @@ export class SearchComponent implements OnInit {
     return this._isLoading;
   }
 
+  private _queryParameterSubscription: Subscription;
+
   constructor (private apiService: ApiService,
-               private searchState: SearchStateService) {
+               private searchState: SearchStateService,
+               private route: ActivatedRoute) {
 
     // restore state
     if (isNullOrUndefined(this.searchState.fields)) {
       this.searchState.fields = [ new SearchFieldData() ];
     }
 
-    this._fields = this.searchState.fields;
+    this._fields = this.searchState.fields.map(field => new SearchFieldData(field.name, field.value, field.comparator));
 
     this.startDateTime = this.searchState.startDatetime;
     this.endDateTime = this.searchState.endDatetime;
   }
 
   ngOnInit () {
-    const request = this.searchState.retrieveRequest();
-    if (!isNullOrUndefined(request)) {
-      this.submitRequest(request);
-    }
+    this._queryParameterSubscription = this.route.queryParams.subscribe(
+      parameters => {
+        if (parameters[ 'doSearch' ]) {
+          this.search();
+        }
+      }
+    );
   }
 
   private submitRequest (request: ApiRequest): void {
@@ -82,7 +88,7 @@ export class SearchComponent implements OnInit {
   }
 
   public anyFieldsEmpty (): boolean {
-    return this._fields.some(element => element.value.trim().length === 0);
+    return this._fields.some(element => typeof element.value === 'number' ? false : element.value.trim().length === 0);
   }
 
   public addField (): void {
@@ -109,6 +115,10 @@ export class SearchComponent implements OnInit {
   public search (): void {
     // make request
 
+    if (this.anyFieldsEmpty()) {
+      return;
+    }
+
     const builder = this.apiService.getRequestBuilder();
 
     builder.setCallback(this.processSearchResult.bind(this));
@@ -117,7 +127,7 @@ export class SearchComponent implements OnInit {
     builder.setEndDatetime(this._endDateTime);
 
     for (const field of this._fields) {
-      builder.addField(field.field, field.value, field.comparator);
+      builder.addField(field.name, field.value, field.comparator);
     }
 
     this.submitRequest(builder.build());

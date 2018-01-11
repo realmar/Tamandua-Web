@@ -3,5 +3,5 @@
   <div id="color-bar"
        [style.background-color]="color"
        [style.width]="percentage + '%'"></div>
-  <p>{{amount}} ({{percentage.toPrecision(2)}}%) {{label}}</p>
+  <p (click)="onItemClick()">{{amount}} ({{percentage.toPrecision(2)}}%) {{label}}</p>
 </div>

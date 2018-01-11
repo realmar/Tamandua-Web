@@ -1,10 +1,10 @@
 export class DashboardCardItemData {
-  private _label;
+  private _key;
   private _amount;
   private _totalAmount;
 
-  get label () {
-    return this._label;
+  get key () {
+    return this._key;
   }
 
   get amount () {
@@ -16,7 +16,7 @@ export class DashboardCardItemData {
   }
 
   constructor (label, amount, totalAmount) {
-    this._label = label;
+    this._key = label;
     this._amount = amount;
     this._totalAmount = totalAmount;
   }

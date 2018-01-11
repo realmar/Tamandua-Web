@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DashboardCardItemData } from './dashboard-card-item-data';
 import * as chroma from 'chroma-js';
 
@@ -14,8 +14,10 @@ export class DashboardCardItemComponent implements OnInit {
     this._data = value;
   }
 
+  @Output() itemClick: EventEmitter<DashboardCardItemData>;
+
   get label (): string {
-    return this._data.label;
+    return this._data.key;
   }
 
   get amount (): number {
@@ -37,6 +39,7 @@ export class DashboardCardItemComponent implements OnInit {
   }
 
   constructor () {
+    this.itemClick = new EventEmitter<DashboardCardItemData>();
     this._colors = [];
 
     const colorRange = chroma.scale([ 'green', 'red' ]).mode('lab').colors(100);
@@ -46,5 +49,9 @@ export class DashboardCardItemComponent implements OnInit {
   }
 
   ngOnInit () {
+  }
+
+  public onItemClick (): void {
+    this.itemClick.emit(this._data);
   }
 }
