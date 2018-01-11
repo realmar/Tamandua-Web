@@ -30,6 +30,7 @@ import { DashboardCardComponent } from './dashboard/dashboard-card/dashboard-car
 import { DashboardCardItemComponent } from './dashboard/dashboard-card/dashboard-card-item/dashboard-card-item.component';
 import { TamanduaMockService } from './api/tamandua-mock.service';
 import { SettingsService } from './settings-service/settings.service';
+import { CachedTamanduaService } from './api/cached-tamandua.service';
 
 @NgModule({
   declarations: [
@@ -75,7 +76,7 @@ import { SettingsService } from './settings-service/settings.service';
     MatProgressSpinnerModule
   ],
   providers: [
-    { provide: ApiService, useClass: TamanduaService },
+    { provide: ApiService, useClass: CachedTamanduaService },
     SearchStateService,
     SettingsService,
     HttpClientModule
