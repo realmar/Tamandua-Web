@@ -8,7 +8,7 @@ import { SettingsService } from '../../settings-service/settings.service';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/interval';
 import { DashboardCardItemData } from './dashboard-card-item/dashboard-card-item-data';
-import { SearchStateService } from '../../search-state-service/search-state.service';
+import { SearchStateService } from '../../state/search-state-service/search-state.service';
 import { Comparator, ComparatorType } from '../../api/request/comparator';
 import { Router } from '@angular/router';
 

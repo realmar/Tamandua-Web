@@ -4,7 +4,7 @@ import { ApiService } from '../api/api-service';
 import { SearchEndpoint } from '../api/request/endpoints/search-endpoint';
 import { ActivatedRoute } from '@angular/router';
 import { isNullOrUndefined } from 'util';
-import { SearchStateService } from '../search-state-service/search-state.service';
+import { SearchStateService } from '../state/search-state-service/search-state.service';
 import { SearchResponse } from '../api/response/search-reponse';
 import { ApiRequest } from '../api/request/request';
 import { Subscription } from 'rxjs/Subscription';

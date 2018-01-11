@@ -4,7 +4,7 @@ import { TagsResponse } from '../../api/response/tags-response';
 import { SelectedTags } from './selected-tags';
 import { MatButtonToggleChange } from '@angular/material/button-toggle/typings/button-toggle';
 import { isNullOrUndefined } from 'util';
-import { SearchStateService } from '../../search-state-service/search-state.service';
+import { SearchStateService } from '../../state/search-state-service/search-state.service';
 
 @Component({
   selector: 'app-search-result-tags-selection',

@@ -23,7 +23,7 @@ import { SearchResultsComponent } from './search-results/search-results.componen
 import { SearchResultDetailsModalComponent } from './search-results/search-result-details-modal/search-result-details-modal.component';
 import { SearchResultAddColumnsModalComponent } from './search-results/search-result-add-columns/search-result-add-columns-modal.component';
 import { SearchResultTagsSelectionComponent } from './search-results/search-result-tags-selection/search-result-tags-selection.component';
-import { SearchStateService } from './search-state-service/search-state.service';
+import { SearchStateService } from './state/search-state-service/search-state.service';
 import { TamanduaService } from './api/tamandua.service';
 import { HttpClientModule } from '@angular/common/http';
 import { DashboardCardComponent } from './dashboard/dashboard-card/dashboard-card.component';
@@ -31,6 +31,7 @@ import { DashboardCardItemComponent } from './dashboard/dashboard-card/dashboard
 import { TamanduaMockService } from './api/tamandua-mock.service';
 import { SettingsService } from './settings-service/settings.service';
 import { CachedTamanduaService } from './api/cached-tamandua.service';
+import { DashboardStateService } from './state/dashboard-state-service/dashboard-state.service';
 
 @NgModule({
   declarations: [
@@ -78,6 +79,7 @@ import { CachedTamanduaService } from './api/cached-tamandua.service';
   providers: [
     { provide: ApiService, useClass: CachedTamanduaService },
     SearchStateService,
+    DashboardStateService,
     SettingsService,
     HttpClientModule
   ],

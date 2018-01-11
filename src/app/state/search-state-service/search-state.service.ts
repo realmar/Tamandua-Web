@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
-import { SearchResponse } from '../api/response/search-reponse';
-import { SelectedTags } from '../search-results/search-result-tags-selection/selected-tags';
-import { RequestBuilderField } from '../api/request/request-builder-field';
+import { SearchResponse } from '../../api/response/search-reponse';
+import { SelectedTags } from '../../search-results/search-result-tags-selection/selected-tags';
+import { RequestBuilderField } from '../../api/request/request-builder-field';
 
 @Injectable()
 export class SearchStateService {
   // region Fields
+
+  // Search
 
   private _searchResults: SearchResponse;
   private _fields: Array<RequestBuilderField>;

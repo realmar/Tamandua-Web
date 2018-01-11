@@ -6,6 +6,7 @@ import { isNullOrUndefined } from 'util';
 import { SettingsService } from '../settings-service/settings.service';
 import { DashboardCardData } from './dashboard-card/dashboard-card-data';
 import { RequestBuilderField } from '../api/request/request-builder-field';
+import { DashboardStateService } from '../state/dashboard-state-service/dashboard-state.service';
 
 interface CardRow {
   title: string;
@@ -47,10 +48,23 @@ export class DashboardComponent implements OnInit {
   }
 
   private _pastHoursCount: number;
+  get pastHoursCount (): number {
+    return this._pastHoursCount;
+  }
+
+  set pastHoursCount (value: number) {
+    this._pastHoursCount = value;
+    this.dashboardStateService.pastHours = value;
+  }
 
   constructor (private apiService: ApiService,
-               private settings: SettingsService) {
-    this._pastHoursCount = 480;
+               private settings: SettingsService,
+               private dashboardStateService: DashboardStateService) {
+    if (isNullOrUndefined(dashboardStateService.pastHours)) {
+      this.pastHoursCount = 24;
+    } else {
+      this.pastHoursCount = dashboardStateService.pastHours;
+    }
   }
 
   ngOnInit () {

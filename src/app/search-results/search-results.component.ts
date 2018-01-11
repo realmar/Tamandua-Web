@@ -9,7 +9,7 @@ import { SearchResultAddColumnsModalComponent } from './search-result-add-column
 import { AddColumnsModalData } from './search-result-add-columns/add-columns-modal-data';
 import { isNullOrUndefined } from 'util';
 import { SelectedTags } from './search-result-tags-selection/selected-tags';
-import { SearchStateService } from '../search-state-service/search-state.service';
+import { SearchStateService } from '../state/search-state-service/search-state.service';
 
 @Component({
   selector: 'app-search-results',

@@ -27,3 +27,11 @@ mat-card {
   display: flex;
   flex-wrap: wrap;
 }
+
+#settings {
+  margin-top: 1rem;
+
+  mat-form-field {
+    width: 4rem;
+  }
+}
