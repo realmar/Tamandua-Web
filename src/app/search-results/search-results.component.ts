@@ -100,7 +100,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit () {
-    this.apiService.getColumns().subscribe(this.processColumns);
+    this.apiService.getColumns().subscribe(this.processColumns.bind(this));
 
     if (!isNullOrUndefined(this.searchState.visibleColumns)) {
       this._visibleColumns = this.searchState.visibleColumns;
