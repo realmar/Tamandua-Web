@@ -18,7 +18,7 @@ export class SettingsService {
   constructor () {
     this._dashboard = {
       maxItemCountPerCard: 10,
-      refreshInterval: 1000000000
+      refreshInterval: 10000
     };
   }
 }

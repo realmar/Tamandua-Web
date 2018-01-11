@@ -9,7 +9,7 @@ import {
   MatGridListModule,
   MatIconModule,
   MatInputModule, MatListModule,
-  MatNativeDateModule, MatPaginatorModule, MatProgressSpinnerModule,
+  MatNativeDateModule, MatPaginatorModule, MatProgressBarModule, MatProgressSpinnerModule,
   MatSelectModule, MatSortModule, MatTableModule, MatToolbarModule
 } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -74,7 +74,8 @@ import { DashboardStateService } from './state/dashboard-state-service/dashboard
     MatDialogModule,
     MatCheckboxModule,
     MatButtonToggleModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatProgressBarModule
   ],
   providers: [
     { provide: ApiService, useClass: CachedTamanduaService },

@@ -20,6 +20,9 @@ import { Router } from '@angular/router';
 export class DashboardCardComponent implements OnInit {
   private _interval: Observable<any>;
   private _isDoingRequest: boolean;
+  get isDoingRequest (): boolean {
+    return this._isDoingRequest;
+  }
 
   private _request: ApiRequest;
   private _data: DashboardCardData;

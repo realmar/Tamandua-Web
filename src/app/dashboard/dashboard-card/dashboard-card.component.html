@@ -2,4 +2,7 @@
 
 <app-dashboard-card-item *ngFor="let item of resultData"
                          [data]="item"
-                         (itemClick)="onItemClick($event)">
+                         (itemClick)="onItemClick($event)"></app-dashboard-card-item>
+
+<mat-progress-bar *ngIf="isDoingRequest && resultData.length === 0"
+                  mode="indeterminate"></mat-progress-bar>
