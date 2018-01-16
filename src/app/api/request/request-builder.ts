@@ -8,6 +8,8 @@ export interface RequestBuilder {
 
   getFields(): Array<RequestBuilderField>;
 
+  removeAllFields(): void;
+
   setStartDatetime (datetime: Date): void;
 
   getStartDatetime(): Date;

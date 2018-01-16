@@ -57,15 +57,19 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
     this.fields.push(new Field(name, value, comparator));
   }
 
-  getFields (): Array<RequestBuilderField> {
+  public getFields (): Array<RequestBuilderField> {
     return this.fields;
+  }
+
+  public removeAllFields (): void {
+    this.fields = [];
   }
 
   public setStartDatetime (datetime: Date): void {
     this.startDatetime = datetime;
   }
 
-  getStartDatetime (): Date {
+  public getStartDatetime (): Date {
     return this.startDatetime;
   }
 
@@ -73,7 +77,7 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
     this.endDatetime = datetime;
   }
 
-  getEndDatetime (): Date {
+  public getEndDatetime (): Date {
     return this.endDatetime;
   }
 
@@ -89,11 +93,11 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
     this.endpoint = endpoint;
   }
 
-  getEndpoint (): Endpoint {
+  public getEndpoint (): Endpoint {
     return this.endpoint;
   }
 
-  setCallback (callback: (object) => void): void {
+  public setCallback (callback: (object) => void): void {
     this.callback = callback;
   }
 

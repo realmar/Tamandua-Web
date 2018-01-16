@@ -1,0 +1,14 @@
+<p id="total" class="mat-subheading-2">Total: {{totalResponse}}</p>
+
+<ng-container *ngFor="let group of summaryResponses">
+  <app-dashboard-card-item [data]="group.data"></app-dashboard-card-item>
+  <ng-container *ngIf="group.children.length > 0">
+    <div class="indented">
+      <app-dashboard-card-item *ngFor="let child of group.children"
+                               [data]="child.data"></app-dashboard-card-item>
+    </div>
+  </ng-container>
+</ng-container>
+
+<mat-progress-bar *ngIf="isDoingRequest"
+                  mode="indeterminate"></mat-progress-bar>

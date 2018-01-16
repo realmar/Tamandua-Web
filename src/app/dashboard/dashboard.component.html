@@ -2,12 +2,22 @@
   <mat-form-field>
     <input matInput placeholder="Past Hours" type="number" [(ngModel)]="pastHoursCount">
   </mat-form-field>
-  <button mat-icon-button (click)="buildRequestBuilderMatrix()">
+  <button mat-icon-button (click)="buildRequestBuilderMatrix(); overview_card.onHoursChanged();">
     <mat-icon>cached</mat-icon>
   </button>
 </div>
 
 <div id="flex-container">
+
+  <mat-card>
+    <mat-card-header><p class="mat-title">Summary</p></mat-card-header>
+    <mat-card-content>
+      <app-dashboard-overview-card
+        #overview_card
+        [pastHoursCount]="pastHoursCount"></app-dashboard-overview-card>
+    </mat-card-content>
+  </mat-card>
+
   <ng-container *ngFor="let row of requestBuilderMatrix">
     <mat-card>
       <mat-card-header>

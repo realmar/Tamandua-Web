@@ -41,14 +41,13 @@ export class DashboardCardItemComponent implements OnInit {
   constructor () {
     this.itemClick = new EventEmitter<DashboardCardItemData>();
     this._colors = [];
-
-    const colorRange = chroma.scale([ 'green', 'red' ]).mode('lab').colors(100);
-    for (const color of colorRange) {
-      this._colors.push(chroma(color).luminance(0.4).hex());
-    }
   }
 
   ngOnInit () {
+    const colorRange = this._data.colorRange.mode('lab').colors(100);
+    for (const color of colorRange) {
+      this._colors.push(chroma(color).luminance(0.4).hex());
+    }
   }
 
   public onItemClick (): void {

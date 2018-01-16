@@ -27,10 +27,11 @@ import { SearchResultTagsSelectionComponent } from './search-results/search-resu
 import { SearchStateService } from './state/search-state-service/search-state.service';
 import { HttpClientModule } from '@angular/common/http';
 import { DashboardCardComponent } from './dashboard/dashboard-card/dashboard-card.component';
-import { DashboardCardItemComponent } from './dashboard/dashboard-card/dashboard-card-item/dashboard-card-item.component';
+import { DashboardCardItemComponent } from './dashboard/dashboard-card-item/dashboard-card-item.component';
 import { SettingsService } from './settings-service/settings.service';
 import { CachedTamanduaService } from './api/cached-tamandua.service';
 import { DashboardStateService } from './state/dashboard-state-service/dashboard-state.service';
+import { DashboardOverviewCardComponent } from './dashboard/dashboard-overview-card/dashboard-overview-card.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { DashboardStateService } from './state/dashboard-state-service/dashboard
     SearchResultAddColumnsModalComponent,
     SearchResultTagsSelectionComponent,
     DashboardCardComponent,
-    DashboardCardItemComponent
+    DashboardCardItemComponent,
+    DashboardOverviewCardComponent
   ],
   imports: [
     BrowserModule,

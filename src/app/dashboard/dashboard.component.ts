@@ -61,7 +61,7 @@ export class DashboardComponent implements OnInit {
                private settings: SettingsService,
                private dashboardStateService: DashboardStateService) {
     if (isNullOrUndefined(dashboardStateService.pastHours)) {
-      this.pastHoursCount = 24;
+      this.pastHoursCount = 500;
     } else {
       this.pastHoursCount = dashboardStateService.pastHours;
     }
