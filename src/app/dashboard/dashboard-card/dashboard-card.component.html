@@ -5,5 +5,4 @@
                          [clickable]="true"
                          (itemClick)="onItemClick($event)"></app-dashboard-card-item>
 
-<mat-progress-bar *ngIf="isDoingRequest && resultData.length === 0"
-                  mode="indeterminate"></mat-progress-bar>
+<p class="mat-body-2" *ngIf="isDoingRequest && resultData.length === 0">Loading ...</p>

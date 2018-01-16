@@ -71,6 +71,7 @@ export class DashboardComponent implements OnInit {
   constructor (private apiService: ApiService,
                private settings: SettingsService,
                private dashboardStateService: DashboardStateService) {
+    this._requestBuilderMatrix = [];
     if (isNullOrUndefined(dashboardStateService.pastHours)) {
       this.pastHoursCount = 500;
     } else {
@@ -83,8 +84,6 @@ export class DashboardComponent implements OnInit {
   }
 
   private buildRequestBuilderMatrix (): void {
-    this._requestBuilderMatrix = [];
-
     /*
      * Create default request builders
      */
