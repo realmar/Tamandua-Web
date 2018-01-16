@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 
 interface DashboardSettings {
-  readonly maxItemCountPerCard: number;
+  maxItemCountPerCard: number;
   /**
    * Refresh interval of dashboard in milliseconds.
    */
-  readonly refreshInterval: number;
+  refreshInterval: number;
 }
 
 @Injectable()

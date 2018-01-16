@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../api/api-service';
 import { AdvancedCountEndpoint } from '../api/request/endpoints/advanced-count-endpoint';
 import { Comparator, ComparatorType } from '../api/request/comparator';
@@ -7,6 +7,7 @@ import { SettingsService } from '../settings-service/settings.service';
 import { DashboardCardData } from './dashboard-card/dashboard-card-data';
 import { RequestBuilderField } from '../api/request/request-builder-field';
 import { DashboardStateService } from '../state/dashboard-state-service/dashboard-state.service';
+import { DashboardOverviewCardComponent } from './dashboard-overview-card/dashboard-overview-card.component';
 
 interface CardRow {
   title: string;
@@ -19,6 +20,8 @@ interface CardRow {
   styleUrls: [ './dashboard.component.scss' ]
 })
 export class DashboardComponent implements OnInit {
+
+  @ViewChild(DashboardOverviewCardComponent) private _overviewCard: DashboardOverviewCardComponent;
 
   // region Card Text Constants
 
@@ -55,6 +58,14 @@ export class DashboardComponent implements OnInit {
   set pastHoursCount (value: number) {
     this._pastHoursCount = value;
     this.dashboardStateService.pastHours = value;
+  }
+
+  get maxItemCountPerCard (): number {
+    return this.settings.dashboard.maxItemCountPerCard;
+  }
+
+  set maxItemCountPerCard (value: number) {
+    this.settings.dashboard.maxItemCountPerCard = value;
   }
 
   constructor (private apiService: ApiService,
@@ -194,6 +205,11 @@ export class DashboardComponent implements OnInit {
     // there is not a card for domain names only
     this._requestBuilderMatrix[ 3 ].cardData.splice(1, 1);
     this._requestBuilderMatrix[ 3 ].cardData[ 0 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilder;
+  }
+
+  public onRefreshClick (): void {
+    this.buildRequestBuilderMatrix();
+    this._overviewCard.onHoursChanged();
   }
 }
 
