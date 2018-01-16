@@ -13,5 +13,20 @@
 </mat-form-field>
 
 <mat-form-field>
-  <input matInput placeholder="Value" [(ngModel)]="value">
+  <ng-container *ngIf="fieldHasChoices; else text_input">
+
+    <mat-form-field>
+      <input type="text" matInput [(ngModel)]="value" [matAutocomplete]="autocomplete">
+    </mat-form-field>
+
+    <mat-autocomplete #autocomplete="matAutocomplete">
+      <mat-option *ngFor="let option of fieldChoicesMap.get(field)" [value]="option">
+        {{ option }}
+      </mat-option>
+    </mat-autocomplete>
+
+  </ng-container>
+  <ng-template #text_input>
+    <input matInput placeholder="Value" [(ngModel)]="value">
+  </ng-template>
 </mat-form-field>

@@ -5,6 +5,7 @@ import { ColumnsResponse } from './response/columns-response';
 import { TagsResponse } from './response/tags-response';
 import { FieldChoicesResponse } from './response/field-choices-response';
 import { Observable } from 'rxjs/Observable';
+import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
 
 export abstract class ApiService {
   abstract getColumns (): Observable<ColumnsResponse>;
@@ -12,6 +13,8 @@ export abstract class ApiService {
   abstract getTags (): Observable<TagsResponse>;
 
   abstract getFieldChoices (field: string, limit: number): Observable<FieldChoicesResponse>;
+
+  abstract getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse>;
 
   abstract SubmitRequest (request: ApiRequest): void;
 

@@ -16,6 +16,7 @@ import { AdvancedCountEndpoint } from './request/endpoints/advanced-count-endpoi
 import { CountEndpoint } from './request/endpoints/count-endpoint';
 import { Observable } from 'rxjs/Observable';
 import { Endpoint } from './request/endpoints/endpoint';
+import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
 
 @Injectable()
 export class TamanduaMockService extends ApiService {
@@ -74,6 +75,21 @@ export class TamanduaMockService extends ApiService {
 
   public getFieldChoices (field: string, limit: number): Observable<FieldChoicesResponse> {
     return of([ 'a', 'b', 'c' ]);
+  }
+
+
+  getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse> {
+    return of([
+      'action',
+      'deliverystatus',
+      'rejectreason',
+      'rejectstage',
+      'saslmethod',
+      'statuscode',
+      'tags',
+      'virusaction',
+      'virusresult'
+    ]);
   }
 
   public SubmitRequest (request: ApiRequest): void {

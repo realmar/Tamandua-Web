@@ -15,6 +15,8 @@ import { FieldchoicesEndpoint } from './request/endpoints/fieldchoices-endpoint'
 import { IntermediateExpressionRequestBuilder } from './request/intermediate-expression-request-builder';
 import { Endpoint } from './request/endpoints/endpoint';
 import { EndpointMethod } from './request/endpoints/endpoint-method.enum';
+import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
+import { SupportedFieldchoicesEndpoint } from './request/endpoints/supported-fieldchoices-endpoint';
 
 @Injectable()
 export class TamanduaService implements ApiService {
@@ -47,6 +49,10 @@ export class TamanduaService implements ApiService {
 
   public getFieldChoices (field: string, limit: number): Observable<FieldChoicesResponse> {
     return this.makeRequest(new FieldchoicesEndpoint(field, limit));
+  }
+
+  getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse> {
+    return this.makeRequest(new SupportedFieldchoicesEndpoint());
   }
 
   public SubmitRequest (request: ApiRequest): void {

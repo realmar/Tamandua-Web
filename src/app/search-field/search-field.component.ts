@@ -3,6 +3,9 @@ import { Comparator, ComparatorType } from '../api/request/comparator';
 import { ApiService } from '../api/api-service';
 import { SearchFieldData } from './search-field-data';
 import { isNullOrUndefined } from 'util';
+import { FieldChoicesResponse } from '../api/response/field-choices-response';
+import { SettingsService } from '../settings-service/settings.service';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-search-field',
@@ -10,6 +13,7 @@ import { isNullOrUndefined } from 'util';
   styleUrls: [ './search-field.component.scss' ]
 })
 export class SearchFieldComponent implements OnInit {
+  private readonly _maxFieldChoicesPerField: number;
   private _data: SearchFieldData;
 
   @Input() set data (value: SearchFieldData) {
@@ -68,7 +72,18 @@ export class SearchFieldComponent implements OnInit {
     return this._fields;
   }
 
+  private _fieldChoicesMap: Map<string, FieldChoicesResponse>;
+  get fieldChoicesMap (): Map<string, FieldChoicesResponse> {
+    return this._fieldChoicesMap;
+  }
+
+  get fieldHasChoices (): boolean {
+    return !isNullOrUndefined(this._fieldChoicesMap.get(this.field));
+  }
+
   constructor (private apiService: ApiService) {
+    this._maxFieldChoicesPerField = 10;
+    this._fieldChoicesMap = new Map<string, FieldChoicesResponse>();
     this._fields = [ 'loading ...' ];
     this._comparators = Object.keys(ComparatorType).map(
       key => ComparatorType[ key ] as ComparatorType);
@@ -81,6 +96,23 @@ export class SearchFieldComponent implements OnInit {
       if (reassignName) {
         this._data.name = this._fields[ 0 ];
       }
+
+      this.getFieldChoices();
     });
+  }
+
+  private getFieldChoices (): void {
+    this.apiService.getSupportedFieldChoices().subscribe(response => {
+      for (const column of this._fields.filter(x => response.indexOf(x) !== -1)) {
+        this.apiService.getFieldChoices(column, this._maxFieldChoicesPerField)
+          .subscribe((result) => this.processFieldChoicesResponse(result, column));
+      }
+    });
+  }
+
+  private processFieldChoicesResponse (result: FieldChoicesResponse, fieldName: string) {
+    if (result.length <= this._maxFieldChoicesPerField) {
+      this._fieldChoicesMap.set(fieldName, result);
+    }
   }
 }
