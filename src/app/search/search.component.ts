@@ -58,10 +58,12 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     // restore state
     if (isNullOrUndefined(this.searchState.fields)) {
-      this.searchState.fields = [ new SearchFieldData() ];
+      this._fields = [ new SearchFieldData() ];
+    } else {
+      this._fields = this.searchState.fields.map(field => new SearchFieldData(field.name, field.value, field.comparator));
     }
 
-    this._fields = this.searchState.fields.map(field => new SearchFieldData(field.name, field.value, field.comparator));
+    this.searchState.fields = this._fields;
 
     this.startDateTime = this.searchState.startDatetime;
     this.endDateTime = this.searchState.endDatetime;
