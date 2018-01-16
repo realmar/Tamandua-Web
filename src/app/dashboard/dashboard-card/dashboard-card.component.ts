@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { DashboardCardData } from './dashboard-card-data';
 import { ApiService } from '../../api/api-service';
 import { AdvancedCountResponse } from '../../api/response/advanced-count-response';
@@ -11,14 +11,15 @@ import { DashboardCardItemData } from './dashboard-card-item/dashboard-card-item
 import { SearchStateService } from '../../state/search-state-service/search-state.service';
 import { Comparator, ComparatorType } from '../../api/request/comparator';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-dashboard-card',
   templateUrl: './dashboard-card.component.html',
   styleUrls: [ './dashboard-card.component.scss' ]
 })
-export class DashboardCardComponent implements OnInit {
-  private _interval: Observable<any>;
+export class DashboardCardComponent implements OnInit, OnDestroy {
+  private _intervalSubscription: Subscription;
   private _isDoingRequest: boolean;
   get isDoingRequest (): boolean {
     return this._isDoingRequest;
@@ -43,7 +44,6 @@ export class DashboardCardComponent implements OnInit {
                private settings: SettingsService,
                private searchState: SearchStateService,
                private router: Router) {
-    this._interval = Observable.interval(this.settings.dashboard.refreshInterval);
     this._isDoingRequest = false;
     this._resultData = [];
   }
@@ -53,8 +53,12 @@ export class DashboardCardComponent implements OnInit {
     builder.setCallback(this.processApiResponse.bind(this));
     this._request = builder.build();
 
-    this._interval.subscribe(this.getData.bind(this));
+    this._intervalSubscription = Observable.interval(this.settings.dashboard.refreshInterval).subscribe(this.getData.bind(this));
     this.getData();
+  }
+
+  ngOnDestroy (): void {
+    this._intervalSubscription.unsubscribe();
   }
 
   private getData (): void {
