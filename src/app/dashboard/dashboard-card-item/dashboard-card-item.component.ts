@@ -14,6 +14,15 @@ export class DashboardCardItemComponent implements OnInit {
     this._data = value;
   }
 
+  private _clickable: boolean;
+  @Input() set clickable (value: boolean) {
+    this._clickable = value;
+  }
+
+  get clickable (): boolean {
+    return this._clickable;
+  }
+
   @Output() itemClick: EventEmitter<DashboardCardItemData>;
 
   get label (): string {
@@ -43,6 +52,7 @@ export class DashboardCardItemComponent implements OnInit {
     this._colors = [];
   }
 
+
   ngOnInit () {
     const colorRange = this._data.colorRange.mode('lab').colors(100);
     for (const color of colorRange) {
@@ -51,6 +61,8 @@ export class DashboardCardItemComponent implements OnInit {
   }
 
   public onItemClick (): void {
-    this.itemClick.emit(this._data);
+    if (this._clickable) {
+      this.itemClick.emit(this._data);
+    }
   }
 }
