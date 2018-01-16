@@ -183,7 +183,7 @@ export class DashboardComponent implements OnInit {
      */
 
     addFilterToBuilder = (data: DashboardCardData) => {
-      data.requestBuilder.addField('rejectreason', '', new Comparator(ComparatorType.Regex));
+      data.requestBuilder.setEndpoint(new AdvancedCountEndpoint('rejectreason', 10));
     };
 
     addFilterToBuilder(this._requestBuilderMatrix[ 3 ].cardData[ 0 ]);
