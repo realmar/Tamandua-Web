@@ -183,7 +183,7 @@ export class DashboardComponent implements OnInit {
      */
 
     addFilterToBuilder = (data: DashboardCardData) => {
-      data.requestBuilder.setEndpoint(new AdvancedCountEndpoint('rejectreason', 10));
+      data.requestBuilder.setEndpoint(new AdvancedCountEndpoint('rejectreason', this.dashboardStateService.maxItemCountPerCard));
     };
 
     addFilterToBuilder(this._requestBuilderMatrix[ 3 ].cardData[ 0 ]);
