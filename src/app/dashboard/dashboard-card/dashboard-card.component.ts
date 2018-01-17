@@ -17,7 +17,9 @@ import { DashboardStateService } from '../../state/dashboard-state-service/dashb
   styleUrls: [ './dashboard-card.component.scss' ]
 })
 export class DashboardCardComponent implements OnInit, OnDestroy {
-  private _intervalSubscription: Subscription;
+  private _refreshIntervalSubscription: Subscription;
+  private _refreshIntervalChangeSubscription: Subscription;
+
   private _isDoingRequest: boolean;
   get isDoingRequest (): boolean {
     return this._isDoingRequest;
@@ -44,6 +46,8 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
                private router: Router) {
     this._isDoingRequest = false;
     this._resultData = [];
+    this._refreshIntervalChangeSubscription =
+      this.dashboardState.refreshIntervalObservable.subscribe(this.onRefreshIntervalChange.bind(this));
   }
 
   ngOnInit () {
@@ -51,12 +55,13 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     builder.setCallback(this.processApiResponse.bind(this));
     this._request = builder.build();
 
-    this._intervalSubscription = Observable.interval(this.dashboardState.refreshInterval).subscribe(this.getData.bind(this));
+    this.createRefreshIntervalSubscription();
     this.getData();
   }
 
   ngOnDestroy (): void {
-    this._intervalSubscription.unsubscribe();
+    this._refreshIntervalSubscription.unsubscribe();
+    this._refreshIntervalChangeSubscription.unsubscribe();
   }
 
   private getData (): void {
@@ -71,6 +76,15 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   private processApiResponse (data: AdvancedCountResponse): void {
     this._isDoingRequest = false;
     this._resultData = data.items.map(item => new DashboardCardItemData(item.key, item.value, data.total));
+  }
+
+  private createRefreshIntervalSubscription () {
+    this._refreshIntervalSubscription = Observable.interval(this.dashboardState.refreshInterval).subscribe(this.getData.bind(this));
+  }
+
+  private onRefreshIntervalChange (value: number): void {
+    this._refreshIntervalSubscription.unsubscribe();
+    this.createRefreshIntervalSubscription();
   }
 
   public onItemClick (data: DashboardCardItemData): void {

@@ -64,6 +64,14 @@ export class DashboardComponent implements OnInit {
     this.dashboardStateService.maxItemCountPerCard = value;
   }
 
+  public get refreshInterval (): number {
+    return this.dashboardStateService.refreshInterval / 1000;
+  }
+
+  public set refreshInterval (value: number) {
+    this.dashboardStateService.refreshInterval = value * 1000;
+  }
+
   constructor (private apiService: ApiService,
                private dashboardStateService: DashboardStateService) {
     this._requestBuilderMatrix = [];

@@ -5,6 +5,9 @@
   <mat-form-field>
     <input matInput placeholder="Field Count" type="number" [(ngModel)]="maxItemCountPerCard">
   </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Interval [s]" type="number" [(ngModel)]="refreshInterval">
+  </mat-form-field>
   <button mat-icon-button (click)="onRefreshClick()">
     <mat-icon>cached</mat-icon>
   </button>
