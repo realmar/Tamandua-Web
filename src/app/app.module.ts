@@ -28,7 +28,6 @@ import { SearchStateService } from './state/search-state-service/search-state.se
 import { HttpClientModule } from '@angular/common/http';
 import { DashboardCardComponent } from './dashboard/dashboard-card/dashboard-card.component';
 import { DashboardCardItemComponent } from './dashboard/dashboard-card-item/dashboard-card-item.component';
-import { SettingsService } from './settings-service/settings.service';
 import { CachedTamanduaService } from './api/cached-tamandua.service';
 import { DashboardStateService } from './state/dashboard-state-service/dashboard-state.service';
 import { DashboardOverviewCardComponent } from './dashboard/dashboard-overview-card/dashboard-overview-card.component';
@@ -84,7 +83,6 @@ import { DashboardOverviewCardComponent } from './dashboard/dashboard-overview-c
     { provide: ApiService, useClass: CachedTamanduaService },
     SearchStateService,
     DashboardStateService,
-    SettingsService,
     HttpClientModule
   ],
   bootstrap: [ AppComponent ],

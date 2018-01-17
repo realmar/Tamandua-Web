@@ -1,6 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
-import { SettingsService } from '../../settings-service/settings.service';
 import { ApiRequest } from '../../api/request/request';
 import { ApiService } from '../../api/api-service';
 import { Comparator, ComparatorType } from '../../api/request/comparator';
@@ -11,6 +10,7 @@ import { isNullOrUndefined } from 'util';
 import { Observable } from 'rxjs/Observable';
 import { Scale } from 'chroma-js';
 import * as chroma from 'chroma-js';
+import { DashboardStateService } from '../../state/dashboard-state-service/dashboard-state.service';
 
 interface SummaryChild<T> {
   name: string;
@@ -60,7 +60,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
 
   private _colorRange: Scale;
 
-  constructor (private settings: SettingsService,
+  constructor (private dashboardState: DashboardStateService,
                private apiService: ApiService) {
     this._summaryRequests = [];
     this._summaryResponses = [];
@@ -68,7 +68,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit () {
-    this._intervalSubscription = Observable.interval(this.settings.dashboard.refreshInterval).subscribe(this.getData.bind(this));
+    this._intervalSubscription = Observable.interval(this.dashboardState.refreshInterval).subscribe(this.getData.bind(this));
     this.buildRequests();
     this.getData();
   }

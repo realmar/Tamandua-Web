@@ -3,9 +3,7 @@ import { ApiService } from '../api/api-service';
 import { AdvancedCountEndpoint } from '../api/request/endpoints/advanced-count-endpoint';
 import { Comparator, ComparatorType } from '../api/request/comparator';
 import { isNullOrUndefined } from 'util';
-import { SettingsService } from '../settings-service/settings.service';
 import { DashboardCardData } from './dashboard-card/dashboard-card-data';
-import { RequestBuilderField } from '../api/request/request-builder-field';
 import { DashboardStateService } from '../state/dashboard-state-service/dashboard-state.service';
 import { DashboardOverviewCardComponent } from './dashboard-overview-card/dashboard-overview-card.component';
 
@@ -46,37 +44,29 @@ export class DashboardComponent implements OnInit {
   // endregion
 
   private _requestBuilderMatrix: Array<CardRow>;
-  get requestBuilderMatrix (): Array<CardRow> {
+  public get requestBuilderMatrix (): Array<CardRow> {
     return this._requestBuilderMatrix;
   }
 
-  private _pastHoursCount: number;
-  get pastHoursCount (): number {
-    return this._pastHoursCount;
+  public get pastHoursCount (): number {
+    return this.dashboardStateService.pastHours;
   }
 
-  set pastHoursCount (value: number) {
-    this._pastHoursCount = value;
+  public set pastHoursCount (value: number) {
     this.dashboardStateService.pastHours = value;
   }
 
-  get maxItemCountPerCard (): number {
-    return this.settings.dashboard.maxItemCountPerCard;
+  public get maxItemCountPerCard (): number {
+    return this.dashboardStateService.maxItemCountPerCard;
   }
 
-  set maxItemCountPerCard (value: number) {
-    this.settings.dashboard.maxItemCountPerCard = value;
+  public set maxItemCountPerCard (value: number) {
+    this.dashboardStateService.maxItemCountPerCard = value;
   }
 
   constructor (private apiService: ApiService,
-               private settings: SettingsService,
                private dashboardStateService: DashboardStateService) {
     this._requestBuilderMatrix = [];
-    if (isNullOrUndefined(dashboardStateService.pastHours)) {
-      this.pastHoursCount = 500;
-    } else {
-      this.pastHoursCount = dashboardStateService.pastHours;
-    }
   }
 
   ngOnInit () {
@@ -100,13 +90,13 @@ export class DashboardComponent implements OnInit {
         const builder = this.apiService.getRequestBuilder();
 
         if (j % 2 === 0) {
-          builder.setEndpoint(new AdvancedCountEndpoint('sender', this.settings.dashboard.maxItemCountPerCard));
+          builder.setEndpoint(new AdvancedCountEndpoint('sender', this.dashboardStateService.maxItemCountPerCard));
         } else {
-          builder.setEndpoint(new AdvancedCountEndpoint('sender', this.settings.dashboard.maxItemCountPerCard, '@'));
+          builder.setEndpoint(new AdvancedCountEndpoint('sender', this.dashboardStateService.maxItemCountPerCard, '@'));
         }
 
         const date = new Date();
-        date.setHours(date.getHours() - this._pastHoursCount);
+        date.setHours(date.getHours() - this.pastHoursCount);
         builder.setStartDatetime(date);
 
         this._requestBuilderMatrix[ i ].cardData[ j ] = new DashboardCardData(builder);

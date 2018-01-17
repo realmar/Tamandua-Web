@@ -4,8 +4,6 @@ import { ApiService } from '../api/api-service';
 import { SearchFieldData } from './search-field-data';
 import { isNullOrUndefined } from 'util';
 import { FieldChoicesResponse } from '../api/response/field-choices-response';
-import { SettingsService } from '../settings-service/settings.service';
-import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-search-field',

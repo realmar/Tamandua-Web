@@ -3,15 +3,13 @@ import { DashboardCardData } from './dashboard-card-data';
 import { ApiService } from '../../api/api-service';
 import { AdvancedCountResponse } from '../../api/response/advanced-count-response';
 import { ApiRequest } from '../../api/request/request';
-import { AdvancedCountEndpoint } from '../../api/request/endpoints/advanced-count-endpoint';
-import { SettingsService } from '../../settings-service/settings.service';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/interval';
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
 import { SearchStateService } from '../../state/search-state-service/search-state.service';
-import { Comparator, ComparatorType } from '../../api/request/comparator';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
+import { DashboardStateService } from '../../state/dashboard-state-service/dashboard-state.service';
 
 @Component({
   selector: 'app-dashboard-card',
@@ -41,7 +39,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   }
 
   constructor (private apiService: ApiService,
-               private settings: SettingsService,
+               private dashboardState: DashboardStateService,
                private searchState: SearchStateService,
                private router: Router) {
     this._isDoingRequest = false;
@@ -53,7 +51,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     builder.setCallback(this.processApiResponse.bind(this));
     this._request = builder.build();
 
-    this._intervalSubscription = Observable.interval(this.settings.dashboard.refreshInterval).subscribe(this.getData.bind(this));
+    this._intervalSubscription = Observable.interval(this.dashboardState.refreshInterval).subscribe(this.getData.bind(this));
     this.getData();
   }
 
