@@ -9,14 +9,22 @@ pre {
   padding: .5rem;
 }
 
+p {
+  margin: 0;
+}
+
 .table {
   display: table;
   width: 100%;
+  border-collapse: collapse;
 }
 
 .row {
   display: table-row;
-  border: solid black 1px;
+}
+
+.border {
+  border-bottom: solid #CFD8DC 1px;
 }
 
 .cell {
@@ -35,4 +43,13 @@ pre {
 
 #close-button {
   float: right
+}
+
+#content {
+  max-height: 84vh;
+}
+
+#code {
+  width: 68vw;
+  overflow-x: scroll;
 }

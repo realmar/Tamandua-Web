@@ -1,13 +1,13 @@
 <h2 mat-dialog-title>Details</h2>
-<mat-dialog-content>
+<mat-dialog-content id="content">
   <div class="table mat-body-1">
-    <div class="row" *ngFor="let key of rowKeys">
-      <div class="cell left-cell">{{key}}</div>
+    <div [class]="lst ? 'row': 'border row'" *ngFor="let row of rows; let i = index; let lst = last;">
+      <div class="cell left-cell">{{row.key}}</div>
       <div class="cell right-cell">
-        <ng-container *ngIf="key !== 'loglines'">
-          {{rowData[key]}}
+        <ng-container *ngIf="row.key !== 'loglines'">
+          <p class="mat-body-1" [innerHTML]="formatValue(row)"></p>
         </ng-container>
-        <pre *ngIf="key === 'loglines'"><code>{{rowData[key]}}</code></pre>
+        <pre id="code" *ngIf="row.key === 'loglines'"><code>{{formatValue(row)}}</code></pre>
       </div>
     </div>
   </div>

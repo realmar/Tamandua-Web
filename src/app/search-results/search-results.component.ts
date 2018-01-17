@@ -137,7 +137,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
   public showDetails (row: SearchRow) {
     this.dialog.open(SearchResultDetailsModalComponent, {
-      width: '80%',
+      width: '98%',
       data: row
     });
   }
