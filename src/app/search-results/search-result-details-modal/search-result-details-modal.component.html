@@ -27,7 +27,7 @@
 
         <ng-template #loglines_container>
           <ng-container *ngIf="hasLoglines">
-            <code [innerHTML]="loglines | safeHtml"></code>
+            <div id="code"><code [innerHTML]="loglines | safeHtml"></code></div>
           </ng-container>
         </ng-template>
 
