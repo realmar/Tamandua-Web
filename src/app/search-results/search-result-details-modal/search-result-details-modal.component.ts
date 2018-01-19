@@ -1,6 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { SearchRow, SearchRowValue } from '../../api/response/search-reponse';
+import { Color } from 'chroma-js';
+import * as chroma from 'chroma-js';
+import { isNullOrUndefined } from 'util';
 
 interface Row {
   key: string;
@@ -19,8 +22,28 @@ export class SearchResultDetailsModalComponent implements OnInit {
     return this._rows;
   }
 
+  public get loglines (): string {
+    return this.formatLoglines();
+  }
+
+  public get hasLoglines (): boolean {
+    for (const row of this._rows) {
+      if (row.key === 'loglines') {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private _highlightedWords: Map<string, Color>;
+  private _currentHighlightedColor: number;
+
   constructor (private dialogRef: MatDialogRef<SearchResultDetailsModalComponent>,
                @Inject(MAT_DIALOG_DATA) private _rowData: SearchRow) {
+    this._highlightedWords = new Map<string, Color>();
+    this._currentHighlightedColor = 0;
+
     const keys = Object.keys(_rowData).sort();
 
     // move loglines to the end
@@ -41,18 +64,53 @@ export class SearchResultDetailsModalComponent implements OnInit {
   ngOnInit () {
   }
 
-  public formatValue (row: Row): string {
-    if (row.value instanceof Array) {
-      let separator: string;
-      if (row.key === 'loglines') {
-        separator = '';
-      } else {
-        separator = ', ';
-      }
+  public getHighlightColor (key: string): string {
+    const color = this._highlightedWords.get(key);
+    const val = isNullOrUndefined(color) ? '' : color.hex();
 
-      return row.value.join(separator);
+    return val;
+
+  }
+
+  public formatLoglines (): string {
+    if (!this.hasLoglines) {
+      return '';
+    }
+
+    const logs = this._rows.find(row => row.key === 'loglines');
+    if (!(logs.value instanceof Array)) {
+      return '';
+    }
+
+    let loglines = '';
+
+    for (const line of logs.value) {
+      loglines += line.toString()
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;') + '<br>';
+    }
+
+    this._highlightedWords.forEach((color, word) => {
+      loglines = loglines.replace(
+        new RegExp(word, 'g'),
+        `<span style=\"background-color: ${color.hex()};\">${word}</span>`);
+    });
+
+    return loglines;
+  }
+
+  public isArray (obj: object): boolean {
+    return obj instanceof Array;
+  }
+
+  public onValueClick (value: string): void {
+    if (this._highlightedWords.has(value)) {
+      this._highlightedWords.delete(value);
     } else {
-      return row.value.toString();
+      this._highlightedWords.set(value, chroma.lch(100, 100, this._currentHighlightedColor));
+
+      this._currentHighlightedColor += 20;
+      this._currentHighlightedColor %= 180;
     }
   }
 }

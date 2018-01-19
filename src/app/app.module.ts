@@ -31,6 +31,7 @@ import { DashboardCardItemComponent } from './dashboard/dashboard-card-item/dash
 import { CachedTamanduaService } from './api/cached-tamandua.service';
 import { DashboardStateService } from './state/dashboard-state-service/dashboard-state.service';
 import { DashboardOverviewCardComponent } from './dashboard/dashboard-overview-card/dashboard-overview-card.component';
+import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { DashboardOverviewCardComponent } from './dashboard/dashboard-overview-c
     SearchResultTagsSelectionComponent,
     DashboardCardComponent,
     DashboardCardItemComponent,
-    DashboardOverviewCardComponent
+    DashboardOverviewCardComponent,
+    SafeHtmlPipe
   ],
   imports: [
     BrowserModule,

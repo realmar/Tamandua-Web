@@ -41,15 +41,19 @@ p {
   padding-left: 1rem;
 }
 
+.row-value {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.spacer {
+  margin-right: .2em;
+}
+
 #close-button {
   float: right
 }
 
 #content {
   max-height: 84vh;
-}
-
-#code {
-  width: 68vw;
-  overflow-x: scroll;
 }

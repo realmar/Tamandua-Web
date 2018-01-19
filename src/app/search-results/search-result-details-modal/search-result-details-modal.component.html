@@ -1,13 +1,36 @@
 <h2 mat-dialog-title>Details</h2>
 <mat-dialog-content id="content">
   <div class="table mat-body-1">
-    <div [class]="lst ? 'row': 'border row'" *ngFor="let row of rows; let i = index; let lst = last;">
+    <div [class]="lst ? 'row': 'border row'" *ngFor="let row of rows; let lst = last;">
       <div class="cell left-cell">{{row.key}}</div>
       <div class="cell right-cell">
-        <ng-container *ngIf="row.key !== 'loglines'">
-          <p class="mat-body-1" [innerHTML]="formatValue(row)"></p>
+
+        <ng-container *ngIf="row.key !== 'loglines';else loglines_container">
+
+          <ng-container *ngIf="isArray(row.value);else simple_value_container">
+            <div>
+              <ng-container *ngFor="let value of row.value; let lst = last;">
+                <p class="mat-body-1 row-value"
+                   [style.background-color]="getHighlightColor(value)"
+                   (click)="onValueClick(value)">{{value}}</p>
+                <span *ngIf="!lst" class="spacer">,</span>
+              </ng-container>
+            </div>
+          </ng-container>
+          <ng-template #simple_value_container>
+            <p class="mat-body-1 row-value"
+               [style.background-color]="getHighlightColor(row.value)"
+               (click)="onValueClick(row.value)">{{row.value}}</p>
+          </ng-template>
+
         </ng-container>
-        <pre id="code" *ngIf="row.key === 'loglines'"><code>{{formatValue(row)}}</code></pre>
+
+        <ng-template #loglines_container>
+          <ng-container *ngIf="hasLoglines">
+            <code [innerHTML]="loglines | safeHtml"></code>
+          </ng-container>
+        </ng-template>
+
       </div>
     </div>
   </div>

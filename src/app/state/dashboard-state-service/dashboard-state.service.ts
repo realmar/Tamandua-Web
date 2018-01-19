@@ -12,7 +12,7 @@ export class DashboardStateService {
 
   constructor () {
     // set default values
-    this._pastHours = 500;
+    this._pastHours = 48;
     this._maxItemCountPerCard = 10;
     this._refreshInterval = 10000;
 
