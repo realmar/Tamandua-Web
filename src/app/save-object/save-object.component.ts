@@ -19,6 +19,15 @@ export class SaveObjectComponent implements OnInit {
     this._model = value;
   }
 
+  private _disabled: boolean;
+  @Input() set disabled (value: boolean) {
+    this._disabled = value;
+  }
+
+  get disabled (): boolean {
+    return this._disabled;
+  }
+
   ngOnInit () {
   }
 

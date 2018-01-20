@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../api/api-service';
 import { ColumnsResponse } from '../api/response/columns-response';
-import { SearchResponse, SearchRow } from '../api/response/search-reponse';
+import { SearchResponse, SearchRow, SearchRowValue } from '../api/response/search-reponse';
 import { MatDialog, MatPaginator, MatSort, MatTableDataSource, Sort } from '@angular/material';
 import { SearchResultDetailsModalComponent } from './search-result-details-modal/search-result-details-modal.component';
 import { Converter } from '../converter';
@@ -10,6 +10,10 @@ import { AddColumnsModalData } from './search-result-add-columns/add-columns-mod
 import { isNullOrUndefined } from 'util';
 import { SelectedTags } from './search-result-tags-selection/selected-tags';
 import { SearchStateService } from '../state/search-state-service/search-state.service';
+import { SaveObjectData } from '../save-object/save-object-data';
+import { YamlSaveStrategy } from '../save-object/strategies/yaml-save-strategy';
+import { PngSaveStrategy } from '../save-object/strategies/png-save-strategy';
+import { JsonSaveStrategy } from '../save-object/strategies/json-save-strategy';
 
 @Component({
   selector: 'app-search-results',
@@ -28,6 +32,10 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   private _rows: MatTableDataSource<SearchRow>;
   public get rows (): MatTableDataSource<SearchRow> {
     return this._rows;
+  }
+
+  public get hasRows (): boolean {
+    return this.allRows.length > 0;
   }
 
   private _visibleColumns = [
@@ -196,6 +204,20 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     }
 
     this._rows.data = this._rows.data.sort((a, b) => omitUndefinedOrSort(a[ sort.active ], b[ sort.active ]));
+  }
+
+  public generateSaveDataObject (): SaveObjectData {
+    const data = new Map<string, any>();
+    data.set('rows', this.allRows);
+
+    return {
+      filename: 'results',
+      data: data,
+      strategies: [
+        new JsonSaveStrategy(),
+        new YamlSaveStrategy()
+      ]
+    };
   }
 
   private compareNumber (value: number, filter: string, regexFilter: RegExp): boolean {
