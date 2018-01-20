@@ -28,6 +28,10 @@ export class SearchFieldComponent implements OnInit {
       this._data.comparator = new Comparator(this.comparators[ 0 ]);
     }
 
+    if (this._data.value === '' && this._data.comparator.type === ComparatorType.Regex) {
+      this._data.value = '^';
+    }
+
     this.dataChange.emit(this._data);
   }
 
@@ -48,6 +52,13 @@ export class SearchFieldComponent implements OnInit {
 
   set comparator (value: ComparatorType) {
     this._data.comparator = new Comparator(value);
+
+    if (this._data.comparator.type !== ComparatorType.Regex && this._data.value === '^') {
+      this._data.value = '';
+    } else if (this._data.comparator.type === ComparatorType.Regex && this._data.value === '') {
+      this._data.value = '^';
+    }
+
     this.dataChange.emit(this._data);
   }
 
