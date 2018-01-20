@@ -40,4 +40,6 @@
 
 </mat-table>
 <mat-paginator [length]="rows.data.length"
-               [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+               [pageSizeOptions]="pageSizeOptions"
+               [pageSize]="pageSize"
+               (page)="onPageSizeChange($event)"></mat-paginator>

@@ -2,7 +2,7 @@ import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/cor
 import { ApiService } from '../api/api-service';
 import { ColumnsResponse } from '../api/response/columns-response';
 import { SearchResponse, SearchRow, SearchRowValue } from '../api/response/search-reponse';
-import { MatDialog, MatPaginator, MatSort, MatTableDataSource, Sort } from '@angular/material';
+import { MatDialog, MatPaginator, MatSort, MatTableDataSource, PageEvent, Sort } from '@angular/material';
 import { SearchResultDetailsModalComponent } from './search-result-details-modal/search-result-details-modal.component';
 import { Converter } from '../converter';
 import { SearchResultAddColumnsModalComponent } from './search-result-add-columns/search-result-add-columns-modal.component';
@@ -53,6 +53,16 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     return [ 'details', ...this.visibleColumns ];
   }
 
+  private _pageSizeOptions: Array<number>;
+  public get pageSizeOptions (): Array<number> {
+    return this._pageSizeOptions;
+  }
+
+  private _pageSize: number;
+  public get pageSize (): number {
+    return this._pageSize;
+  }
+
   private totalRows: number;
   private allColumns: Array<string>;
   private allRows: Array<SearchRow>;
@@ -94,6 +104,13 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this._rows = new MatTableDataSource<SearchRow>();
     this.allRows = [];
     this.allColumns = [];
+    this._pageSizeOptions = [ 5, 10, 25, 100 ];
+
+    if (isNullOrUndefined(this.searchState.paginatorPageSize)) {
+      this._pageSize = this._pageSizeOptions[ 0 ];
+    } else {
+      this._pageSize = this.searchState.paginatorPageSize;
+    }
 
     this.filter = this.searchState.resultFilter;
     this.filterAsRegex = this.searchState.resultFilterAsRegex;
@@ -218,6 +235,11 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
         new YamlSaveStrategy()
       ]
     };
+  }
+
+  public onPageSizeChange (event: PageEvent): void {
+    this._pageSize = event.pageSize;
+    this.searchState.paginatorPageSize = this._pageSize;
   }
 
   private compareNumber (value: number, filter: string, regexFilter: RegExp): boolean {

@@ -18,6 +18,8 @@ export class SearchStateService {
   private _resultFilter: Map<string, string>;
   private _resultFilterAsRegex: Map<string, RegExp>;
 
+  private _paginatorPageSize: number;
+
   // endregion
 
   // region Getters and Setter
@@ -84,6 +86,14 @@ export class SearchStateService {
 
   public set resultFilterAsRegex (value: Map<string, RegExp>) {
     this._resultFilterAsRegex = value;
+  }
+
+  public get paginatorPageSize (): number {
+    return this._paginatorPageSize;
+  }
+
+  public set paginatorPageSize (value: number) {
+    this._paginatorPageSize = value;
   }
 
 // endregion
