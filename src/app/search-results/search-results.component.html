@@ -6,7 +6,7 @@
            (matSortChange)="sortData($event)">
 
   <ng-container matColumnDef="details">
-    <mat-header-cell *matHeaderCellDef>
+    <mat-header-cell *matHeaderCellDef class="details-column">
       <button mat-icon-button
               (click)="addColumns()"
               class="add-columns-button">
@@ -15,7 +15,7 @@
       <app-save-object [data]="generateSaveDataObject()"
                        [disabled]="!hasRows"></app-save-object>
     </mat-header-cell>
-    <mat-cell *matCellDef="let element">
+    <mat-cell *matCellDef="let element" class="details-column">
       <button mat-icon-button (click)="showDetails(element)">
         <mat-icon>zoom_in</mat-icon>
       </button>

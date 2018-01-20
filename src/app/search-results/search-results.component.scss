@@ -4,6 +4,10 @@
   align-content: center;
 }
 
+.details-column {
+  flex: 0 0 6rem;
+}
+
 .column-header > div:first-child {
   display: flex !important;
   align-items: baseline !important;
