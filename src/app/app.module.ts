@@ -86,7 +86,7 @@ import { TamanduaMockService } from './api/tamandua-mock.service';
     MatMenuModule
   ],
   providers: [
-    { provide: ApiService, useClass: TamanduaMockService },
+    { provide: ApiService, useClass: CachedTamanduaService },
     SearchStateService,
     DashboardStateService,
     HttpClientModule

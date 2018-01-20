@@ -201,7 +201,13 @@ export class DashboardComponent implements OnInit {
 
     // there is not a card for domain names only
     this._requestBuilderMatrix[ 3 ].cardData.splice(1, 1);
-    this._requestBuilderMatrix[ 3 ].cardData[ 0 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilder;
+    this._requestBuilderMatrix[ 3 ].cardData[ 0 ].onItemClickFieldBuilder = value => {
+      return {
+        name: 'rejectreason',
+        value: '^' + value,
+        comparator: new Comparator(ComparatorType.Regex)
+      };
+    };
   }
 
   public onRefreshClick (): void {
