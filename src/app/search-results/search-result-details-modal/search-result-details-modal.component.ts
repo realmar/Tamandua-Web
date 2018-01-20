@@ -4,6 +4,10 @@ import { SearchRow, SearchRowValue } from '../../api/response/search-reponse';
 import { Color } from 'chroma-js';
 import * as chroma from 'chroma-js';
 import { isNullOrUndefined } from 'util';
+import { SaveObjectData } from '../../save-object/save-object-data';
+import { JsonSaveStrategy } from '../../save-object/strategies/json-save-strategy';
+import { PngSaveStrategy } from '../../save-object/strategies/png-save-strategy';
+import { YamlSaveStrategy } from '../../save-object/strategies/yaml-save-strategy';
 
 interface Row {
   key: string;
@@ -112,5 +116,23 @@ export class SearchResultDetailsModalComponent implements OnInit {
       this._currentHighlightedColor += 20;
       this._currentHighlightedColor %= 180;
     }
+  }
+
+  public generateSaveDataObject (): SaveObjectData {
+    const data = new Map<string, SearchRowValue>();
+
+    for (const row of this._rows) {
+      data.set(row.key, row.value);
+    }
+
+    return {
+      filename: 'object',
+      data: data,
+      strategies: [
+        new JsonSaveStrategy(),
+        new YamlSaveStrategy(),
+        new PngSaveStrategy()
+      ]
+    };
   }
 }

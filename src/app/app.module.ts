@@ -9,7 +9,7 @@ import {
   MatButtonModule, MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatDatepickerModule, MatDialogModule, MatFormFieldModule,
   MatGridListModule,
   MatIconModule,
-  MatInputModule, MatListModule,
+  MatInputModule, MatListModule, MatMenuModule,
   MatNativeDateModule, MatPaginatorModule, MatProgressBarModule, MatProgressSpinnerModule,
   MatSelectModule, MatSortModule, MatTableModule, MatToolbarModule
 } from '@angular/material';
@@ -32,6 +32,8 @@ import { CachedTamanduaService } from './api/cached-tamandua.service';
 import { DashboardStateService } from './state/dashboard-state-service/dashboard-state.service';
 import { DashboardOverviewCardComponent } from './dashboard/dashboard-overview-card/dashboard-overview-card.component';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
+import { SaveObjectComponent } from './save-object/save-object.component';
+import { TamanduaMockService } from './api/tamandua-mock.service';
 
 @NgModule({
   declarations: [
@@ -48,7 +50,8 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe';
     DashboardCardComponent,
     DashboardCardItemComponent,
     DashboardOverviewCardComponent,
-    SafeHtmlPipe
+    SafeHtmlPipe,
+    SaveObjectComponent
   ],
   imports: [
     BrowserModule,
@@ -79,10 +82,11 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe';
     MatButtonToggleModule,
     MatProgressSpinnerModule,
     MatProgressBarModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatMenuModule
   ],
   providers: [
-    { provide: ApiService, useClass: CachedTamanduaService },
+    { provide: ApiService, useClass: TamanduaMockService },
     SearchStateService,
     DashboardStateService,
     HttpClientModule

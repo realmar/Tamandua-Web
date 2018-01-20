@@ -1,40 +1,45 @@
 <h2 mat-dialog-title>Details</h2>
-<mat-dialog-content id="content">
-  <div class="table mat-body-1">
-    <div [class]="lst ? 'row': 'border row'" *ngFor="let row of rows; let lst = last;">
-      <div class="cell left-cell">{{row.key}}</div>
-      <div class="cell right-cell">
+<app-save-object [data]="generateSaveDataObject()"></app-save-object>
 
-        <ng-container *ngIf="row.key !== 'loglines';else loglines_container">
+<div id="image-canvas">
+  <mat-dialog-content id="content">
+    <div class="table mat-body-1">
+      <div [class]="lst ? 'row': 'border row'" *ngFor="let row of rows; let lst = last;">
+        <div class="cell left-cell">{{row.key}}</div>
+        <div class="cell right-cell">
 
-          <ng-container *ngIf="isArray(row.value);else simple_value_container">
-            <div>
-              <ng-container *ngFor="let value of row.value; let lst = last;">
-                <p class="mat-body-1 row-value"
-                   [style.background-color]="getHighlightColor(value)"
-                   (click)="onValueClick(value)">{{value}}</p>
-                <span *ngIf="!lst" class="spacer">,</span>
-              </ng-container>
-            </div>
+          <ng-container *ngIf="row.key !== 'loglines';else loglines_container">
+
+            <ng-container *ngIf="isArray(row.value);else simple_value_container">
+              <div>
+                <ng-container *ngFor="let value of row.value; let lst = last;">
+                  <p class="mat-body-1 row-value"
+                     [style.background-color]="getHighlightColor(value)"
+                     (click)="onValueClick(value)">{{value}}</p>
+                  <span *ngIf="!lst" class="spacer">,</span>
+                </ng-container>
+              </div>
+            </ng-container>
+            <ng-template #simple_value_container>
+              <p class="mat-body-1 row-value"
+                 [style.background-color]="getHighlightColor(row.value)"
+                 (click)="onValueClick(row.value)">{{row.value}}</p>
+            </ng-template>
+
           </ng-container>
-          <ng-template #simple_value_container>
-            <p class="mat-body-1 row-value"
-               [style.background-color]="getHighlightColor(row.value)"
-               (click)="onValueClick(row.value)">{{row.value}}</p>
+
+          <ng-template #loglines_container>
+            <ng-container *ngIf="hasLoglines">
+              <div id="code"><code [innerHTML]="loglines | safeHtml"></code></div>
+            </ng-container>
           </ng-template>
 
-        </ng-container>
-
-        <ng-template #loglines_container>
-          <ng-container *ngIf="hasLoglines">
-            <div id="code"><code [innerHTML]="loglines | safeHtml"></code></div>
-          </ng-container>
-        </ng-template>
-
+        </div>
       </div>
     </div>
-  </div>
-</mat-dialog-content>
+  </mat-dialog-content>
+</div>
+
 <mat-dialog-actions>
-  <button id="close-button" mat-button [mat-dialog-close]="true">Close</button>
+  <button mat-button [mat-dialog-close]="true">Close</button>
 </mat-dialog-actions>

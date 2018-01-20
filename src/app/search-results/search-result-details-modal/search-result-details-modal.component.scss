@@ -13,6 +13,19 @@ p {
   margin: 0;
 }
 
+app-save-object {
+  position: relative;
+  float: right;
+}
+
+h2 {
+  display: inline-block;
+}
+
+mat-dialog-actions {
+  float: right;
+}
+
 .table {
   display: table;
   width: 100%;
@@ -48,10 +61,6 @@ p {
 
 .spacer {
   margin-right: .2em;
-}
-
-#close-button {
-  float: right
 }
 
 #content {
