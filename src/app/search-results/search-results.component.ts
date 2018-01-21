@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../api/api-service';
 import { ColumnsResponse } from '../api/response/columns-response';
-import { SearchResponse, SearchRow, SearchRowValue } from '../api/response/search-reponse';
-import { MatDialog, MatPaginator, MatSort, MatTableDataSource, PageEvent, Sort } from '@angular/material';
+import { SearchResponse, SearchRow } from '../api/response/search-reponse';
+import { MatDialog, MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { SearchResultDetailsModalComponent } from './search-result-details-modal/search-result-details-modal.component';
 import { Converter } from '../converter';
 import { SearchResultAddColumnsModalComponent } from './search-result-add-columns/search-result-add-columns-modal.component';
@@ -10,10 +10,10 @@ import { AddColumnsModalData } from './search-result-add-columns/add-columns-mod
 import { isNullOrUndefined } from 'util';
 import { SelectedTags } from './search-result-tags-selection/selected-tags';
 import { SearchStateService } from '../state/search-state-service/search-state.service';
+import { TamanduaTableDataSource } from './tamandua-table-data-source';
 import { SaveObjectData } from '../save-object/save-object-data';
-import { YamlSaveStrategy } from '../save-object/strategies/yaml-save-strategy';
-import { PngSaveStrategy } from '../save-object/strategies/png-save-strategy';
 import { JsonSaveStrategy } from '../save-object/strategies/json-save-strategy';
+import { YamlSaveStrategy } from '../save-object/strategies/yaml-save-strategy';
 
 @Component({
   selector: 'app-search-results',
@@ -29,8 +29,8 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this.processRows(value);
   }
 
-  private _rows: MatTableDataSource<SearchRow>;
-  public get rows (): MatTableDataSource<SearchRow> {
+  private _rows: TamanduaTableDataSource<SearchRow>;
+  public get rows (): TamanduaTableDataSource<SearchRow> {
     return this._rows;
   }
 
@@ -101,7 +101,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   constructor (private apiService: ApiService,
                private searchState: SearchStateService,
                private dialog: MatDialog) {
-    this._rows = new MatTableDataSource<SearchRow>();
+    this._rows = new TamanduaTableDataSource<SearchRow>();
     this.allRows = [];
     this.allColumns = [];
     this._pageSizeOptions = [ 5, 10, 25, 100 ];
@@ -135,8 +135,8 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit () {
-    this.rows.paginator = this.paginator;
-    this.rows.sort = this.sort;
+    this._rows.paginator = this.paginator;
+    this._rows.sort = this.sort;
   }
 
   public setSelectedTags (values: SelectedTags) {
@@ -194,33 +194,6 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this.searchState.resultFilterAsRegex = this.filterAsRegex;
 
     this.updateFilter();
-  }
-
-  public sortData (sort: Sort): void {
-    if (!sort.active || sort.direction === '') {
-      return;
-    }
-
-    let sortFunction: <T>(a: T, b: T) => number;
-    const omitUndefinedOrSort = <T> (a: T, b: T) => {
-      if (isNullOrUndefined(a)) {
-        return -1;
-      } else if (isNullOrUndefined(b)) {
-        return 1;
-      } else {
-        return sortFunction(a, b);
-      }
-    };
-
-    const isAsc = sort.direction === 'asc';
-
-    if (sort.active.slice(sort.active.length - 4, sort.active.length) === 'time') {
-      sortFunction = (a, b) => Converter.stringToDate(a.toString()).getTime() - Converter.stringToDate(b.toString()).getTime();
-    } else {
-      sortFunction = (a, b) => a === b ? 0 : (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-    }
-
-    this._rows.data = this._rows.data.sort((a, b) => omitUndefinedOrSort(a[ sort.active ], b[ sort.active ]));
   }
 
   public generateSaveDataObject (): SaveObjectData {
@@ -373,15 +346,16 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
     this.updateFilter();
 
-    if (isNullOrUndefined(this.rows.sort)) {
+    if (isNullOrUndefined(this._rows.sort)) {
       return;
     }
 
-    const sortable = this.rows.sort.sortables.get('phdmxin_time');
+    const sortable = this._rows.sort.sortables.get('phdmxin_time');
 
     if (!isNullOrUndefined(sortable)) {
       sortable.start = 'desc';
-      this.rows.sort.sort(sortable);
+      this.sort.active = undefined;
+      this.sort.sort(sortable);
     }
   }
 }

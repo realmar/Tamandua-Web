@@ -2,8 +2,7 @@
                                   (selectedTagsChange)="setSelectedTags($event)"></app-search-result-tags-selection>
 
 <mat-table [dataSource]="rows"
-           matSort
-           (matSortChange)="sortData($event)">
+           matSort>
 
   <ng-container matColumnDef="details">
     <mat-header-cell *matHeaderCellDef class="details-column">
