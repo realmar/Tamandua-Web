@@ -1,10 +1,11 @@
 import { MatTableDataSource } from '@angular/material';
 import { Converter } from '../converter';
+import { isNullOrUndefined } from 'util';
 
 export class TamanduaTableDataSource<T> extends MatTableDataSource<T> {
   sortingDataAccessor: ((data: T, sortHeaderId: string) => string | number) =
     (data: T, sortHeaderId: string): string | number => {
-      if (sortHeaderId.endsWith('_time')) {
+      if (!isNullOrUndefined(data[ sortHeaderId ]) && sortHeaderId.endsWith('_time')) {
         return Converter.stringToDate(data[ sortHeaderId ]).getTime();
       } else {
         // Source: https://github.com/angular/material2/blob/master/src/lib/table/table-data-source.ts
