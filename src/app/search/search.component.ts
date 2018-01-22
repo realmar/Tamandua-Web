@@ -8,6 +8,7 @@ import { SearchStateService } from '../state/search-state-service/search-state.s
 import { SearchResponse } from '../api/response/search-reponse';
 import { ApiRequest } from '../api/request/request';
 import { Subscription } from 'rxjs/Subscription';
+import { Comparator, ComparatorType } from '../api/request/comparator';
 
 @Component({
   selector: 'app-search',
@@ -58,7 +59,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     // restore state
     if (isNullOrUndefined(this.searchState.fields)) {
-      this._fields = [ new SearchFieldData() ];
+      this._fields = [ new SearchFieldData(undefined, undefined, new Comparator(ComparatorType.Regex)) ];
     } else {
       this._fields = this.searchState.fields.map(field => new SearchFieldData(field.name, field.value, field.comparator));
     }
@@ -96,7 +97,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   public anyFieldsEmpty (): boolean {
-    return this._fields.some(element => typeof element.value === 'number' ? false : element.value.trim().length === 0);
+    return this._fields.some(element =>
+      typeof element.value === 'number' ? false : element.value.trim().length === 0 || element.value.trim() === '^');
   }
 
   public addField (): void {
@@ -104,7 +106,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this._fields.push(new SearchFieldData());
+    this._fields.push(new SearchFieldData(undefined, undefined, new Comparator(ComparatorType.Regex)));
   }
 
   public isOnlyField (): boolean {

@@ -1,4 +1,4 @@
-import { Comparator } from '../api/request/comparator';
+import { Comparator, ComparatorType } from '../api/request/comparator';
 import { RequestBuilderField } from '../api/request/request-builder-field';
 import { isNullOrUndefined } from 'util';
 
@@ -32,8 +32,12 @@ export class SearchFieldData implements RequestBuilderField {
   }
 
   constructor (name?: string, value?: string | number, comparator?: Comparator) {
-    if (isNullOrUndefined(value)) {
-      this._value = '';
+    if (!value) {
+      if (!isNullOrUndefined(comparator) && comparator.type === ComparatorType.Regex) {
+        this._value = '^';
+      } else {
+        this._value = '';
+      }
     } else {
       this._value = value;
     }

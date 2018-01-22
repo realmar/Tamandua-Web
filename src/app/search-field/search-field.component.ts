@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Comparator, ComparatorType } from '../api/request/comparator';
 import { ApiService } from '../api/api-service';
 import { SearchFieldData } from './search-field-data';
@@ -16,22 +16,6 @@ export class SearchFieldComponent implements OnInit {
 
   @Input() set data (value: SearchFieldData) {
     this._data = value;
-
-    // assign default values if they are not set
-    if (isNullOrUndefined(this._data.name)) {
-      this._data.name = this.fields[ 0 ];
-    } else {
-      this._fields = [ this._data.name ];
-    }
-
-    if (isNullOrUndefined(this._data.comparator)) {
-      this._data.comparator = new Comparator(this.comparators[ 0 ]);
-    }
-
-    if (this._data.value === '' && this._data.comparator.type === ComparatorType.Regex) {
-      this._data.value = '^';
-    }
-
     this.dataChange.emit(this._data);
   }
 
@@ -99,6 +83,19 @@ export class SearchFieldComponent implements OnInit {
   }
 
   ngOnInit () {
+    // assign default values if they are not set
+    if (isNullOrUndefined(this._data.name)) {
+      this._data.name = this.fields[ 0 ];
+    } else {
+      this._fields = [ this._data.name ];
+    }
+
+    if (isNullOrUndefined(this._data.comparator)) {
+      this._data.comparator = new Comparator(this.comparators[ 0 ]);
+    }
+
+    this.dataChange.emit(this._data);
+
     this.apiService.getColumns().subscribe(data => {
       const reassignName = this._fields[ 0 ].startsWith('loading');
       this._fields = data;
