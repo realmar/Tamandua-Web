@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SearchFieldData } from '../search-field/search-field-data';
 import { ApiService } from '../api/api-service';
 import { SearchEndpoint } from '../api/request/endpoints/search-endpoint';
-import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router';
+import { Event, NavigationEnd, Router } from '@angular/router';
 import { isNullOrUndefined } from 'util';
 import { SearchStateService } from '../state/search-state-service/search-state.service';
 import { SearchResponse } from '../api/response/search-reponse';

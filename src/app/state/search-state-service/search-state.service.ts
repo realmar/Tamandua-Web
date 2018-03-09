@@ -24,7 +24,6 @@ export class SearchStateService {
 
   // endregion
 
-
   constructor () {
     this._doSearch = false;
   }
