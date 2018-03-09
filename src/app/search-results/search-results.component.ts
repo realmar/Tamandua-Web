@@ -4,7 +4,7 @@ import { ColumnsResponse } from '../api/response/columns-response';
 import { SearchResponse, SearchRow } from '../api/response/search-reponse';
 import { MatDialog, MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { SearchResultDetailsModalComponent } from './search-result-details-modal/search-result-details-modal.component';
-import { Converter } from '../converter';
+import { Converter } from '../utils/converter';
 import { SearchResultAddColumnsModalComponent } from './search-result-add-columns/search-result-add-columns-modal.component';
 import { AddColumnsModalData } from './search-result-add-columns/add-columns-modal-data';
 import { isNullOrUndefined } from 'util';

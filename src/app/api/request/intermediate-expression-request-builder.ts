@@ -5,7 +5,7 @@ import { ApiRequest } from './request';
 import { isNullOrUndefined } from 'util';
 import { Endpoint } from './endpoints/endpoint';
 import { EndpointIsUndefinedError } from './endpoint-is-undefined-error';
-import { Converter } from '../../converter';
+import { Converter } from '../../utils/converter';
 import { RequestBuilderField } from './request-builder-field';
 
 class Field implements RequestBuilderField {

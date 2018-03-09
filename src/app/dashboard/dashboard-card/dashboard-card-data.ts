@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs/Observable';
 import { RequestBuilder } from '../../api/request/request-builder';
 import { RequestBuilderField } from '../../api/request/request-builder-field';
+import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
 
 export class DashboardCardData {
   private _title: string;
@@ -8,6 +9,8 @@ export class DashboardCardData {
 
   private _requestBuilder: RequestBuilder;
   private _onItemClickFieldBuilder: (value: string | number) => RequestBuilderField;
+
+  private _requestResult: Array<DashboardCardItemData>;
 
   constructor (builder: RequestBuilder) {
     this._requestBuilder = builder;
@@ -38,6 +41,14 @@ export class DashboardCardData {
 
   public set onItemClickFieldBuilder (value: (value: string | number) => RequestBuilderField) {
     this._onItemClickFieldBuilder = value;
+  }
+
+  public get requestResult (): Array<DashboardCardItemData> {
+    return this._requestResult;
+  }
+
+  public set requestResult (value: Array<DashboardCardItemData>) {
+    this._requestResult = value;
   }
 
   public buildOnItemClickField (value: string | number): RequestBuilderField {

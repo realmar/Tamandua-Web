@@ -1,5 +1,5 @@
 import { MatTableDataSource } from '@angular/material';
-import { Converter } from '../converter';
+import { Converter } from '../utils/converter';
 import { isNullOrUndefined } from 'util';
 
 export class TamanduaTableDataSource<T> extends MatTableDataSource<T> {

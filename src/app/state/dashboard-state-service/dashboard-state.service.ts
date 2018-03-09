@@ -1,21 +1,22 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+import { CardRow } from '../../dashboard/card-row';
 
 @Injectable()
 export class DashboardStateService {
   private _pastHours: number;
   private _maxItemCountPerCard: number;
-  private _refreshInterval: number;
 
+  private _refreshInterval: number;
   private _refreshIntervalObservable: Subject<number>;
 
   constructor () {
     // set default values
     this._pastHours = 48;
     this._maxItemCountPerCard = 10;
-    this._refreshInterval = 10000;
 
+    this._refreshInterval = 10000;
     this._refreshIntervalObservable = new Subject<number>();
   }
 

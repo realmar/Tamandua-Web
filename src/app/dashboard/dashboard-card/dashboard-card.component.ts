@@ -10,6 +10,7 @@ import { SearchStateService } from '../../state/search-state-service/search-stat
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { DashboardStateService } from '../../state/dashboard-state-service/dashboard-state.service';
+import { isNullOrUndefined } from 'util';
 
 @Component({
   selector: 'app-dashboard-card',
@@ -35,9 +36,8 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     return this._data;
   }
 
-  private _resultData: Array<DashboardCardItemData>;
   get resultData (): Array<DashboardCardItemData> {
-    return this._resultData;
+    return this._data.requestResult;
   }
 
   constructor (private apiService: ApiService,
@@ -45,12 +45,15 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
                private searchState: SearchStateService,
                private router: Router) {
     this._isDoingRequest = false;
-    this._resultData = [];
     this._refreshIntervalChangeSubscription =
       this.dashboardState.refreshIntervalObservable.subscribe(this.onRefreshIntervalChange.bind(this));
   }
 
   ngOnInit () {
+    if (isNullOrUndefined(this._data.requestResult)) {
+      this._data.requestResult = [];
+    }
+
     const builder = this._data.requestBuilder;
     builder.setCallback(this.processApiResponse.bind(this));
     this._request = builder.build();
@@ -75,7 +78,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
 
   private processApiResponse (data: AdvancedCountResponse): void {
     this._isDoingRequest = false;
-    this._resultData = data.items.map(item => new DashboardCardItemData(item.key, item.value, data.total));
+    this._data.requestResult = data.items.map(item => new DashboardCardItemData(item.key, item.value, data.total));
   }
 
   private createRefreshIntervalSubscription () {
@@ -96,7 +99,9 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     this.searchState.startDatetime = this._data.requestBuilder.getStartDatetime();
     this.searchState.endDatetime = this._data.requestBuilder.getEndDatetime();
 
-    this.router.navigate([ 'search' ], { queryParams: { doSearch: true } })
+    this.searchState.doSearch = true;
+
+    this.router.navigate([ 'search' ])
       .then(result => result ? '' : console.log('Failed to navigate'));
   }
 }

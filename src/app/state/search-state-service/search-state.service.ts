@@ -9,6 +9,8 @@ export class SearchStateService {
 
   // Search
 
+  private _doSearch: boolean;
+
   private _searchResults: SearchResponse;
   private _fields: Array<RequestBuilderField>;
   private _startDatetime: Date;
@@ -22,7 +24,20 @@ export class SearchStateService {
 
   // endregion
 
-  // region Getters and Setter
+
+  constructor () {
+    this._doSearch = false;
+  }
+
+// region Getters and Setter
+
+  public get doSearch (): boolean {
+    return this._doSearch;
+  }
+
+  public set doSearch (value: boolean) {
+    this._doSearch = value;
+  }
 
   public get searchResults (): SearchResponse {
     return this._searchResults;

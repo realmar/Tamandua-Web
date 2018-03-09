@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SearchFieldData } from '../search-field/search-field-data';
 import { ApiService } from '../api/api-service';
 import { SearchEndpoint } from '../api/request/endpoints/search-endpoint';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Event, NavigationEnd, Router } from '@angular/router';
 import { isNullOrUndefined } from 'util';
 import { SearchStateService } from '../state/search-state-service/search-state.service';
 import { SearchResponse } from '../api/response/search-reponse';
@@ -51,12 +51,25 @@ export class SearchComponent implements OnInit, OnDestroy {
     return this._isLoading;
   }
 
-  private _queryParameterSubscription: Subscription;
+  private _routerEventSubscription: Subscription;
 
   constructor (private apiService: ApiService,
                private searchState: SearchStateService,
-               private route: ActivatedRoute) {
+               private router: Router) {
+    this.restoreState();
+  }
 
+  ngOnInit () {
+    this._routerEventSubscription = this.router.events.subscribe(this.onRouterEvents.bind(this));
+  }
+
+  ngOnDestroy (): void {
+    if (!isNullOrUndefined(this._routerEventSubscription)) {
+      this._routerEventSubscription.unsubscribe();
+    }
+  }
+
+  private restoreState (): void {
     // restore state
     if (isNullOrUndefined(this.searchState.fields)) {
       this._fields = [ new SearchFieldData(undefined, undefined, new Comparator(ComparatorType.Regex)) ];
@@ -70,19 +83,14 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.endDateTime = this.searchState.endDatetime;
   }
 
-  ngOnInit () {
-    this._queryParameterSubscription = this.route.queryParams.subscribe(
-      parameters => {
-        if (parameters[ 'doSearch' ]) {
-          this.search();
-        }
-      }
-    );
-  }
+  private onRouterEvents (event: Event): void {
+    if (!(event instanceof NavigationEnd)) {
+      return;
+    }
 
-  ngOnDestroy (): void {
-    if (!isNullOrUndefined(this._queryParameterSubscription)) {
-      this._queryParameterSubscription.unsubscribe();
+    if (this.router.url === '/search' && this.searchState.doSearch) {
+      this.searchState.doSearch = false;
+      this.search();
     }
   }
 
@@ -124,6 +132,8 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   public search (): void {
     // make request
+
+    this.restoreState();
 
     if (this.anyFieldsEmpty()) {
       return;

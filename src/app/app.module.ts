@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { AppRoutingModule } from './app-routing.module';
+import { AppRoutingModule } from './routing/app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import {
   MatAutocompleteModule,
@@ -34,6 +34,8 @@ import { DashboardOverviewCardComponent } from './dashboard/dashboard-overview-c
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { SaveObjectComponent } from './save-object/save-object.component';
 import { TamanduaMockService } from './api/tamandua-mock.service';
+import { CustomReuseStrategy } from './routing/custom-reuse-strategy';
+import { RouteReuseStrategy } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -86,7 +88,8 @@ import { TamanduaMockService } from './api/tamandua-mock.service';
     MatMenuModule
   ],
   providers: [
-    { provide: ApiService, useClass: TamanduaMockService },
+    { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
+    { provide: ApiService, useClass: CachedTamanduaService },
     SearchStateService,
     DashboardStateService,
     HttpClientModule
