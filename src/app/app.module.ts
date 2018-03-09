@@ -36,6 +36,11 @@ import { SaveObjectComponent } from './save-object/save-object.component';
 import { TamanduaMockService } from './api/tamandua-mock.service';
 import { CustomReuseStrategy } from './routing/custom-reuse-strategy';
 import { RouteReuseStrategy } from '@angular/router';
+import { PersistentStorageService } from './persistence/persistent-storage-service';
+import { IndexedDbService } from './persistence/indexed-db.service';
+import { DashboardPersistentStateServiceService } from './state/dashboard-state-service/dashboard-persistent-state-service.service';
+import { SearchPersistentStateService } from './state/search-state-service/search-persistent-state.service';
+import { LocalstorageService } from './persistence/localstorage.service';
 
 @NgModule({
   declarations: [
@@ -90,8 +95,9 @@ import { RouteReuseStrategy } from '@angular/router';
   providers: [
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
     { provide: ApiService, useClass: CachedTamanduaService },
-    SearchStateService,
-    DashboardStateService,
+    { provide: PersistentStorageService, useClass: LocalstorageService },
+    { provide: SearchStateService, useClass: SearchPersistentStateService },
+    { provide: DashboardStateService, useClass: DashboardPersistentStateServiceService },
     HttpClientModule
   ],
   bootstrap: [ AppComponent ],

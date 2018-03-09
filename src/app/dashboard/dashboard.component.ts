@@ -45,27 +45,27 @@ export class DashboardComponent implements OnInit {
   }
 
   public get pastHoursCount (): number {
-    return this.dashboardStateService.pastHours;
+    return this.dashboardStateService.getPastHours();
   }
 
   public set pastHoursCount (value: number) {
-    this.dashboardStateService.pastHours = value;
+    this.dashboardStateService.setPastHours(value);
   }
 
   public get maxItemCountPerCard (): number {
-    return this.dashboardStateService.maxItemCountPerCard;
+    return this.dashboardStateService.getMaxItemCountPerCard();
   }
 
   public set maxItemCountPerCard (value: number) {
-    this.dashboardStateService.maxItemCountPerCard = value;
+    this.dashboardStateService.setMaxItemCountPerCard(value);
   }
 
   public get refreshInterval (): number {
-    return this.dashboardStateService.refreshInterval / 1000;
+    return this.dashboardStateService.getRefreshInterval() / 1000;
   }
 
   public set refreshInterval (value: number) {
-    this.dashboardStateService.refreshInterval = value * 1000;
+    this.dashboardStateService.setRefreshInterval(value * 1000);
   }
 
   constructor (private apiService: ApiService,
@@ -96,9 +96,9 @@ export class DashboardComponent implements OnInit {
         const builder = this.apiService.getRequestBuilder();
 
         if (j % 2 === 0) {
-          builder.setEndpoint(new AdvancedCountEndpoint('sender', this.dashboardStateService.maxItemCountPerCard));
+          builder.setEndpoint(new AdvancedCountEndpoint('sender', this.dashboardStateService.getMaxItemCountPerCard()));
         } else {
-          builder.setEndpoint(new AdvancedCountEndpoint('sender', this.dashboardStateService.maxItemCountPerCard, '@'));
+          builder.setEndpoint(new AdvancedCountEndpoint('sender', this.dashboardStateService.getMaxItemCountPerCard(), '@'));
         }
 
         const date = new Date();
@@ -189,7 +189,7 @@ export class DashboardComponent implements OnInit {
      */
 
     addFilterToBuilder = (data: DashboardCardData) => {
-      data.requestBuilder.setEndpoint(new AdvancedCountEndpoint('rejectreason', this.dashboardStateService.maxItemCountPerCard));
+      data.requestBuilder.setEndpoint(new AdvancedCountEndpoint('rejectreason', this.dashboardStateService.getMaxItemCountPerCard()));
     };
 
     addFilterToBuilder(this._cards[ 3 ].cardData[ 0 ]);

@@ -82,7 +82,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   }
 
   private createRefreshIntervalSubscription () {
-    this._refreshIntervalSubscription = Observable.interval(this.dashboardState.refreshInterval).subscribe(this.getData.bind(this));
+    this._refreshIntervalSubscription = Observable.interval(this.dashboardState.getRefreshInterval()).subscribe(this.getData.bind(this));
   }
 
   private onRefreshIntervalChange (value: number): void {

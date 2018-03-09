@@ -42,6 +42,6 @@ export class SearchResultAddColumnsModalComponent implements OnInit {
           1);
     }
 
-    this.searchState.visibleColumns = this._columnData.displayedColumns;
+    this.searchState.setVisibleColumns(this._columnData.displayedColumns);
   }
 }

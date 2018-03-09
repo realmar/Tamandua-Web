@@ -68,7 +68,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit () {
-    this._intervalSubscription = Observable.interval(this.dashboardState.refreshInterval).subscribe(this.getData.bind(this));
+    this._intervalSubscription = Observable.interval(this.dashboardState.getRefreshInterval()).subscribe(this.getData.bind(this));
     this.buildRequests();
     this.getData();
   }

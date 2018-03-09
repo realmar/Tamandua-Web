@@ -26,7 +26,7 @@ export class SearchResultTagsSelectionComponent implements OnInit {
   constructor (private apiService: ApiService,
                private searchState: SearchStateService) {
     this.selectedTagsChange = new EventEmitter<SelectedTags>();
-    this._selectedTags = this.searchState.selectedTags;
+    this._selectedTags = this.searchState.getSelectedTags();
   }
 
   ngOnInit () {
@@ -41,7 +41,7 @@ export class SearchResultTagsSelectionComponent implements OnInit {
     this.selectedTags[ tagIndex ].selected = event.source.checked;
     this.selectedTagsChange.emit(this._selectedTags);
 
-    this.searchState.selectedTags = this._selectedTags;
+    this.searchState.setSelectedTags(this._selectedTags);
   }
 
   private buildSelectedTags (tags: TagsResponse): void {

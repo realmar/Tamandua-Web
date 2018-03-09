@@ -70,19 +70,19 @@ export class SearchStateService {
     this._endDatetime = value;
   }
 
-  public get visibleColumns (): Array<string> {
+  public getVisibleColumns (): Array<string> {
     return this._visibleColumns;
   }
 
-  public set visibleColumns (value: Array<string>) {
+  public setVisibleColumns (value: Array<string>) {
     this._visibleColumns = value;
   }
 
-  public get selectedTags (): SelectedTags {
+  public getSelectedTags (): SelectedTags {
     return this._selectedTags;
   }
 
-  public set selectedTags (value: SelectedTags) {
+  public setSelectedTags (value: SelectedTags) {
     this._selectedTags = value;
   }
 
@@ -102,11 +102,11 @@ export class SearchStateService {
     this._resultFilterAsRegex = value;
   }
 
-  public get paginatorPageSize (): number {
+  public getPaginatorPageSize (): number {
     return this._paginatorPageSize;
   }
 
-  public set paginatorPageSize (value: number) {
+  public setPaginatorPageSize (value: number) {
     this._paginatorPageSize = value;
   }
 

@@ -106,10 +106,10 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this.allColumns = [];
     this._pageSizeOptions = [ 5, 10, 25, 100 ];
 
-    if (isNullOrUndefined(this.searchState.paginatorPageSize)) {
+    if (isNullOrUndefined(this.searchState.getPaginatorPageSize())) {
       this._pageSize = this._pageSizeOptions[ 0 ];
     } else {
-      this._pageSize = this.searchState.paginatorPageSize;
+      this._pageSize = this.searchState.getPaginatorPageSize();
     }
 
     this.filter = this.searchState.resultFilter;
@@ -127,8 +127,8 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   ngOnInit () {
     this.apiService.getColumns().subscribe(this.processColumns.bind(this));
 
-    if (!isNullOrUndefined(this.searchState.visibleColumns)) {
-      this._visibleColumns = this.searchState.visibleColumns;
+    if (!isNullOrUndefined(this.searchState.getVisibleColumns())) {
+      this._visibleColumns = this.searchState.getVisibleColumns();
     }
 
     this.processRows(this.searchState.searchResults);
@@ -212,7 +212,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
   public onPageSizeChange (event: PageEvent): void {
     this._pageSize = event.pageSize;
-    this.searchState.paginatorPageSize = this._pageSize;
+    this.searchState.setPaginatorPageSize(this._pageSize);
   }
 
   private compareNumber (value: number, filter: string, regexFilter: RegExp): boolean {

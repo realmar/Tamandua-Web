@@ -5,6 +5,11 @@ import { CardRow } from '../../dashboard/card-row';
 
 @Injectable()
 export class DashboardStateService {
+
+  // NOTE: you will see a lot of set and get methods instead of setters and getter
+  // this is because it is not possible to call a super setters and getters from
+  // a derived class, which is needed here.
+
   private _pastHours: number;
   private _maxItemCountPerCard: number;
 
@@ -20,27 +25,27 @@ export class DashboardStateService {
     this._refreshIntervalObservable = new Subject<number>();
   }
 
-  public get pastHours (): number {
+  public getPastHours (): number {
     return this._pastHours;
   }
 
-  public set pastHours (value: number) {
+  public setPastHours (value: number) {
     this._pastHours = value;
   }
 
-  public get maxItemCountPerCard (): number {
+  public getMaxItemCountPerCard (): number {
     return this._maxItemCountPerCard;
   }
 
-  public set maxItemCountPerCard (value: number) {
+  public setMaxItemCountPerCard (value: number) {
     this._maxItemCountPerCard = value;
   }
 
-  public get refreshInterval (): number {
+  public getRefreshInterval (): number {
     return this._refreshInterval;
   }
 
-  public set refreshInterval (value: number) {
+  public setRefreshInterval (value: number): void {
     if (value <= 0) {
       return;
     }
