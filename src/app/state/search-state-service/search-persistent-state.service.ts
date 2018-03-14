@@ -15,11 +15,11 @@ export class SearchPersistentStateService extends SearchStateService {
   }
 
   private getData (key: string, setter: (data: any) => void) {
-    this.storage.load(key, function (result, success) {
-      if (success && !isNullOrUndefined(result)) {
+    this.storage.load(key).subscribe(result => {
+      if (!isNullOrUndefined(result)) {
         setter(result);
       }
-    }.bind(this));
+    });
   }
 
   public setVisibleColumns (value: Array<string>): void {

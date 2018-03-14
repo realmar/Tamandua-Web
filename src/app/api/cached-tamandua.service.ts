@@ -20,12 +20,27 @@ interface FieldChoicesCache {
 
 @Injectable()
 export class CachedTamanduaService extends TamanduaService {
-
   private _columnsCache: DataCache<ColumnsResponse>;
   private _tagsCache: DataCache<TagsResponse>;
 
   private _fieldChoiceCaches: Map<string, DataCache<FieldChoicesCache>>;
   private _supportedFieldChoicesCache: DataCache<SupportedFieldchoicesResponse>;
+
+  protected get columnsCache (): DataCache<ColumnsResponse> {
+    return this._columnsCache;
+  }
+
+  protected get tagsCache (): DataCache<TagsResponse> {
+    return this._tagsCache;
+  }
+
+  protected get fieldChoiceCaches (): Map<string, DataCache<FieldChoicesCache>> {
+    return this._fieldChoiceCaches;
+  }
+
+  protected get supportedFieldChoicesCache (): DataCache<SupportedFieldchoicesResponse> {
+    return this._supportedFieldChoicesCache;
+  }
 
   constructor (httpClient: HttpClient) {
     super(httpClient);

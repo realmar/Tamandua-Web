@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PersistentStorageService } from './persistent-storage-service';
+import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
 
 @Injectable()
 export class LocalstorageService implements PersistentStorageService {
@@ -7,7 +9,7 @@ export class LocalstorageService implements PersistentStorageService {
     localStorage.setItem(key, JSON.stringify(obj));
   }
 
-  public load<T> (key: string, callback: (result: T, success: boolean) => void): void {
-    callback(JSON.parse(localStorage.getItem(key)), true);
+  public load<T> (key: string): Observable<T> {
+    return of(JSON.parse(localStorage.getItem(key)));
   }
 }

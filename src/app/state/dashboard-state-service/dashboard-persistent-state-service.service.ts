@@ -14,11 +14,11 @@ export class DashboardPersistentStateServiceService extends DashboardStateServic
   }
 
   private getData (key: string, setter: (data: any) => void) {
-    this.storage.load(key, function (result, success) {
-      if (success && !isNullOrUndefined(result)) {
+    this.storage.load(key).subscribe(result => {
+      if (!isNullOrUndefined(result)) {
         setter(result);
       }
-    }.bind(this));
+    });
   }
 
   public setPastHours (value: number): void {
