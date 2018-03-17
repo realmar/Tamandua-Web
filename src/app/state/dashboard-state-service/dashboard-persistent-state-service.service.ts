@@ -14,8 +14,8 @@ export class DashboardPersistentStateServiceService extends DashboardStateServic
   }
 
   private getData (key: string, setter: (data: any) => void) {
-    this.storage.load(key).subscribe(result => {
-      if (!isNullOrUndefined(result)) {
+    this.storage.load(Number, key).subscribe(result => {
+      if (!isNullOrUndefined(result) && result > 0) {
         setter(result);
       }
     });

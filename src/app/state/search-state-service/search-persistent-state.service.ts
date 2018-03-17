@@ -1,21 +1,22 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { SearchStateService } from './search-state.service';
 import { SelectedTags } from '../../search-results/search-result-tags-selection/selected-tags';
 import { PersistentStorageService } from '../../persistence/persistent-storage-service';
 import { isNullOrUndefined } from 'util';
+import { DataCache } from '../../api/data-cache';
 
 @Injectable()
 export class SearchPersistentStateService extends SearchStateService {
   constructor (private storage: PersistentStorageService) {
     super();
 
-    this.getData('search_visibleColumns', result => this.setVisibleColumns(result));
-    this.getData('search_selectedTags', result => this.setSelectedTags(result));
-    this.getData('search_paginatorPageSize', result => this.setPaginatorPageSize(result));
+    this.getData(Array, 'search_visibleColumns', result => this.setVisibleColumns(result));
+    this.getData(Array, 'search_selectedTags', result => this.setSelectedTags(result));
+    this.getData(Array, 'search_paginatorPageSize', result => this.setPaginatorPageSize(result));
   }
 
-  private getData (key: string, setter: (data: any) => void) {
-    this.storage.load(key).subscribe(result => {
+  private getData<T> (type: Type<T>, key: string, setter: (data: any) => void) {
+    this.storage.load(type, key).subscribe(result => {
       if (!isNullOrUndefined(result)) {
         setter(result);
       }
