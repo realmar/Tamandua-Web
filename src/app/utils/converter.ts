@@ -1,5 +1,3 @@
-import { getLocaleDateTimeFormat } from '@angular/common';
-
 export class Converter {
   /* datetime format:
    * static readonly datetimeFormat = 'YYYY/MM/DD HH:mm:ss';

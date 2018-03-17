@@ -37,8 +37,9 @@ import { RouteReuseStrategy } from '@angular/router';
 import { PersistentStorageService } from './persistence/persistent-storage-service';
 import { DashboardPersistentStateServiceService } from './state/dashboard-state-service/dashboard-persistent-state-service.service';
 import { SearchPersistentStateService } from './state/search-state-service/search-persistent-state.service';
-import { LocalstorageService } from './persistence/localstorage.service';
 import { PersistentCachedTamanduaService } from './api/persistent-cached-tamandua.service';
+import { IndexedDbService } from './persistence/indexed-db.service';
+import { LocalstorageService } from './persistence/localstorage.service';
 
 @NgModule({
   declarations: [
@@ -93,7 +94,7 @@ import { PersistentCachedTamanduaService } from './api/persistent-cached-tamandu
   providers: [
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
     { provide: ApiService, useClass: PersistentCachedTamanduaService },
-    { provide: PersistentStorageService, useClass: LocalstorageService },
+    { provide: PersistentStorageService, useClass: IndexedDbService },
     { provide: SearchStateService, useClass: SearchPersistentStateService },
     { provide: DashboardStateService, useClass: DashboardPersistentStateServiceService },
     HttpClientModule

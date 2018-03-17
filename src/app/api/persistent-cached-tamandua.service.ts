@@ -10,6 +10,7 @@ import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices
 import 'rxjs/add/observable/throw';
 import { isNullOrUndefined } from 'util';
 import { DataCache } from './data-cache';
+import { Subject } from 'rxjs/Subject';
 
 interface DataCacheMetaData {
   key: string;
@@ -51,8 +52,18 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
     } ],
   ]);
 
+  private _isReady: boolean;
+  private _onReadySubject: Subject<any>;
+  private _onReady: Observable<any>;
+
   constructor (private storage: PersistentStorageService, httpClient: HttpClient) {
     super(httpClient);
+
+    this._isReady = false;
+    this._onReadySubject = new Subject<any>();
+    this._onReady = this._onReadySubject.asObservable();
+
+    let dataCounter = 0;
 
     this.dataCacheMetaData
       .forEach(value => {
@@ -70,24 +81,42 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
 
             value.needsPersistence = false;
             value.cacheSetter(result);
+
+            dataCounter++;
+            if (dataCounter === this.dataCacheMetaData.size) {
+              this._isReady = true;
+              this._onReadySubject.next();
+            }
           });
       });
   }
 
   private getData<T> (metadataKey: CachedKeys, cache: DataCache<T>, dataGetter: () => Observable<T>) {
-    const metaData = this.dataCacheMetaData.get(metadataKey);
-    if (!cache.isValid) {
-      metaData.needsPersistence = true;
+    const subject = new Subject<T>();
+
+    const transaction = () => {
+      const metaData = this.dataCacheMetaData.get(metadataKey);
+      if (!cache.isValid) {
+        metaData.needsPersistence = true;
+      }
+
+      const result = dataGetter();
+      result.subscribe(data => {
+        if (metaData.needsPersistence) {
+          this.storage.save(metaData.key, cache);
+        }
+
+        subject.next(data);
+      });
+    };
+
+    if (!this._isReady) {
+      this._onReady.subscribe(() => transaction());
+    } else {
+      transaction();
     }
 
-    const result = dataGetter();
-    result.subscribe(() => {
-      if (metaData.needsPersistence) {
-        this.storage.save(metaData.key, cache);
-      }
-    });
-
-    return result;
+    return subject.asObservable();
   }
 
   public getColumns (): Observable<ColumnsResponse> {
@@ -99,22 +128,34 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
   }
 
   public getFieldChoices (field: string, limit: number): Observable<FieldChoicesResponse> {
-    const cache = this.fieldChoiceCaches;
-    let needsPersistence = false;
-    if (isNullOrUndefined(cache) || !Array.from(cache.values()).some(x => x.isValid)) {
-      this.dataCacheMetaData.get(CachedKeys.FieldChoices).needsPersistence = true;
-      needsPersistence = true;
+    const subject = new Subject<FieldChoicesResponse>();
+
+    const transaction = () => {
+      const cache = this.fieldChoiceCaches;
+      let needsPersistence = false;
+      if (isNullOrUndefined(cache) || !Array.from(cache.values()).some(x => x.isValid)) {
+        this.dataCacheMetaData.get(CachedKeys.FieldChoices).needsPersistence = true;
+        needsPersistence = true;
+      }
+
+      const result = super.getFieldChoices(field, limit);
+      result.subscribe(data => {
+        if (needsPersistence) {
+          const metadata = this.dataCacheMetaData.get(CachedKeys.FieldChoices);
+          this.storage.save(metadata.key, this.fieldChoiceCaches);
+        }
+
+        subject.next(data);
+      });
+    };
+
+    if (!this._isReady) {
+      this._onReady.subscribe(() => transaction());
+    } else {
+      transaction();
     }
 
-    const result = super.getFieldChoices(field, limit);
-    result.subscribe(value => {
-      if (needsPersistence) {
-        const metadata = this.dataCacheMetaData.get(CachedKeys.FieldChoices);
-        this.storage.save(metadata.key, this.fieldChoiceCaches);
-      }
-    });
-
-    return result;
+    return subject.asObservable();
   }
 
   public getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse> {
