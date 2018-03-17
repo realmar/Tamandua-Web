@@ -28,19 +28,17 @@ import { SearchStateService } from './state/search-state-service/search-state.se
 import { HttpClientModule } from '@angular/common/http';
 import { DashboardCardComponent } from './dashboard/dashboard-card/dashboard-card.component';
 import { DashboardCardItemComponent } from './dashboard/dashboard-card-item/dashboard-card-item.component';
-import { CachedTamanduaService } from './api/cached-tamandua.service';
 import { DashboardStateService } from './state/dashboard-state-service/dashboard-state.service';
 import { DashboardOverviewCardComponent } from './dashboard/dashboard-overview-card/dashboard-overview-card.component';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { SaveObjectComponent } from './save-object/save-object.component';
-import { TamanduaMockService } from './api/tamandua-mock.service';
 import { CustomReuseStrategy } from './routing/custom-reuse-strategy';
 import { RouteReuseStrategy } from '@angular/router';
 import { PersistentStorageService } from './persistence/persistent-storage-service';
-import { IndexedDbService } from './persistence/indexed-db.service';
 import { DashboardPersistentStateServiceService } from './state/dashboard-state-service/dashboard-persistent-state-service.service';
 import { SearchPersistentStateService } from './state/search-state-service/search-persistent-state.service';
 import { LocalstorageService } from './persistence/localstorage.service';
+import { PersistentCachedTamanduaService } from './api/persistent-cached-tamandua.service';
 
 @NgModule({
   declarations: [
@@ -94,7 +92,7 @@ import { LocalstorageService } from './persistence/localstorage.service';
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
-    { provide: ApiService, useClass: CachedTamanduaService },
+    { provide: ApiService, useClass: PersistentCachedTamanduaService },
     { provide: PersistentStorageService, useClass: LocalstorageService },
     { provide: SearchStateService, useClass: SearchPersistentStateService },
     { provide: DashboardStateService, useClass: DashboardPersistentStateServiceService },

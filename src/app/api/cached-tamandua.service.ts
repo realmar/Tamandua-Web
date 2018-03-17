@@ -30,16 +30,32 @@ export class CachedTamanduaService extends TamanduaService {
     return this._columnsCache;
   }
 
+  protected set columnsCache (value: DataCache<ColumnsResponse>) {
+    this._columnsCache = value;
+  }
+
   protected get tagsCache (): DataCache<TagsResponse> {
     return this._tagsCache;
+  }
+
+  protected set tagsCache (value: DataCache<TagsResponse>) {
+    this._tagsCache = value;
   }
 
   protected get fieldChoiceCaches (): Map<string, DataCache<FieldChoicesCache>> {
     return this._fieldChoiceCaches;
   }
 
+  protected set fieldChoiceCaches (value: Map<string, DataCache<FieldChoicesCache>>) {
+    this._fieldChoiceCaches = value;
+  }
+
   protected get supportedFieldChoicesCache (): DataCache<SupportedFieldchoicesResponse> {
     return this._supportedFieldChoicesCache;
+  }
+
+  protected set supportedFieldChoicesCache (value: DataCache<SupportedFieldchoicesResponse>) {
+    this._supportedFieldChoicesCache = value;
   }
 
   constructor (httpClient: HttpClient) {
