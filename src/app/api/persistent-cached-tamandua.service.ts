@@ -76,11 +76,10 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
 
             if (isNullOrUndefined(result) || !isValid) {
               value.needsPersistence = true;
-              return;
+            } else {
+              value.needsPersistence = false;
+              value.cacheSetter(result);
             }
-
-            value.needsPersistence = false;
-            value.cacheSetter(result);
 
             dataCounter++;
             if (dataCounter === this.dataCacheMetaData.size) {
@@ -93,6 +92,7 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
 
   private getData<T> (metadataKey: CachedKeys, cache: DataCache<T>, dataGetter: () => Observable<T>) {
     const subject = new Subject<T>();
+    let resultObservable: Observable<T>;
 
     const transaction = () => {
       const metaData = this.dataCacheMetaData.get(metadataKey);
@@ -101,6 +101,8 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
       }
 
       const result = dataGetter();
+      resultObservable = result;
+
       result.subscribe(data => {
         if (metaData.needsPersistence) {
           this.storage.save(metaData.key, cache);
@@ -116,7 +118,7 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
       transaction();
     }
 
-    return subject.asObservable();
+    return isNullOrUndefined(resultObservable) ? subject.asObservable() : resultObservable;
   }
 
   public getColumns (): Observable<ColumnsResponse> {
@@ -129,6 +131,7 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
 
   public getFieldChoices (field: string, limit: number): Observable<FieldChoicesResponse> {
     const subject = new Subject<FieldChoicesResponse>();
+    let resultObservable: Observable<FieldChoicesResponse>;
 
     const transaction = () => {
       const cache = this.fieldChoiceCaches;
@@ -139,6 +142,8 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
       }
 
       const result = super.getFieldChoices(field, limit);
+      resultObservable = result;
+
       result.subscribe(data => {
         if (needsPersistence) {
           const metadata = this.dataCacheMetaData.get(CachedKeys.FieldChoices);
@@ -155,7 +160,7 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
       transaction();
     }
 
-    return subject.asObservable();
+    return isNullOrUndefined(resultObservable) ? subject.asObservable() : resultObservable;
   }
 
   public getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse> {

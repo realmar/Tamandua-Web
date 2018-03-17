@@ -111,7 +111,7 @@ export class SearchFieldComponent implements OnInit {
     this.apiService.getSupportedFieldChoices().subscribe(response => {
       for (const column of this._fields.filter(x => response.indexOf(x) !== -1)) {
         this.apiService.getFieldChoices(column, this._maxFieldChoicesPerField)
-          .subscribe((result) => this.processFieldChoicesResponse(result, column));
+          .subscribe(result => this.processFieldChoicesResponse(result, column));
       }
     });
   }
