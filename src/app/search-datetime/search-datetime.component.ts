@@ -7,16 +7,23 @@ import { isNullOrUndefined } from 'util';
   styleUrls: [ './search-datetime.component.scss' ]
 })
 export class SearchDatetimeComponent implements OnInit {
+  private _label: string;
+  @Input() set label (value: string) {
+    this._label = value;
+  }
 
-  @Input() label: string;
-  @Input() initalHasDateTime: boolean;
+  get label (): string {
+    return this._label;
+  }
 
   private _date: Date;
 
   @Input() set datetime (value: Date) {
     if (!isNullOrUndefined(value)) {
+      this._hasDateTime = true;
       this._date = value;
     }
+
     this.emitDatetimeChange();
   }
 
@@ -54,14 +61,7 @@ export class SearchDatetimeComponent implements OnInit {
     this.emitDatetimeChange();
   }
 
-  constructor () {
-  }
-
   ngOnInit () {
-    if (this.initalHasDateTime) {
-      this._hasDateTime = true;
-    }
-
     if (isNullOrUndefined(this._date)) {
       this._date = new Date();
     }
