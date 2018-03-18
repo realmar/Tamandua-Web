@@ -10,5 +10,4 @@
   </ng-container>
 </ng-container>
 
-<mat-progress-bar *ngIf="isDoingRequest"
-                  mode="indeterminate"></mat-progress-bar>
+<p *ngIf="isDoingRequest && summaryResponses.length === 0">Loading ...</p>

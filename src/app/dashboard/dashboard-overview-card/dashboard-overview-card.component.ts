@@ -71,9 +71,17 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     this._onPastHoursChangeSubscription =
       this.dashboardState.pastHoursObservable.subscribe(this.onPastHoursChange.bind(this));
 
-    this.createIntervalSubscription();
-    this.buildRequests();
-    this.getData();
+    const isReadyCallback = () => {
+      this.createIntervalSubscription();
+      this.buildRequests();
+      this.getData();
+    };
+
+    if (!this.dashboardState.isInitialized) {
+      this.dashboardState.onFinishInitialize.subscribe(isReadyCallback);
+    } else {
+      isReadyCallback();
+    }
   }
 
   ngOnDestroy (): void {
@@ -92,11 +100,18 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private onRefreshIntervalChange (value: number): void {
-    this._intervalSubscription.unsubscribe();
+    if (!isNullOrUndefined(this._intervalSubscription)) {
+      this._intervalSubscription.unsubscribe();
+    }
+
     this.createIntervalSubscription();
   }
 
   private buildRequests (): void {
+    if (!this.dashboardState.isInitialized) {
+      return;
+    }
+
     const builder = this.apiService.getRequestBuilder();
 
     const date = new Date();
@@ -124,9 +139,11 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     builder.removeAllFields();
 
     builder.addField('rejectreason', '^Recipient address rejected: Greylisted', new Comparator(ComparatorType.Regex));
-    builder.setCallback(function (result) {
+    builder.setCallback(result => {
       this.processSummaryChild(result, 0, 0);
-    }.bind(this));
+      this._isDoingRequest = false;
+    });
+
     this._summaryRequests[ 0 ].children.push({
       name: 'Greylisted',
       data: builder.build()
@@ -209,6 +226,11 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private getData (): void {
+    if (this._isDoingRequest || !this.dashboardState.isInitialized) {
+      return;
+    }
+
+    this._isDoingRequest = true;
     this.apiService.SubmitRequest(this._totalRequest);
   }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import { CardRow } from '../../dashboard/card-row';
+import { TimeoutUpdater } from './timeout-updater';
 
 @Injectable()
 export class DashboardStateService {
@@ -9,6 +9,12 @@ export class DashboardStateService {
   // NOTE: you will see a lot of set and get methods instead of setters and getter
   // this is because it is not possible to call a super setters and getters from
   // a derived class, which is needed here.
+
+  private _timeoutBeforeEmit: number;
+
+  private _pastHoursTimeoutEmitter: TimeoutUpdater;
+  private _maxItemCountTimeoutEmitter: TimeoutUpdater;
+  private _intervalTimeoutEmitter: TimeoutUpdater;
 
   private _pastHours: number;
   private _pastHoursSubject: Subject<number>;
@@ -19,7 +25,21 @@ export class DashboardStateService {
   private _refreshInterval: number;
   private _refreshIntervalSubject: Subject<number>;
 
+  protected onFinishInitalizeSubject: Subject<any>;
+
+  public get onFinishInitialize (): Observable<any> {
+    return this.onFinishInitalizeSubject.asObservable();
+  }
+
+  protected _isInitialized: boolean;
+  public get isInitialized (): boolean {
+    return this._isInitialized;
+  }
+
   constructor () {
+    this.onFinishInitalizeSubject = new Subject<any>();
+    this._isInitialized = false;
+
     this._pastHours = 48;
     this._pastHoursSubject = new Subject<number>();
 
@@ -28,10 +48,40 @@ export class DashboardStateService {
 
     this._refreshInterval = 10000;
     this._refreshIntervalSubject = new Subject<number>();
+
+    this._timeoutBeforeEmit = 800;
+
+    this._pastHoursTimeoutEmitter =
+      new TimeoutUpdater(this.emitPastHours.bind(this), this._timeoutBeforeEmit);
+
+    this._maxItemCountTimeoutEmitter =
+      new TimeoutUpdater(this.emitMaxItemsCount.bind(this), this._timeoutBeforeEmit);
+
+    this._intervalTimeoutEmitter =
+      new TimeoutUpdater(this.emitRefreshInterval.bind(this), this._timeoutBeforeEmit);
+
+    this.emitFinishInitialize();
   }
 
   private isUpdatedValueValid (value: number, storedValue: number) {
     return value <= 0 || value === storedValue;
+  }
+
+  protected emitFinishInitialize (): void {
+    this._isInitialized = true;
+    this.onFinishInitalizeSubject.next();
+  }
+
+  protected emitPastHours (): void {
+    this._pastHoursSubject.next(this._pastHours);
+  }
+
+  protected emitMaxItemsCount (): void {
+    this._maxItemsCountSubject.next(this._maxItemCountPerCard);
+  }
+
+  protected emitRefreshInterval (): void {
+    this._refreshIntervalSubject.next(this._refreshInterval);
   }
 
   public getPastHours (): number {
@@ -44,7 +94,7 @@ export class DashboardStateService {
     }
 
     this._pastHours = value;
-    this._pastHoursSubject.next(value);
+    this._pastHoursTimeoutEmitter.startOrInterrupt();
   }
 
   public getMaxItemCountPerCard (): number {
@@ -57,7 +107,7 @@ export class DashboardStateService {
     }
 
     this._maxItemCountPerCard = value;
-    this._maxItemsCountSubject.next(value);
+    this._maxItemCountTimeoutEmitter.startOrInterrupt();
   }
 
   public getRefreshInterval (): number {
@@ -70,7 +120,7 @@ export class DashboardStateService {
     }
 
     this._refreshInterval = value;
-    this._refreshIntervalSubject.next(this._refreshInterval);
+    this._intervalTimeoutEmitter.startOrInterrupt();
   }
 
   public get pastHoursObservable (): Observable<number> {

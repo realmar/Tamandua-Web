@@ -65,12 +65,24 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     }
 
     const builder = this._data.requestBuilder;
-    builder.setCallback(this.processApiResponse.bind(this));
-    this._request = builder.build();
     this._endpoint = builder.getEndpoint() as AdvancedCountEndpoint;
 
-    this.createRefreshIntervalSubscription();
-    this.getData();
+    const isReadyCallback = () => {
+      builder.setCallback(this.processApiResponse.bind(this));
+      builder.setStartDatetime(this.createPastDate(this.dashboardState.getPastHours()));
+      this._endpoint.length = this.dashboardState.getMaxItemCountPerCard();
+
+      this._request = builder.build();
+
+      this.createRefreshIntervalSubscription();
+      this.getData();
+    };
+
+    if (!this.dashboardState.isInitialized) {
+      this.dashboardState.onFinishInitialize.subscribe(isReadyCallback);
+    } else {
+      isReadyCallback();
+    }
   }
 
   ngOnDestroy (): void {
@@ -81,7 +93,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   }
 
   private getData (): void {
-    if (this._isDoingRequest) {
+    if (this._isDoingRequest || !this.dashboardState.isInitialized) {
       return;
     }
 
@@ -113,12 +125,16 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
       .then(result => result ? '' : console.log('Failed to navigate'));
   }
 
-  private onPastHoursChange (value: number): void {
+  private createPastDate (value: number) {
     const date = new Date();
     date.setHours(date.getHours() - value);
 
+    return date;
+  }
+
+  private onPastHoursChange (value: number): void {
     const builder = this._data.requestBuilder;
-    builder.setStartDatetime(date);
+    builder.setStartDatetime(this.createPastDate(value));
 
     this._request = builder.build();
     this.getData();
@@ -135,7 +151,10 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   }
 
   private onRefreshIntervalChange (value: number): void {
-    this._refreshIntervalSubscription.unsubscribe();
+    if (!isNullOrUndefined(this._refreshIntervalSubscription)) {
+      this._refreshIntervalSubscription.unsubscribe();
+    }
+
     this.createRefreshIntervalSubscription();
   }
 }
