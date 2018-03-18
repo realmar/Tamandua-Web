@@ -1,11 +1,9 @@
-import { Observable } from 'rxjs/Observable';
 import { RequestBuilder } from '../../api/request/request-builder';
 import { RequestBuilderField } from '../../api/request/request-builder-field';
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
 
 export class DashboardCardData {
   private _title: string;
-  private _totalCount: Observable<number>;
 
   private _requestBuilder: RequestBuilder;
   private _onItemClickFieldBuilder: (value: string | number) => RequestBuilderField;
@@ -29,14 +27,6 @@ export class DashboardCardData {
 
   public get requestBuilder (): RequestBuilder {
     return this._requestBuilder;
-  }
-
-  public get totalCount (): Observable<number> {
-    return this._totalCount;
-  }
-
-  public set totalCount (value: Observable<number>) {
-    this._totalCount = value;
   }
 
   public set onItemClickFieldBuilder (value: (value: string | number) => RequestBuilderField) {

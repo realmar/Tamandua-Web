@@ -31,16 +31,13 @@ type SummaryCollection<T> = Array<SummaryGroup<T>>;
   styleUrls: [ './dashboard-overview-card.component.scss' ]
 })
 export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
+  private _onPastHoursChangeSubscription: Subscription;
+  private _intervalSubscription: Subscription;
+  private _onIntervalChangeSubscription: Subscription;
+
   private _isDoingRequest: boolean;
   public get isDoingRequest (): boolean {
     return this._isDoingRequest;
-  }
-
-  private _intervalSubscription: Subscription;
-
-  private _pastHoursCount: number;
-  @Input() set pastHoursCount (value: number) {
-    this._pastHoursCount = value;
   }
 
   private _totalRequest: ApiRequest;
@@ -68,20 +65,42 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit () {
-    this._intervalSubscription = Observable.interval(this.dashboardState.getRefreshInterval()).subscribe(this.getData.bind(this));
+    this._onIntervalChangeSubscription =
+      this.dashboardState.refreshIntervalObservable.subscribe(this.onRefreshIntervalChange.bind(this));
+
+    this._onPastHoursChangeSubscription =
+      this.dashboardState.pastHoursObservable.subscribe(this.onPastHoursChange.bind(this));
+
+    this.createIntervalSubscription();
     this.buildRequests();
     this.getData();
   }
 
   ngOnDestroy (): void {
     this._intervalSubscription.unsubscribe();
+    this._onIntervalChangeSubscription.unsubscribe();
+    this._onPastHoursChangeSubscription.unsubscribe();
+  }
+
+  private createIntervalSubscription (): void {
+    this._intervalSubscription = Observable.interval(this.dashboardState.getRefreshInterval()).subscribe(this.getData.bind(this));
+  }
+
+  private onPastHoursChange (value: number) {
+    this.buildRequests();
+    this.getData();
+  }
+
+  private onRefreshIntervalChange (value: number): void {
+    this._intervalSubscription.unsubscribe();
+    this.createIntervalSubscription();
   }
 
   private buildRequests (): void {
     const builder = this.apiService.getRequestBuilder();
 
     const date = new Date();
-    date.setHours(date.getHours() - this._pastHoursCount);
+    date.setHours(date.getHours() - this.dashboardState.getPastHours());
     builder.setStartDatetime(date);
     builder.setEndpoint(new CountEndpoint());
 
@@ -233,10 +252,5 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
         name,
         result,
         this._totalResponse, this._colorRange);
-  }
-
-  public onHoursChanged (): void {
-    this.buildRequests();
-    this.getData();
   }
 }

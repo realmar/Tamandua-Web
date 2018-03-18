@@ -14,9 +14,6 @@ import { CardRow } from './card-row';
   styleUrls: [ './dashboard.component.scss' ]
 })
 export class DashboardComponent implements OnInit {
-
-  @ViewChild(DashboardOverviewCardComponent) private _overviewCard: DashboardOverviewCardComponent;
-
   // region Card Text Constants
 
   private readonly deliveredTitle = 'Delivered';
@@ -206,11 +203,6 @@ export class DashboardComponent implements OnInit {
         comparator: new Comparator(ComparatorType.Regex)
       };
     };
-  }
-
-  public onRefreshClick (): void {
-    this.buildCards();
-    this._overviewCard.onHoursChanged();
   }
 }
 

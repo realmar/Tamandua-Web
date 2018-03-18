@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { DashboardStateService } from '../../state/dashboard-state-service/dashboard-state.service';
 import { isNullOrUndefined } from 'util';
+import { AdvancedCountEndpoint } from '../../api/request/endpoints/advanced-count-endpoint';
 
 @Component({
   selector: 'app-dashboard-card',
@@ -18,6 +19,8 @@ import { isNullOrUndefined } from 'util';
   styleUrls: [ './dashboard-card.component.scss' ]
 })
 export class DashboardCardComponent implements OnInit, OnDestroy {
+  private _pastHoursChangeSubscription: Subscription;
+  private _maxItemCountChangeSubscription: Subscription;
   private _refreshIntervalSubscription: Subscription;
   private _refreshIntervalChangeSubscription: Subscription;
 
@@ -26,6 +29,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     return this._isDoingRequest;
   }
 
+  private _endpoint: AdvancedCountEndpoint;
   private _request: ApiRequest;
   private _data: DashboardCardData;
   @Input() set data (value: DashboardCardData) {
@@ -37,7 +41,8 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   }
 
   get resultData (): Array<DashboardCardItemData> {
-    return this._data.requestResult;
+    const length = this._data.requestResult.length;
+    return this._data.requestResult.slice(0, this._endpoint.length > length ? length : this._endpoint.length);
   }
 
   constructor (private apiService: ApiService,
@@ -45,6 +50,11 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
                private searchState: SearchStateService,
                private router: Router) {
     this._isDoingRequest = false;
+
+    this._pastHoursChangeSubscription =
+      this.dashboardState.pastHoursObservable.subscribe(this.onPastHoursChange.bind(this));
+    this._maxItemCountChangeSubscription =
+      this.dashboardState.maxItemCountObservable.subscribe(this.onMaxItemCountChange.bind(this));
     this._refreshIntervalChangeSubscription =
       this.dashboardState.refreshIntervalObservable.subscribe(this.onRefreshIntervalChange.bind(this));
   }
@@ -57,12 +67,15 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     const builder = this._data.requestBuilder;
     builder.setCallback(this.processApiResponse.bind(this));
     this._request = builder.build();
+    this._endpoint = builder.getEndpoint() as AdvancedCountEndpoint;
 
     this.createRefreshIntervalSubscription();
     this.getData();
   }
 
   ngOnDestroy (): void {
+    this._pastHoursChangeSubscription.unsubscribe();
+    this._maxItemCountChangeSubscription.unsubscribe();
     this._refreshIntervalSubscription.unsubscribe();
     this._refreshIntervalChangeSubscription.unsubscribe();
   }
@@ -85,11 +98,6 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     this._refreshIntervalSubscription = Observable.interval(this.dashboardState.getRefreshInterval()).subscribe(this.getData.bind(this));
   }
 
-  private onRefreshIntervalChange (value: number): void {
-    this._refreshIntervalSubscription.unsubscribe();
-    this.createRefreshIntervalSubscription();
-  }
-
   public onItemClick (data: DashboardCardItemData): void {
     this.searchState.searchResults = undefined;
 
@@ -103,5 +111,31 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
 
     this.router.navigate([ 'search' ])
       .then(result => result ? '' : console.log('Failed to navigate'));
+  }
+
+  private onPastHoursChange (value: number): void {
+    const date = new Date();
+    date.setHours(date.getHours() - value);
+
+    const builder = this._data.requestBuilder;
+    builder.setStartDatetime(date);
+
+    this._request = builder.build();
+    this.getData();
+  }
+
+  private onMaxItemCountChange (value: number): void {
+    const oldLength = this._endpoint.length;
+    this._endpoint.length = value;
+    this._request = this._data.requestBuilder.build();
+
+    if (value > oldLength) {
+      this.getData();
+    }
+  }
+
+  private onRefreshIntervalChange (value: number): void {
+    this._refreshIntervalSubscription.unsubscribe();
+    this.createRefreshIntervalSubscription();
   }
 }

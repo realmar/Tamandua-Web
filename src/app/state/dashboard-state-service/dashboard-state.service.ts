@@ -11,18 +11,27 @@ export class DashboardStateService {
   // a derived class, which is needed here.
 
   private _pastHours: number;
+  private _pastHoursSubject: Subject<number>;
+
   private _maxItemCountPerCard: number;
+  private _maxItemsCountSubject: Subject<number>;
 
   private _refreshInterval: number;
-  private _refreshIntervalObservable: Subject<number>;
+  private _refreshIntervalSubject: Subject<number>;
 
   constructor () {
-    // set default values
     this._pastHours = 48;
+    this._pastHoursSubject = new Subject<number>();
+
     this._maxItemCountPerCard = 10;
+    this._maxItemsCountSubject = new Subject<number>();
 
     this._refreshInterval = 10000;
-    this._refreshIntervalObservable = new Subject<number>();
+    this._refreshIntervalSubject = new Subject<number>();
+  }
+
+  private isUpdatedValueValid (value: number, storedValue: number) {
+    return value <= 0 || value === storedValue;
   }
 
   public getPastHours (): number {
@@ -30,7 +39,12 @@ export class DashboardStateService {
   }
 
   public setPastHours (value: number) {
+    if (this.isUpdatedValueValid(value, this._pastHours)) {
+      return;
+    }
+
     this._pastHours = value;
+    this._pastHoursSubject.next(value);
   }
 
   public getMaxItemCountPerCard (): number {
@@ -38,7 +52,12 @@ export class DashboardStateService {
   }
 
   public setMaxItemCountPerCard (value: number) {
+    if (this.isUpdatedValueValid(value, this._maxItemCountPerCard)) {
+      return;
+    }
+
     this._maxItemCountPerCard = value;
+    this._maxItemsCountSubject.next(value);
   }
 
   public getRefreshInterval (): number {
@@ -46,15 +65,23 @@ export class DashboardStateService {
   }
 
   public setRefreshInterval (value: number): void {
-    if (value <= 0) {
+    if (this.isUpdatedValueValid(value, this._refreshInterval)) {
       return;
     }
 
     this._refreshInterval = value;
-    this._refreshIntervalObservable.next(this._refreshInterval);
+    this._refreshIntervalSubject.next(this._refreshInterval);
+  }
+
+  public get pastHoursObservable (): Observable<number> {
+    return this._pastHoursSubject.asObservable();
+  }
+
+  public get maxItemCountObservable (): Observable<number> {
+    return this._maxItemsCountSubject.asObservable();
   }
 
   public get refreshIntervalObservable (): Observable<number> {
-    return this._refreshIntervalObservable.asObservable();
+    return this._refreshIntervalSubject.asObservable();
   }
 }

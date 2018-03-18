@@ -8,9 +8,6 @@
   <mat-form-field>
     <input matInput placeholder="Interval [s]" type="number" [(ngModel)]="refreshInterval">
   </mat-form-field>
-  <button mat-icon-button (click)="onRefreshClick()">
-    <mat-icon>cached</mat-icon>
-  </button>
 </div>
 
 <div id="flex-container">
@@ -19,8 +16,7 @@
     <mat-card-header><p class="mat-title">Summary</p></mat-card-header>
     <mat-card-content>
       <app-dashboard-overview-card
-        #overview_card
-        [pastHoursCount]="pastHoursCount"></app-dashboard-overview-card>
+        #overview_card></app-dashboard-overview-card>
     </mat-card-content>
   </mat-card>
 

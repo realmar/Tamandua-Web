@@ -13,6 +13,14 @@ export class AdvancedCountEndpoint implements Endpoint {
     this._separator = separator;
   }
 
+  public get length (): number {
+    return this._length;
+  }
+
+  public set length (value: number) {
+    this._length = value;
+  }
+
   public get apiUrl (): string {
     let url = `api/advcount/${this._field}/${this._length}`;
     if (!isNullOrUndefined(this._separator)) {
