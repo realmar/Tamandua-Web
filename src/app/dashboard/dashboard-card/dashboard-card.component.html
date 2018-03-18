@@ -1,8 +1,12 @@
 <h2 class="mat-subheading-2">{{data.title}}</h2>
 
-<app-dashboard-card-item *ngFor="let item of resultData"
-                         [data]="item"
-                         [clickable]="true"
-                         (itemClick)="onItemClick($event)"></app-dashboard-card-item>
-
-<p class="mat-body-2" *ngIf="isDoingRequest && resultData.length === 0">Loading ...</p>
+<ng-container *ngIf="isDoingRequest && resultData.length === 0;else data_container">
+  <mat-progress-bar mode="buffer"></mat-progress-bar>
+</ng-container>
+<ng-template #data_container>
+  <app-dashboard-card-item
+    *ngFor="let item of resultData"
+    [data]="item"
+    [clickable]="true"
+    (itemClick)="onItemClick($event)"></app-dashboard-card-item>
+</ng-template>
