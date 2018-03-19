@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { DashboardSettingsService } from './dashboard-settings.service';
 import { PersistentStorageService } from '../../persistence/persistent-storage-service';
 import { isNullOrUndefined } from 'util';
+import { SettingValidationResult } from '../setting-validation-result';
 
 @Injectable()
 export class DashboardPersistentSettingsService extends DashboardSettingsService {
@@ -36,18 +37,30 @@ export class DashboardPersistentSettingsService extends DashboardSettingsService
     // do not emit
   }
 
-  public setPastHours (value: number): void {
-    super.setPastHours(value);
-    this.storage.save('dashboard_pastHours', value);
+  public setPastHours (value: number): SettingValidationResult {
+    const result = super.setPastHours(value);
+    if (result.isValid) {
+      this.storage.save('dashboard_pastHours', value);
+    }
+
+    return result;
   }
 
-  public setMaxItemCountPerCard (value: number): void {
-    super.setMaxItemCountPerCard(value);
-    this.storage.save('dashboard_MaxItemCountPerCard', value);
+  public setMaxItemCountPerCard (value: number): SettingValidationResult {
+    const result = super.setMaxItemCountPerCard(value);
+    if (result.isValid) {
+      this.storage.save('dashboard_MaxItemCountPerCard', value);
+    }
+
+    return result;
   }
 
-  public setRefreshInterval (value: number): void {
-    super.setRefreshInterval(value);
-    this.storage.save('dashboard_RefreshInterval', value);
+  public setRefreshInterval (value: number): SettingValidationResult {
+    const result = super.setRefreshInterval(value);
+    if (result.isValid) {
+      this.storage.save('dashboard_RefreshInterval', value);
+    }
+
+    return result;
   }
 }

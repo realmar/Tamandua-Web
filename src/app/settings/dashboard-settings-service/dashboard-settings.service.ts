@@ -2,23 +2,21 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Setting } from '../setting';
+import { SettingValidationResult } from '../setting-validation-result';
+import { isNullOrUndefined } from 'util';
 
 @Injectable()
 export class DashboardSettingsService {
-
-  // NOTE: you will see a lot of set and get methods instead of setters and getter
-  // this is because it is not possible to call a super setters and getters from
-  // a derived class, which is needed here.
-
   private _timeoutBeforeEmit: number;
 
-  private _pastHours: number;
+  private _pastHours: Setting<number>;
   private _pastHoursSubject: Subject<number>;
 
-  private _maxItemCountPerCard: number;
+  private _maxItemCountPerCard: Setting<number>;
   private _maxItemsCountSubject: Subject<number>;
 
-  private _refreshInterval: number;
+  private _refreshInterval: Setting<number>;
   private _refreshIntervalSubject: Subject<number>;
 
   protected onFinishInitalizeSubject: Subject<any>;
@@ -36,13 +34,13 @@ export class DashboardSettingsService {
     this.onFinishInitalizeSubject = new Subject<any>();
     this._isInitialized = false;
 
-    this._pastHours = 48;
+    this._pastHours = new Setting<number>(24, this.createMinValidator(0));
     this._pastHoursSubject = new Subject<number>();
 
-    this._maxItemCountPerCard = 10;
+    this._maxItemCountPerCard = new Setting<number>(4, this.createMinValidator(1));
     this._maxItemsCountSubject = new Subject<number>();
 
-    this._refreshInterval = 10000;
+    this._refreshInterval = new Setting<number>(100000, this.createMinValidator(10000));
     this._refreshIntervalSubject = new Subject<number>();
 
     this._timeoutBeforeEmit = 800;
@@ -50,8 +48,20 @@ export class DashboardSettingsService {
     this.emitFinishInitialize();
   }
 
-  private isUpdatedValueValid (value: number, storedValue: number) {
-    return value <= 0 || value === storedValue;
+  private createMinValidator (min: number): (data: number) => SettingValidationResult {
+    const validator = (data: number): SettingValidationResult => {
+      if (isNullOrUndefined(data)) {
+        return new SettingValidationResult(false, 'Value is required');
+      }
+
+      if (data < min) {
+        return new SettingValidationResult(false, `Min value is ${min}`);
+      }
+
+      return new SettingValidationResult(true);
+    };
+
+    return validator;
   }
 
   protected emitFinishInitialize (): void {
@@ -60,54 +70,57 @@ export class DashboardSettingsService {
   }
 
   protected emitPastHours (): void {
-    this._pastHoursSubject.next(this._pastHours);
+    this._pastHoursSubject.next(this._pastHours.getData());
   }
 
   protected emitMaxItemsCount (): void {
-    this._maxItemsCountSubject.next(this._maxItemCountPerCard);
+    this._maxItemsCountSubject.next(this._maxItemCountPerCard.getData());
   }
 
   protected emitRefreshInterval (): void {
-    this._refreshIntervalSubject.next(this._refreshInterval);
+    this._refreshIntervalSubject.next(this._refreshInterval.getData());
   }
 
   public getPastHours (): number {
-    return this._pastHours;
+    return this._pastHours.getData();
   }
 
-  public setPastHours (value: number) {
-    if (this.isUpdatedValueValid(value, this._pastHours)) {
-      return;
+  public setPastHours (value: number): SettingValidationResult {
+    const result = this._pastHours.setData(value);
+
+    if (result.isValid) {
+      this._pastHoursSubject.next(value);
     }
 
-    this._pastHours = value;
-    this._pastHoursSubject.next(value);
+    return result;
   }
 
   public getMaxItemCountPerCard (): number {
-    return this._maxItemCountPerCard;
+    return this._maxItemCountPerCard.getData();
   }
 
-  public setMaxItemCountPerCard (value: number) {
-    if (this.isUpdatedValueValid(value, this._maxItemCountPerCard)) {
-      return;
+  public setMaxItemCountPerCard (value: number): SettingValidationResult {
+    const result = this._maxItemCountPerCard.setData(value);
+
+    if (result.isValid) {
+      this._maxItemsCountSubject.next(value);
     }
 
-    this._maxItemCountPerCard = value;
-    this._maxItemsCountSubject.next(value);
+    return result;
   }
 
   public getRefreshInterval (): number {
-    return this._refreshInterval;
+    return this._refreshInterval.getData();
   }
 
-  public setRefreshInterval (value: number): void {
-    if (this.isUpdatedValueValid(value, this._refreshInterval)) {
-      return;
+  public setRefreshInterval (value: number): SettingValidationResult {
+    const result = this._refreshInterval.setData(value);
+
+    if (result.isValid) {
+      this._refreshIntervalSubject.next(value);
     }
 
-    this._refreshInterval = value;
-    this._refreshIntervalSubject.next(value);
+    return result;
   }
 
   private applyDefaultDebounceTime<T> (observable: Observable<T>): Observable<T> {

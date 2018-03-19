@@ -11,7 +11,7 @@ export class SettingValidationResult {
     return this._messages;
   }
 
-  constructor (isValid: boolean, messages?: Array<string>) {
+  constructor (isValid: boolean, ...messages: Array<string>) {
     if (isNullOrUndefined(messages)) {
       messages = [];
     }
