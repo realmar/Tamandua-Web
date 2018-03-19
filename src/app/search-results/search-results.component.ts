@@ -14,6 +14,8 @@ import { TamanduaTableDataSource } from './tamandua-table-data-source';
 import { SaveObjectData } from '../save-object/save-object-data';
 import { JsonSaveStrategy } from '../save-object/strategies/json-save-strategy';
 import { YamlSaveStrategy } from '../save-object/strategies/yaml-save-strategy';
+import { debounceTime } from 'rxjs/operators';
+import { Subject } from 'rxjs/Subject';
 
 @Component({
   selector: 'app-search-results',
@@ -71,6 +73,8 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     'null': this.compareNull.bind(this)
   };
 
+  private _onFilterChange: Subject<any>;
+
   private static genericCompare<T> (value: T, filter: string, filterTransformLambda: (string) => T): boolean {
     if (filter.startsWith('>=')) {
       return value >= filterTransformLambda(filter.slice(2, filter.length));
@@ -94,6 +98,13 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   constructor (private apiService: ApiService,
                private searchState: SearchSettingsService,
                private dialog: MatDialog) {
+    this._onFilterChange = new Subject<any>();
+    this._onFilterChange
+      .asObservable()
+      .pipe(
+        debounceTime(500),
+      ).subscribe(() => this.updateFilter());
+
     this._rows = new TamanduaTableDataSource<SearchRow>();
     this.allRows = [];
     this.allColumns = [];
@@ -169,7 +180,8 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     Object.keys(this.filter).map(key =>
       this.filterAsRegex[ key ] = new RegExp(this.filter[ key ], 'i'));
 
-    this.updateFilter();
+    // this.updateFilter();
+    this._onFilterChange.next();
   }
 
   public generateSaveDataObject (): SaveObjectData {
