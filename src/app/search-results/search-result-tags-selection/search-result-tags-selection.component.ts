@@ -4,7 +4,7 @@ import { TagsResponse } from '../../api/response/tags-response';
 import { SelectedTags } from './selected-tags';
 import { MatButtonToggleChange } from '@angular/material/button-toggle/typings/button-toggle';
 import { isNullOrUndefined } from 'util';
-import { SearchStateService } from '../../state/search-state-service/search-state.service';
+import { SearchSettingsService } from '../../settings/search-settings-service/search-settings.service';
 import { Subscription } from 'rxjs/Subscription';
 
 @Component({
@@ -26,7 +26,7 @@ export class SearchResultTagsSelectionComponent implements OnInit, OnDestroy {
   @Output() selectedTagsChange: EventEmitter<SelectedTags>;
 
   constructor (private apiService: ApiService,
-               private searchState: SearchStateService) {
+               private searchState: SearchSettingsService) {
     this.selectedTagsChange = new EventEmitter<SelectedTags>();
   }
 

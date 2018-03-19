@@ -6,12 +6,13 @@ import { ApiRequest } from '../../api/request/request';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/interval';
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
-import { SearchStateService } from '../../state/search-state-service/search-state.service';
+import { SearchSettingsService } from '../../settings/search-settings-service/search-settings.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
-import { DashboardStateService } from '../../state/dashboard-state-service/dashboard-state.service';
+import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
 import { isNullOrUndefined } from 'util';
 import { AdvancedCountEndpoint } from '../../api/request/endpoints/advanced-count-endpoint';
+import { SearchStateService } from '../../search-state-service/search-state.service';
 
 @Component({
   selector: 'app-dashboard-card',
@@ -46,17 +47,18 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   }
 
   constructor (private apiService: ApiService,
-               private dashboardState: DashboardStateService,
-               private searchState: SearchStateService,
+               private dashboardSettingsService: DashboardSettingsService,
+               private searchSettingsService: SearchSettingsService,
+               private searchStateService: SearchStateService,
                private router: Router) {
     this._isDoingRequest = false;
 
     this._pastHoursChangeSubscription =
-      this.dashboardState.pastHoursObservable.subscribe(this.onPastHoursChange.bind(this));
+      this.dashboardSettingsService.pastHoursObservable.subscribe(this.onPastHoursChange.bind(this));
     this._maxItemCountChangeSubscription =
-      this.dashboardState.maxItemCountObservable.subscribe(this.onMaxItemCountChange.bind(this));
+      this.dashboardSettingsService.maxItemCountObservable.subscribe(this.onMaxItemCountChange.bind(this));
     this._refreshIntervalChangeSubscription =
-      this.dashboardState.refreshIntervalObservable.subscribe(this.onRefreshIntervalChange.bind(this));
+      this.dashboardSettingsService.refreshIntervalObservable.subscribe(this.onRefreshIntervalChange.bind(this));
   }
 
   ngOnInit () {
@@ -69,8 +71,8 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
 
     const isReadyCallback = () => {
       builder.setCallback(this.processApiResponse.bind(this));
-      builder.setStartDatetime(this.createPastDate(this.dashboardState.getPastHours()));
-      this._endpoint.length = this.dashboardState.getMaxItemCountPerCard();
+      builder.setStartDatetime(this.createPastDate(this.dashboardSettingsService.getPastHours()));
+      this._endpoint.length = this.dashboardSettingsService.getMaxItemCountPerCard();
 
       this._request = builder.build();
 
@@ -78,8 +80,8 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
       this.getData();
     };
 
-    if (!this.dashboardState.isInitialized) {
-      this.dashboardState.onFinishInitialize.subscribe(isReadyCallback);
+    if (!this.dashboardSettingsService.isInitialized) {
+      this.dashboardSettingsService.onFinishInitialize.subscribe(isReadyCallback);
     } else {
       isReadyCallback();
     }
@@ -93,7 +95,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   }
 
   private getData (): void {
-    if (this._isDoingRequest || !this.dashboardState.isInitialized) {
+    if (this._isDoingRequest || !this.dashboardSettingsService.isInitialized) {
       return;
     }
 
@@ -107,17 +109,18 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   }
 
   private createRefreshIntervalSubscription () {
-    this._refreshIntervalSubscription = Observable.interval(this.dashboardState.getRefreshInterval()).subscribe(this.getData.bind(this));
+    this._refreshIntervalSubscription =
+      Observable.interval(this.dashboardSettingsService.getRefreshInterval()).subscribe(this.getData.bind(this));
   }
 
   public onItemClick (data: DashboardCardItemData): void {
-    this.searchState.fields = this._data.requestBuilder.getFields().slice();
-    this.searchState.fields.push(this._data.buildOnItemClickField(data.key));
+    this.searchStateService.fields = this._data.requestBuilder.getFields().slice();
+    this.searchStateService.fields.push(this._data.buildOnItemClickField(data.key));
 
-    this.searchState.startDatetime = this._data.requestBuilder.getStartDatetime();
-    this.searchState.endDatetime = this._data.requestBuilder.getEndDatetime();
+    this.searchStateService.startDatetime = this._data.requestBuilder.getStartDatetime();
+    this.searchStateService.endDatetime = this._data.requestBuilder.getEndDatetime();
 
-    this.searchState.doSearch = true;
+    this.searchStateService.doSearch = true;
 
     this.router.navigate([ 'search' ])
       .then(result => result ? '' : console.log('Failed to navigate'));

@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatCheckboxChange, MatDialogRef } from '@angular/material';
 import { SearchResultDetailsModalComponent } from '../search-result-details-modal/search-result-details-modal.component';
 import { AddColumnsModalData } from './add-columns-modal-data';
-import { SearchStateService } from '../../state/search-state-service/search-state.service';
+import { SearchSettingsService } from '../../settings/search-settings-service/search-settings.service';
 
 @Component({
   selector: 'app-search-add-columns',
@@ -23,7 +23,7 @@ export class SearchResultAddColumnsModalComponent implements OnInit {
 
   constructor (private dialogRef: MatDialogRef<SearchResultDetailsModalComponent>,
                @Inject(MAT_DIALOG_DATA) private _columnData: AddColumnsModalData,
-               private searchState: SearchStateService) {
+               private searchState: SearchSettingsService) {
     this.sortedColumns = this._columnData.allColumns.slice().sort();
   }
 

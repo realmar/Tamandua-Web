@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { DashboardStateService } from './dashboard-state.service';
+import { DashboardSettingsService } from './dashboard-settings.service';
 import { PersistentStorageService } from '../../persistence/persistent-storage-service';
 import { isNullOrUndefined } from 'util';
 
 @Injectable()
-export class DashboardPersistentStateServiceService extends DashboardStateService {
+export class DashboardPersistentSettingsService extends DashboardSettingsService {
   private _retrievedDataCount: number;
 
   constructor (private storage: PersistentStorageService) {

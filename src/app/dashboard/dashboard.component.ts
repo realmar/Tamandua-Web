@@ -4,7 +4,7 @@ import { AdvancedCountEndpoint } from '../api/request/endpoints/advanced-count-e
 import { Comparator, ComparatorType } from '../api/request/comparator';
 import { isNullOrUndefined } from 'util';
 import { DashboardCardData } from './dashboard-card/dashboard-card-data';
-import { DashboardStateService } from '../state/dashboard-state-service/dashboard-state.service';
+import { DashboardSettingsService } from '../settings/dashboard-settings-service/dashboard-settings.service';
 import { DashboardOverviewCardComponent } from './dashboard-overview-card/dashboard-overview-card.component';
 import { CardRow } from './card-row';
 
@@ -66,7 +66,7 @@ export class DashboardComponent implements OnInit {
   }
 
   constructor (private apiService: ApiService,
-               private dashboardStateService: DashboardStateService) {
+               private dashboardStateService: DashboardSettingsService) {
     this._cards = [];
   }
 

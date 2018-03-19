@@ -9,7 +9,7 @@ import { SearchResultAddColumnsModalComponent } from './search-result-add-column
 import { AddColumnsModalData } from './search-result-add-columns/add-columns-modal-data';
 import { isNullOrUndefined } from 'util';
 import { SelectedTags } from './search-result-tags-selection/selected-tags';
-import { SearchStateService } from '../state/search-state-service/search-state.service';
+import { SearchSettingsService } from '../settings/search-settings-service/search-settings.service';
 import { TamanduaTableDataSource } from './tamandua-table-data-source';
 import { SaveObjectData } from '../save-object/save-object-data';
 import { JsonSaveStrategy } from '../save-object/strategies/json-save-strategy';
@@ -90,7 +90,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   constructor (private apiService: ApiService,
-               private searchState: SearchStateService,
+               private searchState: SearchSettingsService,
                private dialog: MatDialog) {
     this._rows = new TamanduaTableDataSource<SearchRow>();
     this.allRows = [];

@@ -1,11 +1,11 @@
 import { Injectable, Type } from '@angular/core';
-import { SearchStateService } from './search-state.service';
+import { SearchSettingsService } from './search-settings.service';
 import { SelectedTags } from '../../search-results/search-result-tags-selection/selected-tags';
 import { PersistentStorageService } from '../../persistence/persistent-storage-service';
 import { isNullOrUndefined } from 'util';
 
 @Injectable()
-export class SearchPersistentStateService extends SearchStateService {
+export class SearchPersistentSettingsService extends SearchSettingsService {
   private _restoredDataCount: number;
 
   constructor (private storage: PersistentStorageService) {

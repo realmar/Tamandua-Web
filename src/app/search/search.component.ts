@@ -4,11 +4,12 @@ import { ApiService } from '../api/api-service';
 import { SearchEndpoint } from '../api/request/endpoints/search-endpoint';
 import { Event, NavigationEnd, Router } from '@angular/router';
 import { isNullOrUndefined } from 'util';
-import { SearchStateService } from '../state/search-state-service/search-state.service';
+import { SearchSettingsService } from '../settings/search-settings-service/search-settings.service';
 import { SearchResponse } from '../api/response/search-reponse';
 import { ApiRequest } from '../api/request/request';
 import { Subscription } from 'rxjs/Subscription';
 import { Comparator, ComparatorType } from '../api/request/comparator';
+import { SearchStateService } from '../search-state-service/search-state.service';
 
 @Component({
   selector: 'app-search',
@@ -19,7 +20,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   private _startDateTime: Date;
   set startDateTime (value: Date) {
     this._startDateTime = value;
-    this.searchState.startDatetime = value;
+    this.searchStateService.startDatetime = value;
   }
 
   get startDateTime (): Date {
@@ -29,7 +30,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   private _endDateTime: Date;
   set endDateTime (value: Date) {
     this._endDateTime = value;
-    this.searchState.endDatetime = value;
+    this.searchStateService.endDatetime = value;
   }
 
   get endDateTime (): Date {
@@ -54,7 +55,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   private _routerEventSubscription: Subscription;
 
   constructor (private apiService: ApiService,
-               private searchState: SearchStateService,
+               private searchSettingsService: SearchSettingsService,
+               private searchStateService: SearchStateService,
                private router: Router) {
     this.restoreState();
   }
@@ -71,16 +73,16 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   private restoreState (): void {
     // restore state
-    if (isNullOrUndefined(this.searchState.fields)) {
+    if (isNullOrUndefined(this.searchStateService.fields)) {
       this._fields = [ new SearchFieldData(undefined, undefined, new Comparator(ComparatorType.Regex)) ];
     } else {
-      this._fields = this.searchState.fields.map(field => new SearchFieldData(field.name, field.value, field.comparator));
+      this._fields = this.searchStateService.fields.map(field => new SearchFieldData(field.name, field.value, field.comparator));
     }
 
-    this.searchState.fields = this._fields;
+    this.searchStateService.fields = this._fields;
 
-    this.startDateTime = this.searchState.startDatetime;
-    this.endDateTime = this.searchState.endDatetime;
+    this.startDateTime = this.searchStateService.startDatetime;
+    this.endDateTime = this.searchStateService.endDatetime;
   }
 
   private onRouterEvents (event: Event): void {
@@ -88,8 +90,8 @@ export class SearchComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.router.url === '/search' && this.searchState.doSearch) {
-      this.searchState.doSearch = false;
+    if (this.router.url === '/search' && this.searchStateService.doSearch) {
+      this.searchStateService.doSearch = false;
       this.search();
     }
   }

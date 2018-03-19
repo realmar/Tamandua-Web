@@ -6,15 +6,10 @@ import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 
 @Injectable()
-export class SearchStateService {
+export class SearchSettingsService {
   // region Fields
 
   // Search
-
-  private _doSearch: boolean;
-  private _fields: Array<RequestBuilderField>;
-  private _startDatetime: Date;
-  private _endDatetime: Date;
 
   private _visibleColumns: Array<string>;
   private _selectedTags: SelectedTags;
@@ -32,8 +27,6 @@ export class SearchStateService {
 
   constructor () {
     // default values
-
-    this._doSearch = false;
     this._paginatorPageSize = this._pageSizeOptions[ 0 ];
     this._selectedTags = [];
     this._visibleColumns = [
@@ -57,38 +50,6 @@ export class SearchStateService {
   }
 
 // region Getters and Setter
-
-  public get doSearch (): boolean {
-    return this._doSearch;
-  }
-
-  public set doSearch (value: boolean) {
-    this._doSearch = value;
-  }
-
-  public get fields (): Array<RequestBuilderField> {
-    return this._fields;
-  }
-
-  public set fields (value: Array<RequestBuilderField>) {
-    this._fields = value;
-  }
-
-  public get startDatetime (): Date {
-    return this._startDatetime;
-  }
-
-  public set startDatetime (value: Date) {
-    this._startDatetime = value;
-  }
-
-  public get endDatetime (): Date {
-    return this._endDatetime;
-  }
-
-  public set endDatetime (value: Date) {
-    this._endDatetime = value;
-  }
 
   public getVisibleColumns (): Array<string> {
     return this._visibleColumns;

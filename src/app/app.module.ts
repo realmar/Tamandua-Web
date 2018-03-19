@@ -24,22 +24,23 @@ import { SearchResultsComponent } from './search-results/search-results.componen
 import { SearchResultDetailsModalComponent } from './search-results/search-result-details-modal/search-result-details-modal.component';
 import { SearchResultAddColumnsModalComponent } from './search-results/search-result-add-columns/search-result-add-columns-modal.component';
 import { SearchResultTagsSelectionComponent } from './search-results/search-result-tags-selection/search-result-tags-selection.component';
-import { SearchStateService } from './state/search-state-service/search-state.service';
+import { SearchSettingsService } from './settings/search-settings-service/search-settings.service';
 import { HttpClientModule } from '@angular/common/http';
 import { DashboardCardComponent } from './dashboard/dashboard-card/dashboard-card.component';
 import { DashboardCardItemComponent } from './dashboard/dashboard-card-item/dashboard-card-item.component';
-import { DashboardStateService } from './state/dashboard-state-service/dashboard-state.service';
+import { DashboardSettingsService } from './settings/dashboard-settings-service/dashboard-settings.service';
 import { DashboardOverviewCardComponent } from './dashboard/dashboard-overview-card/dashboard-overview-card.component';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { SaveObjectComponent } from './save-object/save-object.component';
 import { CustomReuseStrategy } from './routing/custom-reuse-strategy';
 import { RouteReuseStrategy } from '@angular/router';
 import { PersistentStorageService } from './persistence/persistent-storage-service';
-import { DashboardPersistentStateServiceService } from './state/dashboard-state-service/dashboard-persistent-state-service.service';
-import { SearchPersistentStateService } from './state/search-state-service/search-persistent-state.service';
+import { DashboardPersistentSettingsService } from './settings/dashboard-settings-service/dashboard-persistent-settings.service';
+import { SearchPersistentSettingsService } from './settings/search-settings-service/search-persistent-settings.service';
 import { PersistentCachedTamanduaService } from './api/persistent-cached-tamandua.service';
 import { IndexedDbService } from './persistence/indexed-db.service';
 import { NgxDnDModule } from '@swimlane/ngx-dnd';
+import { SearchStateService } from './search-state-service/search-state.service';
 
 @NgModule({
   declarations: [
@@ -98,8 +99,9 @@ import { NgxDnDModule } from '@swimlane/ngx-dnd';
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
     { provide: ApiService, useClass: PersistentCachedTamanduaService },
     { provide: PersistentStorageService, useClass: IndexedDbService },
-    { provide: SearchStateService, useClass: SearchPersistentStateService },
-    { provide: DashboardStateService, useClass: DashboardPersistentStateServiceService },
+    { provide: SearchSettingsService, useClass: SearchPersistentSettingsService },
+    { provide: DashboardSettingsService, useClass: DashboardPersistentSettingsService },
+    SearchStateService,
     HttpClientModule
   ],
   bootstrap: [ AppComponent ],

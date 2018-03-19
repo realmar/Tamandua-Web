@@ -2,7 +2,7 @@ import { TestBed, inject } from '@angular/core/testing';
 
 import { SearchStateService } from './search-state.service';
 
-describe('SearchStateService', () => {
+describe('SearchSettingsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [SearchStateService]

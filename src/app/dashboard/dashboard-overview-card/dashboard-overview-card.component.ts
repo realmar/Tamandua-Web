@@ -10,7 +10,7 @@ import { isNullOrUndefined } from 'util';
 import { Observable } from 'rxjs/Observable';
 import { Scale } from 'chroma-js';
 import * as chroma from 'chroma-js';
-import { DashboardStateService } from '../../state/dashboard-state-service/dashboard-state.service';
+import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
 
 interface SummaryChild<T> {
   name: string;
@@ -57,7 +57,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
 
   private _colorRange: Scale;
 
-  constructor (private dashboardState: DashboardStateService,
+  constructor (private dashboardState: DashboardSettingsService,
                private apiService: ApiService) {
     this._summaryRequests = [];
     this._summaryResponses = [];

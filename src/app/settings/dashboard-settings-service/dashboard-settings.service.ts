@@ -4,7 +4,7 @@ import { Subject } from 'rxjs/Subject';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Injectable()
-export class DashboardStateService {
+export class DashboardSettingsService {
 
   // NOTE: you will see a lot of set and get methods instead of setters and getter
   // this is because it is not possible to call a super setters and getters from
