@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import { TimeoutUpdater } from './timeout-updater';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Injectable()
 export class DashboardStateService {
@@ -11,10 +11,6 @@ export class DashboardStateService {
   // a derived class, which is needed here.
 
   private _timeoutBeforeEmit: number;
-
-  private _pastHoursTimeoutEmitter: TimeoutUpdater;
-  private _maxItemCountTimeoutEmitter: TimeoutUpdater;
-  private _intervalTimeoutEmitter: TimeoutUpdater;
 
   private _pastHours: number;
   private _pastHoursSubject: Subject<number>;
@@ -51,15 +47,6 @@ export class DashboardStateService {
 
     this._timeoutBeforeEmit = 800;
 
-    this._pastHoursTimeoutEmitter =
-      new TimeoutUpdater(this.emitPastHours.bind(this), this._timeoutBeforeEmit);
-
-    this._maxItemCountTimeoutEmitter =
-      new TimeoutUpdater(this.emitMaxItemsCount.bind(this), this._timeoutBeforeEmit);
-
-    this._intervalTimeoutEmitter =
-      new TimeoutUpdater(this.emitRefreshInterval.bind(this), this._timeoutBeforeEmit);
-
     this.emitFinishInitialize();
   }
 
@@ -94,7 +81,7 @@ export class DashboardStateService {
     }
 
     this._pastHours = value;
-    this._pastHoursTimeoutEmitter.startOrInterrupt();
+    this._pastHoursSubject.next(value);
   }
 
   public getMaxItemCountPerCard (): number {
@@ -107,7 +94,7 @@ export class DashboardStateService {
     }
 
     this._maxItemCountPerCard = value;
-    this._maxItemCountTimeoutEmitter.startOrInterrupt();
+    this._maxItemsCountSubject.next(value);
   }
 
   public getRefreshInterval (): number {
@@ -120,18 +107,24 @@ export class DashboardStateService {
     }
 
     this._refreshInterval = value;
-    this._intervalTimeoutEmitter.startOrInterrupt();
+    this._refreshIntervalSubject.next(value);
+  }
+
+  private applyDefaultDebounceTime<T> (observable: Observable<T>): Observable<T> {
+    return observable.pipe(
+      debounceTime(this._timeoutBeforeEmit),
+      distinctUntilChanged());
   }
 
   public get pastHoursObservable (): Observable<number> {
-    return this._pastHoursSubject.asObservable();
+    return this.applyDefaultDebounceTime(this._pastHoursSubject.asObservable());
   }
 
   public get maxItemCountObservable (): Observable<number> {
-    return this._maxItemsCountSubject.asObservable();
+    return this.applyDefaultDebounceTime(this._maxItemsCountSubject.asObservable());
   }
 
   public get refreshIntervalObservable (): Observable<number> {
-    return this._refreshIntervalSubject.asObservable();
+    return this.applyDefaultDebounceTime(this._refreshIntervalSubject.asObservable());
   }
 }
