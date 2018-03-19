@@ -66,7 +66,9 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     'string': this.compareString.bind(this),
     'object': this.compareObject.bind(this),
     'datetime': this.compareDatetime.bind(this),
-    'array': this.compareArray.bind(this)
+    'array': this.compareArray.bind(this),
+    'undefined': this.compareUndefined.bind(this),
+    'null': this.compareNull.bind(this)
   };
 
   private static genericCompare<T> (value: T, filter: string, filterTransformLambda: (string) => T): boolean {
@@ -247,6 +249,16 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
       f => Converter.stringToDate(f).getTime());
   }
 
+  private compareUndefined (value: any, filter: string, regexFilter: RegExp): boolean {
+    // exclude undefined values from filter results
+    return false;
+  }
+
+  private compareNull (value: any, filter: string, regexFilter: RegExp): boolean {
+    // exclude null values from filter results
+    return false;
+  }
+
   private isKeyDatetime (key: string): boolean {
     return key.slice(key.length - 4, key.length) === 'time';
   }
@@ -280,12 +292,17 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
           typeStr = typeof(value);
         }
 
-        if (!this.typeCompareFunctionMap[ typeStr ](
-            value,
-            this.filter[ key ],
-            this.filterAsRegex[ key ])) {
-          isValid = false;
-          break;
+        const comparer = this.typeCompareFunctionMap[ typeStr ];
+        if (isNullOrUndefined(comparer)) {
+          console.warn(`No comparator found for type: ${typeStr} while filtering table.`);
+        } else {
+          if (!comparer(
+              value,
+              this.filter[ key ],
+              this.filterAsRegex[ key ])) {
+            isValid = false;
+            break;
+          }
         }
       }
 
