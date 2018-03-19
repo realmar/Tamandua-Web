@@ -1,6 +1,5 @@
+import { SelectedTag } from './selected-tag';
+
 export interface SelectedTags
-  extends Array <{
-    tag: string;
-    selected: boolean;
-  }> {
+  extends Array <SelectedTag> {
 }

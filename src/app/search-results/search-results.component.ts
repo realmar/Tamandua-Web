@@ -38,29 +38,20 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     return this.allRows.length > 0;
   }
 
-  private _visibleColumns = [
-    'phdmxin_time',
-    'sender',
-    'recipient',
-    'tags'
-  ];
-
   public get visibleColumns (): Array<string> {
-    return this._visibleColumns;
+    return this.searchState.getVisibleColumns();
   }
 
   public get visibleColumnsWithMetadata (): Array<string> {
     return [ 'details', ...this.visibleColumns ];
   }
 
-  private _pageSizeOptions: Array<number>;
   public get pageSizeOptions (): Array<number> {
-    return this._pageSizeOptions;
+    return this.searchState.getPageSizeOptions();
   }
 
-  private _pageSize: number;
   public get pageSize (): number {
-    return this._pageSize;
+    return this.searchState.getPaginatorPageSize();
   }
 
   private totalRows: number;
@@ -104,13 +95,6 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this._rows = new TamanduaTableDataSource<SearchRow>();
     this.allRows = [];
     this.allColumns = [];
-    this._pageSizeOptions = [ 5, 10, 25, 100 ];
-
-    if (isNullOrUndefined(this.searchState.getPaginatorPageSize())) {
-      this._pageSize = this._pageSizeOptions[ 0 ];
-    } else {
-      this._pageSize = this.searchState.getPaginatorPageSize();
-    }
 
     this.filter = this.searchState.resultFilter;
     this.filterAsRegex = this.searchState.resultFilterAsRegex;
@@ -126,11 +110,6 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
   ngOnInit () {
     this.apiService.getColumns().subscribe(this.processColumns.bind(this));
-
-    if (!isNullOrUndefined(this.searchState.getVisibleColumns())) {
-      this._visibleColumns = this.searchState.getVisibleColumns();
-    }
-
     this.processRows(this.searchState.searchResults);
   }
 
@@ -140,6 +119,8 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public setSelectedTags (values: SelectedTags) {
+    this.searchState.setSelectedTags(values);
+
     const newFilter = [];
     for (const value of values) {
       if (value.selected) {
@@ -155,7 +136,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this.dialog.open(SearchResultAddColumnsModalComponent, {
       data: {
         allColumns: this.allColumns,
-        displayedColumns: this._visibleColumns
+        displayedColumns: this.searchState.getVisibleColumns()
       } as AddColumnsModalData
     });
   }
@@ -211,8 +192,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public onPageSizeChange (event: PageEvent): void {
-    this._pageSize = event.pageSize;
-    this.searchState.setPaginatorPageSize(this._pageSize);
+    this.searchState.setPaginatorPageSize(event.pageSize);
   }
 
   private compareNumber (value: number, filter: string, regexFilter: RegExp): boolean {

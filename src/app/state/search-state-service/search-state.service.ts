@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { SearchResponse } from '../../api/response/search-reponse';
 import { SelectedTags } from '../../search-results/search-result-tags-selection/selected-tags';
 import { RequestBuilderField } from '../../api/request/request-builder-field';
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class SearchStateService {
@@ -20,12 +22,42 @@ export class SearchStateService {
   private _resultFilter: Map<string, string>;
   private _resultFilterAsRegex: Map<string, RegExp>;
 
+  private _pageSizeOptions = [ 5, 10, 25, 100 ];
   private _paginatorPageSize: number;
 
-  // endregion
+  protected onReadySubject: Subject<any>;
+
+  private _isReady: boolean;
+  public get isReady (): boolean {
+    return this._isReady;
+  }
+
+// endregion
 
   constructor () {
+    // default values
+
     this._doSearch = false;
+    this._paginatorPageSize = this._pageSizeOptions[ 0 ];
+    this._selectedTags = [];
+    this._visibleColumns = [
+      'phdmxin_time',
+      'sender',
+      'recipient',
+      'tags'
+    ];
+
+    this.onReadySubject = new Subject<any>();
+    this.onReadyCallback();
+  }
+
+  protected onReadyCallback (): void {
+    this._isReady = true;
+    this.onReadySubject.next();
+  }
+
+  public onReady (): Observable<any> {
+    return this.onReadySubject.asObservable();
   }
 
 // region Getters and Setter
@@ -100,6 +132,10 @@ export class SearchStateService {
 
   public set resultFilterAsRegex (value: Map<string, RegExp>) {
     this._resultFilterAsRegex = value;
+  }
+
+  public getPageSizeOptions (): Array<number> {
+    return this._pageSizeOptions;
   }
 
   public getPaginatorPageSize (): number {

@@ -1,24 +1,26 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ApiService } from '../../api/api-service';
 import { TagsResponse } from '../../api/response/tags-response';
 import { SelectedTags } from './selected-tags';
 import { MatButtonToggleChange } from '@angular/material/button-toggle/typings/button-toggle';
 import { isNullOrUndefined } from 'util';
 import { SearchStateService } from '../../state/search-state-service/search-state.service';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-search-result-tags-selection',
   templateUrl: './search-result-tags-selection.component.html',
   styleUrls: [ './search-result-tags-selection.component.scss' ]
 })
-export class SearchResultTagsSelectionComponent implements OnInit {
+export class SearchResultTagsSelectionComponent implements OnInit, OnDestroy {
   private readonly defaultNotSelectedTags = [
     'incomplete'
   ];
 
-  private _selectedTags: SelectedTags;
+  private _selectedTagsChangeSubscription: Subscription;
+
   public get selectedTags (): SelectedTags {
-    return this._selectedTags;
+    return this.searchState.getSelectedTags();
   }
 
   @Output() selectedTagsChange: EventEmitter<SelectedTags>;
@@ -26,31 +28,42 @@ export class SearchResultTagsSelectionComponent implements OnInit {
   constructor (private apiService: ApiService,
                private searchState: SearchStateService) {
     this.selectedTagsChange = new EventEmitter<SelectedTags>();
-    this._selectedTags = this.searchState.getSelectedTags();
   }
 
   ngOnInit () {
-    if (isNullOrUndefined(this._selectedTags)) {
-      this._selectedTags = [];
-      this.apiService.getTags().subscribe(this.buildSelectedTags.bind(this));
+    const onReadyCallback = () => {
+      if (this.searchState.getSelectedTags().length === 0) {
+        this.apiService.getTags().subscribe(this.buildSelectedTags.bind(this));
+      }
+      this.selectedTagsChange.emit(this.searchState.getSelectedTags());
+    };
+
+    if (!this.searchState.isReady) {
+      this.searchState.onReady().subscribe(onReadyCallback);
+    } else {
+      onReadyCallback();
     }
-    this.selectedTagsChange.emit(this._selectedTags);
+  }
+
+  ngOnDestroy (): void {
+    if (!isNullOrUndefined(this._selectedTagsChangeSubscription)) {
+      this._selectedTagsChangeSubscription.unsubscribe();
+    }
   }
 
   public onSelectionChange (event: MatButtonToggleChange, tagIndex: number): void {
     this.selectedTags[ tagIndex ].selected = event.source.checked;
-    this.selectedTagsChange.emit(this._selectedTags);
-
-    this.searchState.setSelectedTags(this._selectedTags);
+    this.selectedTagsChange.emit(this.searchState.getSelectedTags());
   }
 
   private buildSelectedTags (tags: TagsResponse): void {
-    this._selectedTags = tags.sort().map(tag => {
+    this.searchState.setSelectedTags(tags.sort().map(tag => {
       return {
         tag: tag,
         selected: this.defaultNotSelectedTags.indexOf(tag) === -1
       };
-    });
-    this.selectedTagsChange.emit(this._selectedTags);
+    }));
+
+    this.selectedTagsChange.emit(this.searchState.getSelectedTags());
   }
 }

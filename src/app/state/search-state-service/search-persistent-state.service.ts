@@ -3,22 +3,55 @@ import { SearchStateService } from './search-state.service';
 import { SelectedTags } from '../../search-results/search-result-tags-selection/selected-tags';
 import { PersistentStorageService } from '../../persistence/persistent-storage-service';
 import { isNullOrUndefined } from 'util';
-import { DataCache } from '../../api/data-cache';
 
 @Injectable()
 export class SearchPersistentStateService extends SearchStateService {
+  private _restoredDataCount: number;
+
   constructor (private storage: PersistentStorageService) {
     super();
 
-    this.getData(Array, 'search_visibleColumns', result => this.setVisibleColumns(result));
-    this.getData(Array, 'search_selectedTags', result => this.setSelectedTags(result));
-    this.getData(Array, 'search_paginatorPageSize', result => this.setPaginatorPageSize(result));
+    this._restoredDataCount = 0;
+    this.getData(Array, 'search_visibleColumns', result => this.setVisibleColumns(result), this.visibleColumnsValidator.bind(this));
+    this.getData(Object, 'search_selectedTags', result => this.setSelectedTags(result), this.selectedTagsvalidator.bind(this));
+    this.getData(Array, 'search_paginatorPageSize', result => this.setPaginatorPageSize(result), this.pageSizeValidator.bind(this));
   }
 
-  private getData<T> (type: Type<T>, key: string, setter: (data: any) => void) {
+  protected onReadyCallback (): void {
+    // do not emit
+  }
+
+  private visibleColumnsValidator (data: Array<string>): boolean {
+    return !isNullOrUndefined(data);
+  }
+
+  private selectedTagsvalidator (data: SelectedTags): boolean {
+    if (isNullOrUndefined(data)) {
+      return false;
+    }
+
+    for (const item of data) {
+      if (!item.tag || isNullOrUndefined(item.selected)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private pageSizeValidator (data: number): boolean {
+    return !isNullOrUndefined(data) && data > 0;
+  }
+
+  private getData<T> (type: Type<T>, key: string, setter: (data: any) => void, dataValidator: (data: T) => boolean) {
     this.storage.load(type, key).subscribe(result => {
-      if (!isNullOrUndefined(result)) {
+      if (!isNullOrUndefined(result) && dataValidator(result)) {
         setter(result);
+      }
+
+      this._restoredDataCount++;
+      if (this._restoredDataCount === 3) {
+        super.onReadyCallback();
       }
     });
   }
@@ -29,6 +62,10 @@ export class SearchPersistentStateService extends SearchStateService {
   }
 
   public setSelectedTags (value: SelectedTags): void {
+    if (!this.selectedTagsvalidator(value)) {
+      console.log(value);
+    }
+
     super.setSelectedTags(value);
     this.storage.save('search_selectedTags', value);
   }
