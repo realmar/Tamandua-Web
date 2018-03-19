@@ -1,20 +1,19 @@
 import { Injectable } from '@angular/core';
-import { SearchResponse } from '../../api/response/search-reponse';
 import { SelectedTags } from '../../search-results/search-result-tags-selection/selected-tags';
-import { RequestBuilderField } from '../../api/request/request-builder-field';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
+import { Setting } from '../setting';
+import { isNullOrUndefined } from 'util';
+import { SettingValidationResult } from '../setting-validation-result';
 
 @Injectable()
 export class SearchSettingsService {
   // region Fields
 
-  // Search
-
-  private _visibleColumns: Array<string>;
-  private _selectedTags: SelectedTags;
+  private _visibleColumns: Setting<Array<string>>;
+  private _selectedTags: Setting<SelectedTags>;
   private _pageSizeOptions = [ 5, 10, 25, 100 ];
-  private _paginatorPageSize: number;
+  private _paginatorPageSize: Setting<number>;
 
   protected onReadySubject: Subject<any>;
 
@@ -27,18 +26,44 @@ export class SearchSettingsService {
 
   constructor () {
     // default values
-    this._paginatorPageSize = this._pageSizeOptions[ 0 ];
-    this._selectedTags = [];
-    this._visibleColumns = [
+    this._paginatorPageSize = new Setting<number>(this._pageSizeOptions[ 0 ], this.pageSizeValidator.bind(this));
+    this._selectedTags = new Setting<SelectedTags>([], this.selectedTagsvalidator.bind(this));
+    this._visibleColumns = new Setting<Array<string>>([
       'phdmxin_time',
       'sender',
       'recipient',
       'tags'
-    ];
+    ], this.visibleColumnsValidator.bind(this));
 
     this.onReadySubject = new Subject<any>();
     this.onReadyCallback();
   }
+
+  // region Validators
+
+  private visibleColumnsValidator (data: Array<string>): SettingValidationResult {
+    return new SettingValidationResult(!isNullOrUndefined(data));
+  }
+
+  private selectedTagsvalidator (data: SelectedTags): SettingValidationResult {
+    if (isNullOrUndefined(data)) {
+      return new SettingValidationResult(false);
+    }
+
+    for (const item of data) {
+      if (!item.tag || isNullOrUndefined(item.selected)) {
+        return new SettingValidationResult(false);
+      }
+    }
+
+    return new SettingValidationResult(true);
+  }
+
+  private pageSizeValidator (data: number): SettingValidationResult {
+    return new SettingValidationResult(!isNullOrUndefined(data) && data > 0);
+  }
+
+  // endregions
 
   protected onReadyCallback (): void {
     this._isReady = true;
@@ -52,31 +77,31 @@ export class SearchSettingsService {
 // region Getters and Setter
 
   public getVisibleColumns (): Array<string> {
-    return this._visibleColumns;
+    return this._visibleColumns.getData();
   }
 
-  public setVisibleColumns (value: Array<string>) {
-    this._visibleColumns = value;
+  public setVisibleColumns (value: Array<string>): SettingValidationResult {
+    return this._visibleColumns.setData(value);
   }
 
   public getSelectedTags (): SelectedTags {
-    return this._selectedTags;
+    return this._selectedTags.getData();
   }
 
-  public setSelectedTags (value: SelectedTags) {
-    this._selectedTags = value;
+  public setSelectedTags (value: SelectedTags): SettingValidationResult {
+    return this._selectedTags.setData(value);
+  }
+
+  public getPaginatorPageSize (): number {
+    return this._paginatorPageSize.getData();
+  }
+
+  public setPaginatorPageSize (value: number): SettingValidationResult {
+    return this._paginatorPageSize.setData(value);
   }
 
   public getPageSizeOptions (): Array<number> {
     return this._pageSizeOptions;
-  }
-
-  public getPaginatorPageSize (): number {
-    return this._paginatorPageSize;
-  }
-
-  public setPaginatorPageSize (value: number) {
-    this._paginatorPageSize = value;
   }
 
 // endregion
