@@ -111,8 +111,6 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   }
 
   public onItemClick (data: DashboardCardItemData): void {
-    this.searchState.searchResults = undefined;
-
     this.searchState.fields = this._data.requestBuilder.getFields().slice();
     this.searchState.fields.push(this._data.buildOnItemClickField(data.key));
 

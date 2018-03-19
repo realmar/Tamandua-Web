@@ -96,9 +96,6 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this.allRows = [];
     this.allColumns = [];
 
-    this.filter = this.searchState.resultFilter;
-    this.filterAsRegex = this.searchState.resultFilterAsRegex;
-
     if (isNullOrUndefined(this.filter)) {
       this.filter = new Map<string, string>();
     }
@@ -110,7 +107,6 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
   ngOnInit () {
     this.apiService.getColumns().subscribe(this.processColumns.bind(this));
-    this.processRows(this.searchState.searchResults);
   }
 
   ngAfterViewInit () {
@@ -170,9 +166,6 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this.filterAsRegex = new Map<string, RegExp>();
     Object.keys(this.filter).map(key =>
       this.filterAsRegex[ key ] = new RegExp(this.filter[ key ], 'i'));
-
-    this.searchState.resultFilter = this.filter;
-    this.searchState.resultFilterAsRegex = this.filterAsRegex;
 
     this.updateFilter();
   }
@@ -314,10 +307,6 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     if (isNullOrUndefined(result)) {
       return;
     }
-
-    // save state
-
-    this.searchState.searchResults = result;
 
     // process result
 

@@ -12,16 +12,12 @@ export class SearchStateService {
   // Search
 
   private _doSearch: boolean;
-
-  private _searchResults: SearchResponse;
   private _fields: Array<RequestBuilderField>;
   private _startDatetime: Date;
   private _endDatetime: Date;
+
   private _visibleColumns: Array<string>;
   private _selectedTags: SelectedTags;
-  private _resultFilter: Map<string, string>;
-  private _resultFilterAsRegex: Map<string, RegExp>;
-
   private _pageSizeOptions = [ 5, 10, 25, 100 ];
   private _paginatorPageSize: number;
 
@@ -70,14 +66,6 @@ export class SearchStateService {
     this._doSearch = value;
   }
 
-  public get searchResults (): SearchResponse {
-    return this._searchResults;
-  }
-
-  public set searchResults (value: SearchResponse) {
-    this._searchResults = value;
-  }
-
   public get fields (): Array<RequestBuilderField> {
     return this._fields;
   }
@@ -116,22 +104,6 @@ export class SearchStateService {
 
   public setSelectedTags (value: SelectedTags) {
     this._selectedTags = value;
-  }
-
-  public get resultFilter (): Map<string, string> {
-    return this._resultFilter;
-  }
-
-  public set resultFilter (value: Map<string, string>) {
-    this._resultFilter = value;
-  }
-
-  public get resultFilterAsRegex (): Map<string, RegExp> {
-    return this._resultFilterAsRegex;
-  }
-
-  public set resultFilterAsRegex (value: Map<string, RegExp>) {
-    this._resultFilterAsRegex = value;
   }
 
   public getPageSizeOptions (): Array<number> {
