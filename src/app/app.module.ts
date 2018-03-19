@@ -11,7 +11,7 @@ import {
   MatIconModule,
   MatInputModule, MatListModule, MatMenuModule,
   MatNativeDateModule, MatPaginatorModule, MatProgressBarModule, MatProgressSpinnerModule,
-  MatSelectModule, MatSortModule, MatTableModule, MatToolbarModule
+  MatSelectModule, MatSortModule, MatTableModule, MatTabsModule, MatToolbarModule
 } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationComponent } from './navigation/navigation.component';
@@ -39,7 +39,7 @@ import { DashboardPersistentStateServiceService } from './state/dashboard-state-
 import { SearchPersistentStateService } from './state/search-state-service/search-persistent-state.service';
 import { PersistentCachedTamanduaService } from './api/persistent-cached-tamandua.service';
 import { IndexedDbService } from './persistence/indexed-db.service';
-import { LocalstorageService } from './persistence/localstorage.service';
+import { NgxDnDModule } from '@swimlane/ngx-dnd';
 
 @NgModule({
   declarations: [
@@ -89,7 +89,10 @@ import { LocalstorageService } from './persistence/localstorage.service';
     MatProgressSpinnerModule,
     MatProgressBarModule,
     MatAutocompleteModule,
-    MatMenuModule
+    MatMenuModule,
+    MatTabsModule,
+
+    NgxDnDModule
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },

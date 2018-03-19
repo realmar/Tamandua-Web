@@ -1,0 +1,11 @@
+@import '~@swimlane/ngx-dnd/release/index.css';
+
+mat-icon {
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.tab-content {
+  margin: 0.5em 0 0 1em;
+  overflow-y: hidden;
+}

@@ -17,13 +17,25 @@ export class SearchResultAddColumnsModalComponent implements OnInit {
     return this.sortedColumns;
   }
 
+  public get displayedColumns (): Array<string> {
+    return this._columnData.displayedColumns;
+  }
+
   constructor (private dialogRef: MatDialogRef<SearchResultDetailsModalComponent>,
                @Inject(MAT_DIALOG_DATA) private _columnData: AddColumnsModalData,
                private searchState: SearchStateService) {
-    this.sortedColumns = this._columnData.allColumns.sort();
+    this.sortedColumns = this._columnData.allColumns.slice().sort();
   }
 
   ngOnInit () {
+  }
+
+  /**
+   * Called when the user drops a dragged item
+   * @param event
+   */
+  public onDropped (event: any): void {
+    this.searchState.setVisibleColumns(this._columnData.displayedColumns);
   }
 
   public isDisplayed (column: string): boolean {
