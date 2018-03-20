@@ -43,7 +43,7 @@ export class SearchResultDetailsModalComponent implements OnInit {
   private _highlightedWords: Map<string, Color>;
   private _currentHighlightedColor: number;
 
-  constructor (private dialogRef: MatDialogRef<SearchResultDetailsModalComponent>,
+  constructor (private _dialogRef: MatDialogRef<SearchResultDetailsModalComponent>,
                @Inject(MAT_DIALOG_DATA) private _rowData: SearchRow) {
     this._highlightedWords = new Map<string, Color>();
     this._currentHighlightedColor = 0;

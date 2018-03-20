@@ -13,14 +13,14 @@ import * as chroma from 'chroma-js';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
 
 interface SummaryChild<T> {
-  name: string;
+  readonly name: string;
   data: T;
 }
 
 interface SummaryGroup<T> {
-  name: string;
+  readonly name: string;
   data: T;
-  children: Array<SummaryChild<T>>;
+  readonly children: Array<SummaryChild<T>>;
 }
 
 type SummaryCollection<T> = Array<SummaryGroup<T>>;
@@ -57,8 +57,8 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
 
   private _colorRange: Scale;
 
-  constructor (private dashboardState: DashboardSettingsService,
-               private apiService: ApiService) {
+  constructor (private _dashboardState: DashboardSettingsService,
+               private _apiService: ApiService) {
     this._summaryRequests = [];
     this._summaryResponses = [];
     this._colorRange = chroma.scale([ '#E1F5FE', '#03A9F4' ]);
@@ -66,10 +66,10 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
 
   ngOnInit () {
     this._onIntervalChangeSubscription =
-      this.dashboardState.refreshIntervalObservable.subscribe(this.onRefreshIntervalChange.bind(this));
+      this._dashboardState.refreshIntervalObservable.subscribe(this.onRefreshIntervalChange.bind(this));
 
     this._onPastHoursChangeSubscription =
-      this.dashboardState.pastHoursObservable.subscribe(this.onPastHoursChange.bind(this));
+      this._dashboardState.pastHoursObservable.subscribe(this.onPastHoursChange.bind(this));
 
     const isReadyCallback = () => {
       this.createIntervalSubscription();
@@ -77,8 +77,8 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
       this.getData();
     };
 
-    if (!this.dashboardState.isInitialized) {
-      this.dashboardState.onFinishInitialize.subscribe(isReadyCallback);
+    if (!this._dashboardState.isInitialized) {
+      this._dashboardState.onFinishInitialize.subscribe(isReadyCallback);
     } else {
       isReadyCallback();
     }
@@ -91,7 +91,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private createIntervalSubscription (): void {
-    this._intervalSubscription = Observable.interval(this.dashboardState.getRefreshInterval()).subscribe(this.getData.bind(this));
+    this._intervalSubscription = Observable.interval(this._dashboardState.getRefreshInterval()).subscribe(this.getData.bind(this));
   }
 
   private onPastHoursChange (value: number) {
@@ -108,14 +108,14 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private buildRequests (): void {
-    if (!this.dashboardState.isInitialized) {
+    if (!this._dashboardState.isInitialized) {
       return;
     }
 
-    const builder = this.apiService.getRequestBuilder();
+    const builder = this._apiService.getRequestBuilder();
 
     const date = new Date();
-    date.setHours(date.getHours() - this.dashboardState.getPastHours());
+    date.setHours(date.getHours() - this._dashboardState.getPastHours());
     builder.setStartDatetime(date);
     builder.setEndpoint(new CountEndpoint());
 
@@ -226,19 +226,19 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private getData (): void {
-    if (this._isDoingRequest || !this.dashboardState.isInitialized) {
+    if (this._isDoingRequest || !this._dashboardState.isInitialized) {
       return;
     }
 
     this._isDoingRequest = true;
-    this.apiService.SubmitRequest(this._totalRequest);
+    this._apiService.SubmitRequest(this._totalRequest);
   }
 
   private processSummaryTotal (result: CountResponse): void {
     this._totalResponse = result;
 
     for (const group of this._summaryRequests) {
-      this.apiService.SubmitRequest(group.data);
+      this._apiService.SubmitRequest(group.data);
     }
   }
 
@@ -255,7 +255,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
 
     this._summaryResponses[ index ].data = new DashboardCardItemData(name, result, this._totalResponse, this._colorRange);
     for (const child of this._summaryRequests[ index ].children) {
-      this.apiService.SubmitRequest(child.data);
+      this._apiService.SubmitRequest(child.data);
     }
   }
 

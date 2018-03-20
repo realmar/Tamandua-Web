@@ -20,7 +20,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   private _startDateTime: Date;
   set startDateTime (value: Date) {
     this._startDateTime = value;
-    this.searchStateService.startDatetime = value;
+    this._searchStateService.startDatetime = value;
   }
 
   get startDateTime (): Date {
@@ -30,7 +30,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   private _endDateTime: Date;
   set endDateTime (value: Date) {
     this._endDateTime = value;
-    this.searchStateService.endDatetime = value;
+    this._searchStateService.endDatetime = value;
   }
 
   get endDateTime (): Date {
@@ -54,15 +54,15 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   private _routerEventSubscription: Subscription;
 
-  constructor (private apiService: ApiService,
-               private searchSettingsService: SearchSettingsService,
-               private searchStateService: SearchStateService,
-               private router: Router) {
+  constructor (private _apiService: ApiService,
+               private _searchSettingsService: SearchSettingsService,
+               private _searchStateService: SearchStateService,
+               private _router: Router) {
     this.restoreState();
   }
 
   ngOnInit () {
-    this._routerEventSubscription = this.router.events.subscribe(this.onRouterEvents.bind(this));
+    this._routerEventSubscription = this._router.events.subscribe(this.onRouterEvents.bind(this));
   }
 
   ngOnDestroy (): void {
@@ -73,16 +73,16 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   private restoreState (): void {
     // restore state
-    if (isNullOrUndefined(this.searchStateService.fields)) {
+    if (isNullOrUndefined(this._searchStateService.fields)) {
       this._fields = [ new SearchFieldData(undefined, undefined, new Comparator(ComparatorType.Regex)) ];
     } else {
-      this._fields = this.searchStateService.fields.map(field => new SearchFieldData(field.name, field.value, field.comparator));
+      this._fields = this._searchStateService.fields.map(field => new SearchFieldData(field.name, field.value, field.comparator));
     }
 
-    this.searchStateService.fields = this._fields;
+    this._searchStateService.fields = this._fields;
 
-    this.startDateTime = this.searchStateService.startDatetime;
-    this.endDateTime = this.searchStateService.endDatetime;
+    this.startDateTime = this._searchStateService.startDatetime;
+    this.endDateTime = this._searchStateService.endDatetime;
   }
 
   private onRouterEvents (event: Event): void {
@@ -90,15 +90,15 @@ export class SearchComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.router.url === '/search' && this.searchStateService.doSearch) {
-      this.searchStateService.doSearch = false;
+    if (this._router.url === '/search' && this._searchStateService.doSearch) {
+      this._searchStateService.doSearch = false;
       this.search();
     }
   }
 
   private submitRequest (request: ApiRequest): void {
     this._isLoading = true;
-    this.apiService.SubmitRequest(request);
+    this._apiService.SubmitRequest(request);
   }
 
   private processSearchResult (result: SearchResponse): void {
@@ -141,7 +141,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const builder = this.apiService.getRequestBuilder();
+    const builder = this._apiService.getRequestBuilder();
 
     builder.setCallback(this.processSearchResult.bind(this));
     builder.setEndpoint(new SearchEndpoint(0, 1000));

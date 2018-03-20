@@ -13,10 +13,10 @@ import { DataCache } from './data-cache';
 import { Subject } from 'rxjs/Subject';
 
 interface DataCacheMetaData {
-  key: string;
-  cacheSetter: (data: any) => void;
+  readonly key: string;
+  readonly cacheSetter: (data: any) => void;
   needsPersistence: boolean;
-  type: Type<any>;
+  readonly type: Type<any>;
 }
 
 enum CachedKeys {
@@ -56,7 +56,7 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
   private _onReadySubject: Subject<any>;
   private _onReady: Observable<any>;
 
-  constructor (private storage: PersistentStorageService, httpClient: HttpClient) {
+  constructor (private _storage: PersistentStorageService, httpClient: HttpClient) {
     super(httpClient);
 
     this._isReady = false;
@@ -67,7 +67,7 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
 
     this.dataCacheMetaData
       .forEach(value => {
-        this.storage.load<any>(value.type, value.key).subscribe(
+        this._storage.load<any>(value.type, value.key).subscribe(
           result => {
             let isValid = true;
             if (result instanceof DataCache) {
@@ -105,7 +105,7 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
 
       result.subscribe(data => {
         if (metaData.needsPersistence) {
-          this.storage.save(metaData.key, cache);
+          this._storage.save(metaData.key, cache);
         }
 
         subject.next(data);
@@ -147,7 +147,7 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
       result.subscribe(data => {
         if (needsPersistence) {
           const metadata = this.dataCacheMetaData.get(CachedKeys.FieldChoices);
-          this.storage.save(metadata.key, this.fieldChoiceCaches);
+          this._storage.save(metadata.key, this.fieldChoiceCaches);
         }
 
         subject.next(data);

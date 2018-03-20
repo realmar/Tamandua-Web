@@ -20,20 +20,20 @@ import { SupportedFieldchoicesEndpoint } from './request/endpoints/supported-fie
 
 @Injectable()
 export class TamanduaService implements ApiService {
-  private readonly apiRoot = 'http://localhost:8080';
+  private readonly _apiRoot = 'http://localhost:8080';
 
-  constructor (private httpClient: HttpClient) {
+  constructor (private _httpClient: HttpClient) {
   }
 
   private createFullUrl (apiUrl: string): string {
-    return [ this.apiRoot, apiUrl ].join('/');
+    return [ this._apiRoot, apiUrl ].join('/');
   }
 
   private makeRequest<TResponse extends ApiResponse> (endpoint: Endpoint, data?: object): Observable<TResponse> {
     if (endpoint.method === EndpointMethod.Get) {
-      return this.httpClient.get<TResponse>(this.createFullUrl(endpoint.apiUrl));
+      return this._httpClient.get<TResponse>(this.createFullUrl(endpoint.apiUrl));
     } else if (endpoint.method === EndpointMethod.Post) {
-      return this.httpClient.post<TResponse>(this.createFullUrl(endpoint.apiUrl), data);
+      return this._httpClient.post<TResponse>(this.createFullUrl(endpoint.apiUrl), data);
     } else {
       throw new Error(`Endpoint method not supported: ${endpoint.method}`);
     }

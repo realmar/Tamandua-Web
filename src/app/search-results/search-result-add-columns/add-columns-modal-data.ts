@@ -1,4 +1,4 @@
 export interface AddColumnsModalData {
-  allColumns: Array<string>;
-  displayedColumns: Array<string>;
+  readonly allColumns: Array<string>;
+  readonly displayedColumns: Array<string>;
 }

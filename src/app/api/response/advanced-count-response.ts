@@ -1,11 +1,11 @@
 import { ApiResponse } from './api-response';
 
 export interface AdvancedCountItem {
-  key: string;
-  value: number;
+  readonly key: string;
+  readonly value: number;
 }
 
 export interface AdvancedCountResponse extends ApiResponse {
-  items: Array<AdvancedCountItem>;
-  total: number;
+  readonly items: Array<AdvancedCountItem>;
+  readonly total: number;
 }

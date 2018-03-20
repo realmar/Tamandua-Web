@@ -2,10 +2,10 @@ import { ActivatedRouteSnapshot, DetachedRouteHandle, RouteReuseStrategy } from 
 import { routes } from './app-routing.module';
 
 export class CustomReuseStrategy implements RouteReuseStrategy {
-  private readonly storedRoutes: Map<string, DetachedRouteHandle>;
+  private readonly _storedRoutes: Map<string, DetachedRouteHandle>;
 
   public constructor () {
-    this.storedRoutes = new Map<string, DetachedRouteHandle>();
+    this._storedRoutes = new Map<string, DetachedRouteHandle>();
   }
 
   public shouldDetach (route: ActivatedRouteSnapshot): boolean {
@@ -17,15 +17,15 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
       return;
     }
 
-    this.storedRoutes.set(route.routeConfig.path, handle);
+    this._storedRoutes.set(route.routeConfig.path, handle);
   }
 
   public shouldAttach (route: ActivatedRouteSnapshot): boolean {
-    return this.storedRoutes.has(route.routeConfig.path);
+    return this._storedRoutes.has(route.routeConfig.path);
   }
 
   public retrieve (route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
-    return this.storedRoutes.get(route.routeConfig.path);
+    return this._storedRoutes.get(route.routeConfig.path);
   }
 
   public shouldReuseRoute (future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {

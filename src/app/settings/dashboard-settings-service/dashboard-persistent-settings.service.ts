@@ -8,7 +8,7 @@ import { SettingValidationResult } from '../setting-validation-result';
 export class DashboardPersistentSettingsService extends DashboardSettingsService {
   private _retrievedDataCount: number;
 
-  constructor (private storage: PersistentStorageService) {
+  constructor (private _storage: PersistentStorageService) {
     super();
 
     this._retrievedDataCount = 0;
@@ -18,7 +18,7 @@ export class DashboardPersistentSettingsService extends DashboardSettingsService
   }
 
   private getData (key: string, setter: (data: any) => void, callback: (data: any) => void) {
-    this.storage.load(Number, key).subscribe(result => {
+    this._storage.load(Number, key).subscribe(result => {
       if (!isNullOrUndefined(result) && result > 0) {
         setter(result);
       }
@@ -40,7 +40,7 @@ export class DashboardPersistentSettingsService extends DashboardSettingsService
   public setPastHours (value: number): SettingValidationResult {
     const result = super.setPastHours(value);
     if (result.isValid) {
-      this.storage.save('dashboard_pastHours', value);
+      this._storage.save('dashboard_pastHours', value);
     }
 
     return result;
@@ -49,7 +49,7 @@ export class DashboardPersistentSettingsService extends DashboardSettingsService
   public setMaxItemCountPerCard (value: number): SettingValidationResult {
     const result = super.setMaxItemCountPerCard(value);
     if (result.isValid) {
-      this.storage.save('dashboard_MaxItemCountPerCard', value);
+      this._storage.save('dashboard_MaxItemCountPerCard', value);
     }
 
     return result;
@@ -58,7 +58,7 @@ export class DashboardPersistentSettingsService extends DashboardSettingsService
   public setRefreshInterval (value: number): SettingValidationResult {
     const result = super.setRefreshInterval(value);
     if (result.isValid) {
-      this.storage.save('dashboard_RefreshInterval', value);
+      this._storage.save('dashboard_RefreshInterval', value);
     }
 
     return result;

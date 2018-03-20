@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Comparator, ComparatorType } from '../api/request/comparator';
 import { ApiService } from '../api/api-service';
 import { SearchFieldData } from './search-field-data';
@@ -74,7 +74,7 @@ export class SearchFieldComponent implements OnInit {
     return !isNullOrUndefined(this._fieldChoicesMap.get(this.field));
   }
 
-  constructor (private apiService: ApiService) {
+  constructor (private _apiService: ApiService) {
     this._maxFieldChoicesPerField = 10;
     this._fieldChoicesMap = new Map<string, FieldChoicesResponse>();
     this._fields = [ 'loading ...' ];
@@ -96,7 +96,7 @@ export class SearchFieldComponent implements OnInit {
 
     this.dataChange.emit(this._data);
 
-    this.apiService.getColumns().subscribe(data => {
+    this._apiService.getColumns().subscribe(data => {
       const reassignName = this._fields[ 0 ].startsWith('loading');
       this._fields = data;
       if (reassignName) {
@@ -108,9 +108,9 @@ export class SearchFieldComponent implements OnInit {
   }
 
   private getFieldChoices (): void {
-    this.apiService.getSupportedFieldChoices().subscribe(response => {
+    this._apiService.getSupportedFieldChoices().subscribe(response => {
       for (const column of this._fields.filter(x => response.indexOf(x) !== -1)) {
-        this.apiService.getFieldChoices(column, this._maxFieldChoicesPerField)
+        this._apiService.getFieldChoices(column, this._maxFieldChoicesPerField)
           .subscribe(result => this.processFieldChoicesResponse(result, column));
       }
     });

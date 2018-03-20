@@ -38,11 +38,11 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public get hasRows (): boolean {
-    return this.allRows.length > 0;
+    return this._allRows.length > 0;
   }
 
   public get visibleColumns (): Array<string> {
-    return this.searchSettingsService.getVisibleColumns();
+    return this._searchSettingsService.getVisibleColumns();
   }
 
   public get visibleColumnsWithMetadata (): Array<string> {
@@ -50,19 +50,19 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public get pageSizeOptions (): Array<number> {
-    return this.searchSettingsService.getPageSizeOptions();
+    return this._searchSettingsService.getPageSizeOptions();
   }
 
   public get pageSize (): number {
-    return this.searchSettingsService.getPaginatorPageSize();
+    return this._searchSettingsService.getPaginatorPageSize();
   }
 
-  private totalRows: number;
-  private allColumns: Array<string>;
-  private allRows: Array<SearchRow>;
+  private _totalRows: number;
+  private _allColumns: Array<string>;
+  private _allRows: Array<SearchRow>;
 
-  private filter: Map<string, string>;
-  private filterAsRegex: Map<string, RegExp>;
+  private _filter: Map<string, string>;
+  private _filterAsRegex: Map<string, RegExp>;
 
   private readonly typeCompareFunctionMap = {
     'number': this.compareNumber.bind(this),
@@ -96,9 +96,9 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     return value === filterTransformLambda(filter);
   }
 
-  constructor (private apiService: ApiService,
-               private searchSettingsService: SearchSettingsService,
-               private dialog: MatDialog) {
+  constructor (private _apiService: ApiService,
+               private _searchSettingsService: SearchSettingsService,
+               private _dialog: MatDialog) {
     this._onFilterChange = new Subject<any>();
     this._onFilterChange
       .asObservable()
@@ -107,14 +107,14 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
       ).subscribe(() => this.updateFilter());
 
     this._rows = new TamanduaTableDataSource<SearchRow>();
-    this.allRows = [];
-    this.allColumns = [];
+    this._allRows = [];
+    this._allColumns = [];
 
     this.clearFilters();
   }
 
   ngOnInit () {
-    this.apiService.getColumns().subscribe(this.processColumns.bind(this));
+    this._apiService.getColumns().subscribe(this.processColumns.bind(this));
   }
 
   ngAfterViewInit () {
@@ -123,7 +123,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public setSelectedTags (values: SelectedTags) {
-    this.searchSettingsService.setSelectedTags(values);
+    this._searchSettingsService.setSelectedTags(values);
 
     const newFilter = [];
     for (const value of values) {
@@ -137,23 +137,23 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public addColumns (): void {
-    this.dialog.open(SearchResultAddColumnsModalComponent, {
+    this._dialog.open(SearchResultAddColumnsModalComponent, {
       data: {
-        allColumns: this.allColumns,
-        displayedColumns: this.searchSettingsService.getVisibleColumns()
+        allColumns: this._allColumns,
+        displayedColumns: this._searchSettingsService.getVisibleColumns()
       } as AddColumnsModalData
     });
   }
 
   public showDetails (row: SearchRow) {
-    this.dialog.open(SearchResultDetailsModalComponent, {
+    this._dialog.open(SearchResultDetailsModalComponent, {
       width: '98%',
       data: row
     });
   }
 
   public getFilter (column: string): string {
-    const value = this.filter[ column ];
+    const value = this._filter[ column ];
     return isNullOrUndefined(value) ? '' : value;
   }
 
@@ -161,19 +161,19 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     if (!filterValue) {
       // remove key `column`
       // delete this.filter[column] does not work (and may be slow on certain engines)
-      this.filter = Object.keys(this.filter).reduce((result, key) => {
+      this._filter = Object.keys(this._filter).reduce((result, key) => {
         if (key !== column) {
-          result[ key ] = this.filter[ key ];
+          result[ key ] = this._filter[ key ];
         }
         return result;
       }, {}) as Map<string, string>;
     } else {
-      this.filter[ column ] = filterValue.trim();
+      this._filter[ column ] = filterValue.trim();
     }
 
-    this.filterAsRegex = new Map<string, RegExp>();
-    Object.keys(this.filter).map(key =>
-      this.filterAsRegex[ key ] = new RegExp(this.filter[ key ], 'i'));
+    this._filterAsRegex = new Map<string, RegExp>();
+    Object.keys(this._filter).map(key =>
+      this._filterAsRegex[ key ] = new RegExp(this._filter[ key ], 'i'));
 
     // this.updateFilter();
     this._onFilterChange.next();
@@ -194,7 +194,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public onPageSizeChange (event: PageEvent): void {
-    this.searchSettingsService.setPaginatorPageSize(event.pageSize);
+    this._searchSettingsService.setPaginatorPageSize(event.pageSize);
   }
 
   private compareNumber (value: number, filter: string, regexFilter: RegExp): boolean {
@@ -274,7 +274,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     // This needs to be ultra fast ... needs further investigation
 
     // prevent key evaluation for every row
-    const filterKeys = Object.keys(this.filter);
+    const filterKeys = Object.keys(this._filter);
     // prevent dereference array every iteration
     const filterKeyLength = filterKeys.length;
 
@@ -282,13 +282,13 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
     // This loop here is probably slow, however it should be fast ...
     let counter = 0;
-    for (let i = 0; i < this.allRows.length; ++i) {
+    for (let i = 0; i < this._allRows.length; ++i) {
       let isValid = true;
 
       // Check all filters. All filters need to match.
       for (let j = 0; j < filterKeyLength; ++j) {
         const key = filterKeys[ j ];
-        const value = this.allRows[ i ][ filterKeys[ j ] ];
+        const value = this._allRows[ i ][ filterKeys[ j ] ];
         let typeStr: string;
 
         if (this.isKeyDatetime(key)) {
@@ -305,8 +305,8 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
         } else {
           if (!comparer(
               value,
-              this.filter[ key ],
-              this.filterAsRegex[ key ])) {
+              this._filter[ key ],
+              this._filterAsRegex[ key ])) {
             isValid = false;
             break;
           }
@@ -316,7 +316,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
       if (isValid) {
         // .push( ... ) is slow:
         // https://jsperf.com/push-allocated-vs-dynamic
-        rows[ counter++ ] = this.allRows[ i ];
+        rows[ counter++ ] = this._allRows[ i ];
       }
     }
 
@@ -324,16 +324,16 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   private clearFilters (): void {
-    this.filter = new Map<string, string>();
-    this.filterAsRegex = new Map<string, RegExp>();
+    this._filter = new Map<string, string>();
+    this._filterAsRegex = new Map<string, RegExp>();
 
-    if (this.searchSettingsService.isReady) {
-      this.setSelectedTags(this.searchSettingsService.getSelectedTags());
+    if (this._searchSettingsService.isReady) {
+      this.setSelectedTags(this._searchSettingsService.getSelectedTags());
     }
   }
 
   private processColumns (columns: ColumnsResponse): void {
-    this.allColumns = columns;
+    this._allColumns = columns;
   }
 
   private processRows (result: SearchResponse): void {
@@ -343,8 +343,8 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
     // process result
 
-    this.totalRows = result.total_rows;
-    this.allRows = result.rows;
+    this._totalRows = result.total_rows;
+    this._allRows = result.rows;
 
     this.updateFilter();
 

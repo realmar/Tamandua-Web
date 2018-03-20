@@ -9,7 +9,7 @@ import { SettingValidationResult } from '../setting-validation-result';
 export class SearchPersistentSettingsService extends SearchSettingsService {
   private _restoredDataCount: number;
 
-  constructor (private storage: PersistentStorageService) {
+  constructor (private _storage: PersistentStorageService) {
     super();
 
     this._restoredDataCount = 0;
@@ -23,7 +23,7 @@ export class SearchPersistentSettingsService extends SearchSettingsService {
   }
 
   private getData<T> (type: Type<T>, key: string, setter: (data: any) => void) {
-    this.storage.load(type, key).subscribe(result => {
+    this._storage.load(type, key).subscribe(result => {
       if (!isNullOrUndefined(result)) {
         setter(result);
       }
@@ -38,7 +38,7 @@ export class SearchPersistentSettingsService extends SearchSettingsService {
   public setVisibleColumns (value: Array<string>): SettingValidationResult {
     const result = super.setVisibleColumns(value);
     if (result.isValid) {
-      this.storage.save('search_visibleColumns', value);
+      this._storage.save('search_visibleColumns', value);
     }
 
     return result;
@@ -47,7 +47,7 @@ export class SearchPersistentSettingsService extends SearchSettingsService {
   public setSelectedTags (value: SelectedTags): SettingValidationResult {
     const result = super.setSelectedTags(value);
     if (result.isValid) {
-      this.storage.save('search_selectedTags', value);
+      this._storage.save('search_selectedTags', value);
     }
 
     return result;
@@ -56,7 +56,7 @@ export class SearchPersistentSettingsService extends SearchSettingsService {
   public setPaginatorPageSize (value: number): SettingValidationResult {
     const result = super.setPaginatorPageSize(value);
     if (result.isValid) {
-      this.storage.save('search_paginatorPageSize', value);
+      this._storage.save('search_paginatorPageSize', value);
     }
 
     return result;

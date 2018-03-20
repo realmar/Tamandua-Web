@@ -1,11 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../api/api-service';
 import { AdvancedCountEndpoint } from '../api/request/endpoints/advanced-count-endpoint';
 import { Comparator, ComparatorType } from '../api/request/comparator';
 import { isNullOrUndefined } from 'util';
 import { DashboardCardData } from './dashboard-card/dashboard-card-data';
 import { DashboardSettingsService } from '../settings/dashboard-settings-service/dashboard-settings.service';
-import { DashboardOverviewCardComponent } from './dashboard-overview-card/dashboard-overview-card.component';
 import { CardRow } from './card-row';
 
 @Component({
@@ -16,23 +15,23 @@ import { CardRow } from './card-row';
 export class DashboardComponent implements OnInit {
   // region Card Text Constants
 
-  private readonly deliveredTitle = 'Delivered';
+  private readonly _deliveredTitle = 'Delivered';
 
-  private readonly deliveredSenders = 'Top delivered senders';
-  private readonly deliveredSenderDomains = 'Top delivered sender domains';
+  private readonly _deliveredSenders = 'Top delivered senders';
+  private readonly _deliveredSenderDomains = 'Top delivered sender domains';
 
-  private readonly greylisted = 'Greylisted';
+  private readonly _greylisted = 'Greylisted';
 
-  private readonly greylistedTitle = 'Top greylisted';
-  private readonly greylistedDomains = 'Top greylisted domains';
+  private readonly _greylistedTitle = 'Top greylisted';
+  private readonly _greylistedDomains = 'Top greylisted domains';
 
-  private readonly spamTitle = 'Spam';
+  private readonly _spamTitle = 'Spam';
 
-  private readonly spamSenders = 'Top spam senders';
-  private readonly spamSenderDomains = 'Top spam sender domains';
+  private readonly _spamSenders = 'Top spam senders';
+  private readonly _spamSenderDomains = 'Top spam sender domains';
 
-  private readonly rejectTitle = 'Rejected';
-  private readonly rejectReasons = 'Top reject reasons';
+  private readonly _rejectTitle = 'Rejected';
+  private readonly _rejectReasons = 'Top reject reasons';
 
   // endregion
 
@@ -42,31 +41,31 @@ export class DashboardComponent implements OnInit {
   }
 
   public get pastHoursCount (): number {
-    return this.dashboardStateService.getPastHours();
+    return this._dashboardStateService.getPastHours();
   }
 
   public set pastHoursCount (value: number) {
-    this.dashboardStateService.setPastHours(value);
+    this._dashboardStateService.setPastHours(value);
   }
 
   public get maxItemCountPerCard (): number {
-    return this.dashboardStateService.getMaxItemCountPerCard();
+    return this._dashboardStateService.getMaxItemCountPerCard();
   }
 
   public set maxItemCountPerCard (value: number) {
-    this.dashboardStateService.setMaxItemCountPerCard(value);
+    this._dashboardStateService.setMaxItemCountPerCard(value);
   }
 
   public get refreshInterval (): number {
-    return this.dashboardStateService.getRefreshInterval() / 1000;
+    return this._dashboardStateService.getRefreshInterval() / 1000;
   }
 
   public set refreshInterval (value: number) {
-    this.dashboardStateService.setRefreshInterval(value * 1000);
+    this._dashboardStateService.setRefreshInterval(value * 1000);
   }
 
-  constructor (private apiService: ApiService,
-               private dashboardStateService: DashboardSettingsService) {
+  constructor (private _apiService: ApiService,
+               private _dashboardStateService: DashboardSettingsService) {
     this._cards = [];
   }
 
@@ -90,12 +89,12 @@ export class DashboardComponent implements OnInit {
           };
         }
 
-        const builder = this.apiService.getRequestBuilder();
+        const builder = this._apiService.getRequestBuilder();
 
         if (j % 2 === 0) {
-          builder.setEndpoint(new AdvancedCountEndpoint('sender', this.dashboardStateService.getMaxItemCountPerCard()));
+          builder.setEndpoint(new AdvancedCountEndpoint('sender', this._dashboardStateService.getMaxItemCountPerCard()));
         } else {
-          builder.setEndpoint(new AdvancedCountEndpoint('sender', this.dashboardStateService.getMaxItemCountPerCard(), '@'));
+          builder.setEndpoint(new AdvancedCountEndpoint('sender', this._dashboardStateService.getMaxItemCountPerCard(), '@'));
         }
 
         const date = new Date();
@@ -135,10 +134,10 @@ export class DashboardComponent implements OnInit {
     addFilterToBuilder(this._cards[ 0 ].cardData[ 0 ]);
     addFilterToBuilder(this._cards[ 0 ].cardData[ 1 ]);
 
-    this._cards[ 0 ].title = this.deliveredTitle;
+    this._cards[ 0 ].title = this._deliveredTitle;
 
-    this._cards[ 0 ].cardData[ 0 ].title = this.deliveredSenders;
-    this._cards[ 0 ].cardData[ 1 ].title = this.deliveredSenderDomains;
+    this._cards[ 0 ].cardData[ 0 ].title = this._deliveredSenders;
+    this._cards[ 0 ].cardData[ 1 ].title = this._deliveredSenderDomains;
 
     this._cards[ 0 ].cardData[ 0 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilder;
     this._cards[ 0 ].cardData[ 1 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilderDomainOnly;
@@ -154,10 +153,10 @@ export class DashboardComponent implements OnInit {
     addFilterToBuilder(this._cards[ 1 ].cardData[ 0 ]);
     addFilterToBuilder(this._cards[ 1 ].cardData[ 1 ]);
 
-    this._cards[ 1 ].title = this.greylistedTitle;
+    this._cards[ 1 ].title = this._greylistedTitle;
 
-    this._cards[ 1 ].cardData[ 0 ].title = this.greylisted;
-    this._cards[ 1 ].cardData[ 1 ].title = this.greylistedDomains;
+    this._cards[ 1 ].cardData[ 0 ].title = this._greylisted;
+    this._cards[ 1 ].cardData[ 1 ].title = this._greylistedDomains;
 
     this._cards[ 1 ].cardData[ 0 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilder;
     this._cards[ 1 ].cardData[ 1 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilderDomainOnly;
@@ -173,10 +172,10 @@ export class DashboardComponent implements OnInit {
     addFilterToBuilder(this._cards[ 2 ].cardData[ 0 ]);
     addFilterToBuilder(this._cards[ 2 ].cardData[ 1 ]);
 
-    this._cards[ 2 ].title = this.spamTitle;
+    this._cards[ 2 ].title = this._spamTitle;
 
-    this._cards[ 2 ].cardData[ 0 ].title = this.spamSenders;
-    this._cards[ 2 ].cardData[ 1 ].title = this.spamSenderDomains;
+    this._cards[ 2 ].cardData[ 0 ].title = this._spamSenders;
+    this._cards[ 2 ].cardData[ 1 ].title = this._spamSenderDomains;
 
     this._cards[ 2 ].cardData[ 0 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilder;
     this._cards[ 2 ].cardData[ 1 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilderDomainOnly;
@@ -186,13 +185,13 @@ export class DashboardComponent implements OnInit {
      */
 
     addFilterToBuilder = (data: DashboardCardData) => {
-      data.requestBuilder.setEndpoint(new AdvancedCountEndpoint('rejectreason', this.dashboardStateService.getMaxItemCountPerCard()));
+      data.requestBuilder.setEndpoint(new AdvancedCountEndpoint('rejectreason', this._dashboardStateService.getMaxItemCountPerCard()));
     };
 
     addFilterToBuilder(this._cards[ 3 ].cardData[ 0 ]);
 
-    this._cards[ 3 ].title = this.rejectTitle;
-    this._cards[ 3 ].cardData[ 0 ].title = this.rejectReasons;
+    this._cards[ 3 ].title = this._rejectTitle;
+    this._cards[ 3 ].cardData[ 0 ].title = this._rejectReasons;
 
     // there is not a card for domain names only
     this._cards[ 3 ].cardData.splice(1, 1);

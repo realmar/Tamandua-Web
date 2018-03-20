@@ -11,20 +11,20 @@ import { SearchSettingsService } from '../../settings/search-settings-service/se
 })
 export class SearchResultAddColumnsModalComponent implements OnInit {
 
-  private sortedColumns: Array<string>;
+  private _sortedColumns: Array<string>;
 
   public get columns (): Array<string> {
-    return this.sortedColumns;
+    return this._sortedColumns;
   }
 
   public get displayedColumns (): Array<string> {
     return this._columnData.displayedColumns;
   }
 
-  constructor (private dialogRef: MatDialogRef<SearchResultDetailsModalComponent>,
+  constructor (private _dialogRef: MatDialogRef<SearchResultDetailsModalComponent>,
                @Inject(MAT_DIALOG_DATA) private _columnData: AddColumnsModalData,
-               private searchState: SearchSettingsService) {
-    this.sortedColumns = this._columnData.allColumns.slice().sort();
+               private _searchState: SearchSettingsService) {
+    this._sortedColumns = this._columnData.allColumns.slice().sort();
   }
 
   ngOnInit () {
@@ -35,7 +35,7 @@ export class SearchResultAddColumnsModalComponent implements OnInit {
    * @param event
    */
   public onDropped (event: any): void {
-    this.searchState.setVisibleColumns(this._columnData.displayedColumns);
+    this._searchState.setVisibleColumns(this._columnData.displayedColumns);
   }
 
   public isDisplayed (column: string): boolean {
@@ -54,6 +54,6 @@ export class SearchResultAddColumnsModalComponent implements OnInit {
           1);
     }
 
-    this.searchState.setVisibleColumns(this._columnData.displayedColumns);
+    this._searchState.setVisibleColumns(this._columnData.displayedColumns);
   }
 }

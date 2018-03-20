@@ -9,6 +9,6 @@ export interface SearchRow {
 // export type SearchRow = Map<string, string | number | Array<string | number>>;
 
 export interface SearchResponse extends ApiResponse {
-  total_rows: number;
-  rows: Array<SearchRow>;
+  readonly total_rows: number;
+  readonly rows: Array<SearchRow>;
 }

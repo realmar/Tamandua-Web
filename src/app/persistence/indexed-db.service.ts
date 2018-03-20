@@ -7,8 +7,8 @@ import { isNullOrUndefined } from 'util';
 import { plainToClass } from 'class-transformer';
 
 interface TamanduaStore {
-  key: string;
-  obj: any;
+  readonly key: string;
+  readonly obj: any;
 }
 
 class TamanduaDexie extends Dexie {
