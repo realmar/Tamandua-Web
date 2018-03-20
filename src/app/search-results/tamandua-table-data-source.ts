@@ -6,30 +6,42 @@ import { _isNumberValue } from '@angular/cdk/coercion';
 // copy pasta from https://github.com/angular/material2/blob/master/src/lib/table/table-data-source.ts
 // with added support for tamandua specific data (arrays, datetime as strings, undefined, null)
 export class TamanduaTableDataSource<T> extends MatTableDataSource<T> {
+  private convertValue (value: any, headerId: string): any {
+    if (!isNullOrUndefined(value) && headerId.endsWith('_time') && value) {
+      return Converter.stringToDate(value).getTime();
+    } else {
+      // If the value is a string and only whitespace, return the value.
+      // Otherwise +value will convert it to 0.
+      if (typeof value === 'string' && !value.trim()) {
+        return value.toLowerCase();
+      }
+
+      return _isNumberValue(value) ? Number(value) : value;
+    }
+  }
+
+  // Source: https://github.com/angular/material2/blob/master/src/lib/table/table-data-source.ts#L100
+  // We cannot just do super.sortingDataAccessor because
+  // sortingDataAccessor is a property and not a method, so super
+  // does not work, see: https://github.com/Microsoft/TypeScript/issues/4465
   sortingDataAccessor: ((data: T, sortHeaderId: string) => string | number) =
     (data: T, sortHeaderId: string): string | number => {
-      if (!isNullOrUndefined(data[ sortHeaderId ]) && sortHeaderId.endsWith('_time') && data[ sortHeaderId ]) {
-        return Converter.stringToDate(data[ sortHeaderId ]).getTime();
+      const value = data[ sortHeaderId ];
+      if (value instanceof Array) {
+        // this is a rare case where I don't care about the type because I implicitly know what type
+        // I'm working with. I cannot change the return type of this method as then it would
+        // incorrectly extend the base class. Further down I also overwrite the sortData method
+        // which makes use of this method. The sortData methods manually checks the type (if it is
+        // an array or not) and handles the data accordingly.
+        return value.map(v => this.convertValue(v, sortHeaderId)) as any as string | number;
       } else {
-        // Source: https://github.com/angular/material2/blob/master/src/lib/table/table-data-source.ts#L100
-        // We cannot just do super.sortingDataAccessor because
-        // sortingDataAccessor is a property and not a method, so super
-        // does not work, see: https://github.com/Microsoft/TypeScript/issues/4465
-        const value: any = data[ sortHeaderId ];
-
-        // If the value is a string and only whitespace, return the value.
-        // Otherwise +value will convert it to 0.
-        if (typeof value === 'string' && !value.trim()) {
-          return value.toLowerCase();
-        }
-
-        return _isNumberValue(value) ? Number(value) : value;
+        return this.convertValue(value, sortHeaderId);
       }
     };
 
   sortData: ((data: T[], sort: MatSort) => T[]) = (data: T[], sort: MatSort): T[] => {
     // Source: https://github.com/angular/material2/blob/master/src/lib/table/table-data-source.ts#L115
-    // this implementation adds support for T potentially being an array
+    // this implementation adds support for T potentially being an array and handles undefined or null data
 
     const active = sort.active;
     const direction = sort.direction;

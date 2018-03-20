@@ -32,7 +32,12 @@ export class Converter {
 
   // pure
   public static stringToDate (datetimeString: string): Date {
-    const dtSplit = datetimeString.split(' ');
+    let dtSplit;
+    try {
+      dtSplit = datetimeString.split(' ');
+    } catch (e) {
+      console.log(e);
+    }
 
     let date: string;
     let time: string;

@@ -17,6 +17,19 @@ import { YamlSaveStrategy } from '../save-object/strategies/yaml-save-strategy';
 import { debounceTime } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
 
+interface TypeComparatorArguments {
+  key: string;
+  value: any;
+  filter: string;
+  regexFilter: RegExp;
+}
+
+type TypeComparator = (args: TypeComparatorArguments) => boolean;
+
+interface TypeComparatorMap {
+  [index: string]: TypeComparator;
+}
+
 @Component({
   selector: 'app-search-results',
   templateUrl: './search-results.component.html',
@@ -64,7 +77,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   private _filter: Map<string, string>;
   private _filterAsRegex: Map<string, RegExp>;
 
-  private readonly typeCompareFunctionMap = {
+  private readonly typeCompareFunctionMap: TypeComparatorMap = {
     'number': this.compareNumber.bind(this),
     'string': this.compareString.bind(this),
     'object': this.compareObject.bind(this),
@@ -153,27 +166,20 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public getFilter (column: string): string {
-    const value = this._filter[ column ];
+    const value = this._filter.get(column);
     return isNullOrUndefined(value) ? '' : value;
   }
 
   public setFilter (filterValue: string, column: string): void {
     if (!filterValue) {
-      // remove key `column`
-      // delete this.filter[column] does not work (and may be slow on certain engines)
-      this._filter = Object.keys(this._filter).reduce((result, key) => {
-        if (key !== column) {
-          result[ key ] = this._filter[ key ];
-        }
-        return result;
-      }, {}) as Map<string, string>;
+      this._filter.delete(column);
     } else {
-      this._filter[ column ] = filterValue.trim();
+      this._filter.set(column, filterValue.trim());
     }
 
     this._filterAsRegex = new Map<string, RegExp>();
-    Object.keys(this._filter).map(key =>
-      this._filterAsRegex[ key ] = new RegExp(this._filter[ key ], 'i'));
+    this._filter.forEach(
+      (value, key) => this._filterAsRegex.set(key, new RegExp(this._filter.get(key), 'i')));
 
     // this.updateFilter();
     this._onFilterChange.next();
@@ -197,30 +203,35 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this._searchSettingsService.setPaginatorPageSize(event.pageSize);
   }
 
-  private compareNumber (value: number, filter: string, regexFilter: RegExp): boolean {
-    return SearchResultsComponent.genericCompare<number>(value, filter, parseFloat);
+  private compareNumber (args: TypeComparatorArguments): boolean {
+    return SearchResultsComponent.genericCompare<number>(args.value, args.filter, parseFloat);
   }
 
-  private compareString (value: string, filter: string, regexFilter: RegExp): boolean {
-    return regexFilter.test(value);
+  private compareString (args: TypeComparatorArguments): boolean {
+    return args.regexFilter.test(args.value);
   }
 
-  private compareArray (values: Array<string>, filter: string, regexFilter: RegExp): boolean {
+  private compareArray (args: TypeComparatorArguments): boolean {
     // only | connective is supported atm
 
     let isValid = false;
 
-    const expressionParts = filter.split('|');
+    const expressionParts = args.filter.split('|');
     for (let i = 0; i < expressionParts.length; i++) {
       let isMatch = false;
 
-      for (let j = 0; j < values.length; j++) {
+      for (let j = 0; j < args.value.length; j++) {
         const part = expressionParts[ i ].trim();
 
-        isMatch = this.typeCompareFunctionMap[ this.isKeyDatetime(values[ j ]) ? 'datetime' : typeof(values[ j ]) ](
-          values[ j ],
-          part,
-          new RegExp(part));
+        const comparatorName = this.isKeyDatetime(args.key) ? 'datetime' : typeof(args.value[ j ]);
+        const comparatorArguments = {
+          key: args.key,
+          value: args.value[ j ],
+          filter: part,
+          regexFilter: new RegExp(part)
+        };
+
+        isMatch = this.typeCompareFunctionMap[ comparatorName ](comparatorArguments);
 
         if (isMatch) {
           break;
@@ -233,48 +244,52 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     return isValid;
   }
 
-  private compareObject (value: object, filter: string, regexFilter: RegExp): boolean {
-    console.warn('The type ' + value.constructor.name + ' does not have a specific compare function. ' +
+  private compareObject (args: TypeComparatorArguments): boolean {
+    console.warn('The type ' + args.value.constructor.name + ' does not have a specific compare function. ' +
       'You should implement one. (Otherwise the object cannot be compared --> as long as it is ' +
       'not null or undefined, true is returned.)');
-    return !value;
+    return !args.value;
   }
 
-  private compareDatetime (value: string, filter: string, regexFilter: RegExp): boolean {
-    let finalValue = value;
-    const stripedFilter = filter.replace(/^(>=|<=|<|>)/, '');
+  private compareDatetime (args: TypeComparatorArguments): boolean {
+    let finalValue = args.value;
+    const stripedFilter = args.filter.replace(/^(>=|<=|<|>)/, '');
 
     if (Converter.isStringTimeOnly(stripedFilter)) {
-      finalValue = value.substring(value.indexOf(' ') + 1, value.length);
+      finalValue = args.value.substring(args.value.indexOf(' ') + 1, args.value.length);
     } else if (Converter.isStringDateOnly(stripedFilter)) {
-      finalValue = value.substring(0, value.indexOf(' '));
+      finalValue = args.value.substring(0, args.value.indexOf(' '));
     }
 
     return SearchResultsComponent.genericCompare<number>(
       Converter.stringToDate(finalValue).getTime(),
-      filter,
+      args.filter,
       f => Converter.stringToDate(f).getTime());
   }
 
-  private compareUndefined (value: any, filter: string, regexFilter: RegExp): boolean {
+  private compareUndefined (args: TypeComparatorArguments): boolean {
     // exclude undefined values from filter results
     return false;
   }
 
-  private compareNull (value: any, filter: string, regexFilter: RegExp): boolean {
+  private compareNull (args: TypeComparatorArguments): boolean {
     // exclude null values from filter results
     return false;
   }
 
   private isKeyDatetime (key: string): boolean {
-    return key.slice(key.length - 4, key.length) === 'time';
+    try {
+      return key.slice(key.length - 4, key.length) === 'time';
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   private updateFilter (): void {
     // This needs to be ultra fast ... needs further investigation
 
     // prevent key evaluation for every row
-    const filterKeys = Object.keys(this._filter);
+    const filterKeys = Array.from(this._filter.keys()) as Array<string>;
     // prevent dereference array every iteration
     const filterKeyLength = filterKeys.length;
 
@@ -288,13 +303,13 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
       // Check all filters. All filters need to match.
       for (let j = 0; j < filterKeyLength; ++j) {
         const key = filterKeys[ j ];
-        const value = this._allRows[ i ][ filterKeys[ j ] ];
+        const value = this._allRows[ i ][ key ];
         let typeStr: string;
 
-        if (this.isKeyDatetime(key)) {
-          typeStr = 'datetime';
-        } else if (value instanceof Array) {
+        if (value instanceof Array) {
           typeStr = 'array';
+        } else if (this.isKeyDatetime(key)) {
+          typeStr = 'datetime';
         } else {
           typeStr = typeof(value);
         }
@@ -303,10 +318,13 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
         if (isNullOrUndefined(comparer)) {
           console.warn(`No comparator found for type: ${typeStr} while filtering table.`);
         } else {
-          if (!comparer(
-              value,
-              this._filter[ key ],
-              this._filterAsRegex[ key ])) {
+          const comparatorArguments = {
+            key: key,
+            value: value,
+            filter: this._filter.get(key),
+            regexFilter: this._filterAsRegex.get(key)
+          };
+          if (!comparer(comparatorArguments)) {
             isValid = false;
             break;
           }
