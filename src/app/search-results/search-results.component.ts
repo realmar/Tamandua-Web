@@ -28,6 +28,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
   @Input()
   public set searchResult (value: SearchResponse) {
+    this.clearFilters();
     this.processRows(value);
   }
 
@@ -41,7 +42,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public get visibleColumns (): Array<string> {
-    return this.searchState.getVisibleColumns();
+    return this.searchSettingsService.getVisibleColumns();
   }
 
   public get visibleColumnsWithMetadata (): Array<string> {
@@ -49,11 +50,11 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public get pageSizeOptions (): Array<number> {
-    return this.searchState.getPageSizeOptions();
+    return this.searchSettingsService.getPageSizeOptions();
   }
 
   public get pageSize (): number {
-    return this.searchState.getPaginatorPageSize();
+    return this.searchSettingsService.getPaginatorPageSize();
   }
 
   private totalRows: number;
@@ -96,7 +97,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   constructor (private apiService: ApiService,
-               private searchState: SearchSettingsService,
+               private searchSettingsService: SearchSettingsService,
                private dialog: MatDialog) {
     this._onFilterChange = new Subject<any>();
     this._onFilterChange
@@ -109,13 +110,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this.allRows = [];
     this.allColumns = [];
 
-    if (isNullOrUndefined(this.filter)) {
-      this.filter = new Map<string, string>();
-    }
-
-    if (isNullOrUndefined(this.filterAsRegex)) {
-      this.filterAsRegex = new Map<string, RegExp>();
-    }
+    this.clearFilters();
   }
 
   ngOnInit () {
@@ -128,7 +123,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public setSelectedTags (values: SelectedTags) {
-    this.searchState.setSelectedTags(values);
+    this.searchSettingsService.setSelectedTags(values);
 
     const newFilter = [];
     for (const value of values) {
@@ -145,7 +140,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this.dialog.open(SearchResultAddColumnsModalComponent, {
       data: {
         allColumns: this.allColumns,
-        displayedColumns: this.searchState.getVisibleColumns()
+        displayedColumns: this.searchSettingsService.getVisibleColumns()
       } as AddColumnsModalData
     });
   }
@@ -199,7 +194,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public onPageSizeChange (event: PageEvent): void {
-    this.searchState.setPaginatorPageSize(event.pageSize);
+    this.searchSettingsService.setPaginatorPageSize(event.pageSize);
   }
 
   private compareNumber (value: number, filter: string, regexFilter: RegExp): boolean {
@@ -326,6 +321,15 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     }
 
     this._rows.data = rows;
+  }
+
+  private clearFilters (): void {
+    this.filter = new Map<string, string>();
+    this.filterAsRegex = new Map<string, RegExp>();
+
+    if (this.searchSettingsService.isReady) {
+      this.setSelectedTags(this.searchSettingsService.getSelectedTags());
+    }
   }
 
   private processColumns (columns: ColumnsResponse): void {
