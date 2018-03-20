@@ -42,6 +42,7 @@ import { IndexedDbService } from './persistence/indexed-db.service';
 import { NgxDnDModule } from '@swimlane/ngx-dnd';
 import { SearchStateService } from './search-state-service/search-state.service';
 import { ScrollbarModule } from 'ngx-scrollbar';
+import { DashboardSettingComponent } from './dashboard/dashboard-setting/dashboard-setting.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { ScrollbarModule } from 'ngx-scrollbar';
     DashboardCardItemComponent,
     DashboardOverviewCardComponent,
     SafeHtmlPipe,
-    SaveObjectComponent
+    SaveObjectComponent,
+    DashboardSettingComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,7 @@
+<mat-form-field>
+  <input matInput
+         [placeholder]="placeholder"
+         [type]="type"
+         [formControl]="dataFormControl">
+  <mat-error *ngIf="dataFormControl.hasError">{{dataValidationMessage}}</mat-error>
+</mat-form-field>

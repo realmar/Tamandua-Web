@@ -6,6 +6,7 @@ import { isNullOrUndefined } from 'util';
 import { DashboardCardData } from './dashboard-card/dashboard-card-data';
 import { DashboardSettingsService } from '../settings/dashboard-settings-service/dashboard-settings.service';
 import { CardRow } from './card-row';
+import { SettingValidationResult } from '../settings/setting-validation-result';
 
 @Component({
   selector: 'app-dashboard',
@@ -35,6 +36,10 @@ export class DashboardComponent implements OnInit {
 
   // endregion
 
+  private _pastHoursValidationResult: SettingValidationResult;
+  private _maxItemCountValidationResult: SettingValidationResult;
+  private _intervalValidationResult: SettingValidationResult;
+
   private _cards: Array<CardRow>;
   public get cards (): Array<CardRow> {
     return this._cards;
@@ -45,7 +50,7 @@ export class DashboardComponent implements OnInit {
   }
 
   public set pastHoursCount (value: number) {
-    this._dashboardStateService.setPastHours(value);
+    this._pastHoursValidationResult = this._dashboardStateService.setPastHours(value);
   }
 
   public get maxItemCountPerCard (): number {
@@ -53,7 +58,7 @@ export class DashboardComponent implements OnInit {
   }
 
   public set maxItemCountPerCard (value: number) {
-    this._dashboardStateService.setMaxItemCountPerCard(value);
+    this._maxItemCountValidationResult = this._dashboardStateService.setMaxItemCountPerCard(value);
   }
 
   public get refreshInterval (): number {
@@ -61,7 +66,19 @@ export class DashboardComponent implements OnInit {
   }
 
   public set refreshInterval (value: number) {
-    this._dashboardStateService.setRefreshInterval(value * 1000);
+    this._intervalValidationResult = this._dashboardStateService.setRefreshInterval(value * 1000);
+  }
+
+  public get pastHoursValidationResult (): SettingValidationResult {
+    return this._pastHoursValidationResult;
+  }
+
+  public get maxItemCountValidationResult (): SettingValidationResult {
+    return this._maxItemCountValidationResult;
+  }
+
+  public get intervalValidationResult (): SettingValidationResult {
+    return this._intervalValidationResult;
   }
 
   constructor (private _apiService: ApiService,

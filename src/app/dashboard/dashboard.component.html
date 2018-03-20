@@ -1,13 +1,18 @@
 <div id="settings">
-  <mat-form-field>
-    <input matInput placeholder="Past Hours" type="number" [(ngModel)]="pastHoursCount">
-  </mat-form-field>
-  <mat-form-field>
-    <input matInput placeholder="Field Count" type="number" [(ngModel)]="maxItemCountPerCard">
-  </mat-form-field>
-  <mat-form-field>
-    <input matInput placeholder="Interval [s]" type="number" [(ngModel)]="refreshInterval">
-  </mat-form-field>
+  <app-dashboard-setting placeholder="Past Hours"
+                         type="number"
+                         [dataValidationResult]="pastHoursValidationResult"
+                         [(data)]="pastHoursCount"></app-dashboard-setting>
+
+  <app-dashboard-setting placeholder="Field Count"
+                         type="number"
+                         [dataValidationResult]="maxItemCountValidationResult"
+                         [(data)]="maxItemCountPerCard"></app-dashboard-setting>
+
+  <app-dashboard-setting placeholder="Interval [s]"
+                         type="number"
+                         [dataValidationResult]="intervalValidationResult"
+                         [(data)]="refreshInterval"></app-dashboard-setting>
 </div>
 
 <div id="flex-container">

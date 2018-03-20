@@ -34,13 +34,13 @@ export class DashboardSettingsService {
     this.onFinishInitalizeSubject = new Subject<any>();
     this._isInitialized = false;
 
-    this._pastHours = new Setting<number>(24, this.createMinValidator(0));
+    this._pastHours = new Setting<number>(24, this.createMinValidator(1, x => x.toString()));
     this._pastHoursSubject = new Subject<number>();
 
-    this._maxItemCountPerCard = new Setting<number>(4, this.createMinValidator(1));
+    this._maxItemCountPerCard = new Setting<number>(4, this.createMinValidator(1, x => x.toString()));
     this._maxItemsCountSubject = new Subject<number>();
 
-    this._refreshInterval = new Setting<number>(100000, this.createMinValidator(10000));
+    this._refreshInterval = new Setting<number>(100000, this.createMinValidator(10000, x => (x / 1000).toString()));
     this._refreshIntervalSubject = new Subject<number>();
 
     this._timeoutBeforeEmit = 800;
@@ -48,14 +48,14 @@ export class DashboardSettingsService {
     this.emitFinishInitialize();
   }
 
-  private createMinValidator (min: number): (data: number) => SettingValidationResult {
+  private createMinValidator (min: number, formatter: (value: number) => string): (data: number) => SettingValidationResult {
     const validator = (data: number): SettingValidationResult => {
       if (isNullOrUndefined(data)) {
         return new SettingValidationResult(false, 'Value is required');
       }
 
       if (data < min) {
-        return new SettingValidationResult(false, `Min value is ${min}`);
+        return new SettingValidationResult(false, `Min value is ${formatter(min)}`);
       }
 
       return new SettingValidationResult(true);
