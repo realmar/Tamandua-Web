@@ -22,6 +22,8 @@ export class SearchDatetimeComponent implements OnInit {
     if (!isNullOrUndefined(value)) {
       this._hasDateTime = true;
       this._date = value;
+    } else {
+      this._hasDateTime = false;
     }
 
     this.emitDatetimeChange();
