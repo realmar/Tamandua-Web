@@ -1,11 +1,18 @@
 @import '~@swimlane/ngx-dnd/release/index.css';
 
-mat-icon {
-  vertical-align: middle;
-  cursor: pointer;
+$max-height: 65vh;
+
+#dialog-container {
+  max-height: $max-height;
+  overflow-y: hidden;
 }
 
 .tab-content {
+  max-height: $max-height - 6vh;
   margin: 0.5em 0 0 1em;
-  overflow-y: hidden;
+}
+
+mat-icon {
+  vertical-align: middle;
+  cursor: pointer;
 }
