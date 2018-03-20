@@ -1,6 +1,7 @@
 @import '~@swimlane/ngx-dnd/release/index.css';
 
 $max-height: 65vh;
+$inner-max-height: $max-height - 6vh;
 
 #dialog-container {
   max-height: $max-height;
@@ -8,8 +9,12 @@ $max-height: 65vh;
 }
 
 .tab-content {
-  max-height: $max-height - 6vh;
+  max-height: $inner-max-height;
   margin: 0.5em 0 0 1em;
+}
+
+mat-tab-group {
+  max-height: $max-height;
 }
 
 mat-icon {

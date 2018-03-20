@@ -41,6 +41,7 @@ import { PersistentCachedTamanduaService } from './api/persistent-cached-tamandu
 import { IndexedDbService } from './persistence/indexed-db.service';
 import { NgxDnDModule } from '@swimlane/ngx-dnd';
 import { SearchStateService } from './search-state-service/search-state.service';
+import { ScrollbarModule } from 'ngx-scrollbar';
 
 @NgModule({
   declarations: [
@@ -93,7 +94,8 @@ import { SearchStateService } from './search-state-service/search-state.service'
     MatMenuModule,
     MatTabsModule,
 
-    NgxDnDModule
+    NgxDnDModule,
+    ScrollbarModule
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
