@@ -186,7 +186,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
   public generateSaveDataObject (): SaveObjectData {
     const data = new Map<string, any>();
-    data.set('rows', this.allRows);
+    data.set('rows', this._rows.data);
 
     return {
       filename: 'results',
