@@ -25,6 +25,14 @@
   color: #212121;
 }
 
+.mat-header-row {
+  padding-top: 0.5em;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+}
+
 mat-row {
   height: 2rem;
   min-height: 0;
