@@ -36,53 +36,13 @@ export class DashboardComponent implements OnInit {
 
   // endregion
 
-  private _pastHoursValidationResult: SettingValidationResult;
-  private _maxItemCountValidationResult: SettingValidationResult;
-  private _intervalValidationResult: SettingValidationResult;
-
   private _cards: Array<CardRow>;
   public get cards (): Array<CardRow> {
     return this._cards;
   }
 
-  public get pastHoursCount (): number {
-    return this._dashboardStateService.getPastHours();
-  }
-
-  public set pastHoursCount (value: number) {
-    this._pastHoursValidationResult = this._dashboardStateService.setPastHours(value);
-  }
-
-  public get maxItemCountPerCard (): number {
-    return this._dashboardStateService.getMaxItemCountPerCard();
-  }
-
-  public set maxItemCountPerCard (value: number) {
-    this._maxItemCountValidationResult = this._dashboardStateService.setMaxItemCountPerCard(value);
-  }
-
-  public get refreshInterval (): number {
-    return this._dashboardStateService.getRefreshInterval() / 1000;
-  }
-
-  public set refreshInterval (value: number) {
-    this._intervalValidationResult = this._dashboardStateService.setRefreshInterval(value * 1000);
-  }
-
-  public get pastHoursValidationResult (): SettingValidationResult {
-    return this._pastHoursValidationResult;
-  }
-
-  public get maxItemCountValidationResult (): SettingValidationResult {
-    return this._maxItemCountValidationResult;
-  }
-
-  public get intervalValidationResult (): SettingValidationResult {
-    return this._intervalValidationResult;
-  }
-
   constructor (private _apiService: ApiService,
-               private _dashboardStateService: DashboardSettingsService) {
+               private _dashboardSettingsService: DashboardSettingsService) {
     this._cards = [];
   }
 
@@ -109,13 +69,13 @@ export class DashboardComponent implements OnInit {
         const builder = this._apiService.getRequestBuilder();
 
         if (j % 2 === 0) {
-          builder.setEndpoint(new AdvancedCountEndpoint('sender', this._dashboardStateService.getMaxItemCountPerCard()));
+          builder.setEndpoint(new AdvancedCountEndpoint('sender', this._dashboardSettingsService.getMaxItemCountPerCard()));
         } else {
-          builder.setEndpoint(new AdvancedCountEndpoint('sender', this._dashboardStateService.getMaxItemCountPerCard(), '@'));
+          builder.setEndpoint(new AdvancedCountEndpoint('sender', this._dashboardSettingsService.getMaxItemCountPerCard(), '@'));
         }
 
         const date = new Date();
-        date.setHours(date.getHours() - this.pastHoursCount);
+        date.setHours(date.getHours() - this._dashboardSettingsService.getPastHours());
         builder.setStartDatetime(date);
 
         this._cards[ i ].cardData[ j ] = new DashboardCardData(builder);
@@ -202,7 +162,7 @@ export class DashboardComponent implements OnInit {
      */
 
     addFilterToBuilder = (data: DashboardCardData) => {
-      data.requestBuilder.setEndpoint(new AdvancedCountEndpoint('rejectreason', this._dashboardStateService.getMaxItemCountPerCard()));
+      data.requestBuilder.setEndpoint(new AdvancedCountEndpoint('rejectreason', this._dashboardSettingsService.getMaxItemCountPerCard()));
     };
 
     addFilterToBuilder(this._cards[ 3 ].cardData[ 0 ]);

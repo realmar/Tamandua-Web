@@ -1,22 +1,6 @@
-<div id="settings">
-  <app-dashboard-setting placeholder="Past Hours"
-                         type="number"
-                         [dataValidationResult]="pastHoursValidationResult"
-                         [(data)]="pastHoursCount"></app-dashboard-setting>
-
-  <app-dashboard-setting placeholder="Field Count"
-                         type="number"
-                         [dataValidationResult]="maxItemCountValidationResult"
-                         [(data)]="maxItemCountPerCard"></app-dashboard-setting>
-
-  <app-dashboard-setting placeholder="Interval [s]"
-                         type="number"
-                         [dataValidationResult]="intervalValidationResult"
-                         [(data)]="refreshInterval"></app-dashboard-setting>
-</div>
+<app-dashboard-settings></app-dashboard-settings>
 
 <div id="flex-container">
-
   <mat-card id="summary-card">
     <mat-card-header><p class="mat-title">Summary</p></mat-card-header>
     <mat-card-content>

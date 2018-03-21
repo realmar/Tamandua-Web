@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { SettingValidationResult } from '../../settings/setting-validation-result';
+import { SettingValidationResult } from '../../../settings/setting-validation-result';
 import { FormControl } from '@angular/forms';
 import { isNullOrUndefined } from 'util';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'app-dashboard-setting',
@@ -54,19 +55,26 @@ export class DashboardSettingComponent implements OnInit {
     return this._dataChange;
   }
 
-  private _dataValidationResult: SettingValidationResult;
+  private _validationResult: SettingValidationResult;
 
   @Input()
-  public set dataValidationResult (value: SettingValidationResult) {
-    this._dataValidationResult = value;
-    this._dataFormControl.updateValueAndValidity();
+  public set validationResultObservable (value: Observable<SettingValidationResult>) {
+    value.subscribe(result => {
+      const isValid = isNullOrUndefined(this._validationResult) || result.isValid !== this._validationResult.isValid;
+      if (isNullOrUndefined(result) && !isValid) {
+        return;
+      }
+
+      this._validationResult = result;
+      this._dataFormControl.updateValueAndValidity();
+    });
   }
 
   public get dataValidationMessage (): string {
-    if (isNullOrUndefined(this._dataValidationResult)) {
+    if (isNullOrUndefined(this._validationResult)) {
       return '';
     } else {
-      return this._dataValidationResult.messages.join('\n');
+      return this._validationResult.messages.join('\n');
     }
   }
 
@@ -76,8 +84,8 @@ export class DashboardSettingComponent implements OnInit {
 
     this._dataFormControl.valueChanges.subscribe(value => {
       if (value !== this._lastEmittedData) {
-        this._dataChange.emit(value);
         this._lastEmittedData = value;
+        this._dataChange.emit(value);
       }
     });
   }
@@ -86,7 +94,7 @@ export class DashboardSettingComponent implements OnInit {
   }
 
   private validator (control: FormControl): { [error: string]: any } {
-    if (!isNullOrUndefined(this._dataValidationResult) && !this._dataValidationResult.isValid) {
+    if (!isNullOrUndefined(this._validationResult) && !this._validationResult.isValid) {
       return { custom: { value: false } };
     } else {
       return null;
