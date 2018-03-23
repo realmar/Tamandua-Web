@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { TamanduaService } from './tamandua.service';
 import { Observable } from 'rxjs/Observable';
 import { ColumnsResponse } from './response/columns-response';
-import { DataCache } from './data-cache';
+import { TimedDataCache } from './cache/timed-data-cache';
 import { HttpClient } from '@angular/common/http';
 import { isNullOrUndefined } from 'util';
 import { of } from 'rxjs/observable/of';
@@ -10,12 +10,13 @@ import { ApiResponse } from './response/api-response';
 import { TagsResponse } from './response/tags-response';
 import { FieldChoicesResponse } from './response/field-choices-response';
 import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
+import { DataCache } from './cache/data-cache';
 
-interface FieldChoicesCache {
+export interface FieldChoicesCache {
   readonly limit: number;
   readonly field: string;
 
-  readonly response: FieldChoicesResponse;
+  response: FieldChoicesResponse;
 }
 
 @Injectable()
@@ -61,11 +62,11 @@ export class CachedTamanduaService extends TamanduaService {
   constructor (httpClient: HttpClient) {
     super(httpClient);
 
-    this._columnsCache = new DataCache<ColumnsResponse>();
-    this._tagsCache = new DataCache<TagsResponse>();
+    this._columnsCache = new TimedDataCache<ColumnsResponse>();
+    this._tagsCache = new TimedDataCache<TagsResponse>();
 
-    this._fieldChoiceCaches = new Map<string, DataCache<FieldChoicesCache>>();
-    this._supportedFieldChoicesCache = new DataCache<SupportedFieldchoicesResponse>();
+    this._fieldChoiceCaches = new Map<string, TimedDataCache<FieldChoicesCache>>();
+    this._supportedFieldChoicesCache = new TimedDataCache<SupportedFieldchoicesResponse>();
   }
 
   private cacheGeneric<T extends ApiResponse> (cache: DataCache<T>, dataFunction: () => Observable<T>): Observable<T> {
@@ -79,6 +80,17 @@ export class CachedTamanduaService extends TamanduaService {
     return result;
   }
 
+  protected getOrCreateFieldChoiceCache (field: string): DataCache<FieldChoicesCache> {
+    let cache = this._fieldChoiceCaches.get(field);
+
+    if (isNullOrUndefined(cache)) {
+      cache = new TimedDataCache<FieldChoicesCache>();
+      this._fieldChoiceCaches.set(field, cache);
+    }
+
+    return cache;
+  }
+
   public getColumns (): Observable<ColumnsResponse> {
     return this.cacheGeneric(this._columnsCache, super.getColumns.bind(this));
   }
@@ -88,15 +100,10 @@ export class CachedTamanduaService extends TamanduaService {
   }
 
   public getFieldChoices (field: string, limit: number): Observable<FieldChoicesResponse> {
-    let cache = this._fieldChoiceCaches.get(field);
-
-    if (isNullOrUndefined(cache)) {
-      cache = new DataCache<FieldChoicesCache>();
-      this._fieldChoiceCaches.set(field, cache);
-    }
+    const cache = this.getOrCreateFieldChoiceCache(field);
 
     if (isNullOrUndefined(cache.data) || cache.data.field !== field || cache.data.limit !== limit) {
-      cache.isValid = false;
+      cache.invalidate();
     }
 
     if (cache.isValid) {
@@ -104,10 +111,7 @@ export class CachedTamanduaService extends TamanduaService {
     } else {
       const result = super.getFieldChoices(field, limit);
 
-      result.subscribe(function (response) {
-        cache.isValid = true;
-        cache.data = { limit: limit, field: field, response: response };
-      }.bind(this));
+      result.subscribe(response => cache.data = { limit: limit, field: field, response: response });
 
       return result;
     }

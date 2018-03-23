@@ -6,12 +6,19 @@ export {};
 declare global {
   interface Map<K, V> {
     toObject(): object;
+
+    valuesToArray(): Array<V>;
   }
 }
-
 
 Map.prototype.toObject = function () {
   const obj = {};
   this.forEach((value, key) => obj[ key ] = value);
   return obj;
+};
+
+Map.prototype.valuesToArray = function () {
+  const array = [];
+  this.forEach(value => array.push(value));
+  return array;
 };

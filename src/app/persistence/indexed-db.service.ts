@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import Dexie from 'dexie';
 import { Subject } from 'rxjs/Subject';
 import { isNullOrUndefined } from 'util';
-import { plainToClass } from 'class-transformer';
+import { classToPlain, plainToClass } from 'class-transformer';
 
 interface TamanduaStore {
   readonly key: string;
@@ -19,7 +19,7 @@ class TamanduaDexie extends Dexie {
     super(dbName);
 
     this.version(1).stores({
-      store: 'key,obj'
+      store: 'key'
     });
   }
 }
@@ -35,7 +35,8 @@ export class IndexedDbService implements PersistentStorageService {
 
   public save (key: string, obj: any): void {
     this._db.transaction('rw', this._db.store, () => {
-      this._db.store.put({ key: key, obj: obj });
+      const transformedObj = classToPlain(obj);
+      this._db.store.put({ key: key, obj: transformedObj });
     });
   }
 
