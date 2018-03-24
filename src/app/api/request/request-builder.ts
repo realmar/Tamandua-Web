@@ -2,6 +2,7 @@ import { Comparator } from './comparator';
 import { ApiRequest } from './request';
 import { Endpoint } from './endpoints/endpoint';
 import { RequestBuilderField } from './request-builder-field';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export interface RequestBuilder {
   addField (name: string, value: string | number, comparator: Comparator): void;
@@ -27,6 +28,8 @@ export interface RequestBuilder {
   getEndpoint(): Endpoint;
 
   setCallback(callback: (object) => void): void;
+
+  setErrorCallback(callback: (HttpErrorResponse) => void): void;
 
   build(): ApiRequest;
 }

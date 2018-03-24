@@ -64,6 +64,6 @@ export class TamanduaService implements ApiService {
   }
 
   public visitIE (request: IntermediateExpressionRequest): void {
-    this.makeRequest(request.endpoint, request.dataObject).subscribe(request.callback);
+    this.makeRequest(request.endpoint, request.dataObject).subscribe(request.callback, request.errorCallback);
   }
 }

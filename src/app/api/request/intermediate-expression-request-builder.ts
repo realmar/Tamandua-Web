@@ -7,6 +7,7 @@ import { Endpoint } from './endpoints/endpoint';
 import { EndpointIsUndefinedError } from './endpoint-is-undefined-error';
 import { Converter } from '../../utils/converter';
 import { RequestBuilderField } from './request-builder-field';
+import { HttpErrorResponse } from '@angular/common/http';
 
 class Field implements RequestBuilderField {
   private _comparator: Comparator;
@@ -43,62 +44,67 @@ class Field implements RequestBuilderField {
 }
 
 export class IntermediateExpressionRequestBuilder implements RequestBuilder {
-  private fields: Array<Field>;
-  private startDatetime: Date;
-  private endDatetime: Date;
-  private endpoint: Endpoint;
-  private callback: (object) => void;
+  private _fields: Array<Field>;
+  private _startDatetime: Date;
+  private _endDatetime: Date;
+  private _endpoint: Endpoint;
+  private _callback: (object) => void;
+  private _errorCallback: (HttpErrorResponse) => void;
 
   constructor () {
-    this.fields = [];
+    this._fields = [];
   }
 
   public addField (name: string, value: string | number, comparator: Comparator): void {
-    this.fields.push(new Field(name, value, comparator));
+    this._fields.push(new Field(name, value, comparator));
   }
 
   public getFields (): Array<RequestBuilderField> {
-    return this.fields;
+    return this._fields;
   }
 
   public removeAllFields (): void {
-    this.fields = [];
+    this._fields = [];
   }
 
   public setStartDatetime (datetime: Date): void {
-    this.startDatetime = datetime;
+    this._startDatetime = datetime;
   }
 
   public getStartDatetime (): Date {
-    return this.startDatetime;
+    return this._startDatetime;
   }
 
   public setEndDatetime (datetime: Date): void {
-    this.endDatetime = datetime;
+    this._endDatetime = datetime;
   }
 
   public getEndDatetime (): Date {
-    return this.endDatetime;
+    return this._endDatetime;
   }
 
   public removeStartDatetime (): void {
-    this.startDatetime = undefined;
+    this._startDatetime = undefined;
   }
 
   public removeEndDatetime (): void {
-    this.endDatetime = undefined;
+    this._endDatetime = undefined;
   }
 
   public setEndpoint (endpoint: Endpoint): void {
-    this.endpoint = endpoint;
+    this._endpoint = endpoint;
   }
 
   public getEndpoint (): Endpoint {
-    return this.endpoint;
+    return this._endpoint;
   }
 
   public setCallback (callback: (object) => void): void {
-    this.callback = callback;
+    this._callback = callback;
+  }
+
+  public setErrorCallback (callback: (HttpErrorResponse) => void): void {
+    this._errorCallback = callback;
   }
 
   /**
@@ -108,7 +114,7 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
    * @returns {ApiRequest} Assembled request object.
    */
   public build (): ApiRequest {
-    if (isNullOrUndefined(this.endpoint)) {
+    if (isNullOrUndefined(this._endpoint)) {
       throw new EndpointIsUndefinedError();
     }
 
@@ -117,18 +123,18 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
       datetime: {}
     };
 
-    for (const field of this.fields) {
+    for (const field of this._fields) {
       data.fields.push(field.asObject());
     }
 
-    if (!isNullOrUndefined(this.startDatetime)) {
-      data.datetime[ 'start' ] = Converter.dateToString(this.startDatetime);
+    if (!isNullOrUndefined(this._startDatetime)) {
+      data.datetime[ 'start' ] = Converter.dateToString(this._startDatetime);
     }
 
-    if (!isNullOrUndefined(this.endDatetime)) {
-      data.datetime[ 'end' ] = Converter.dateToString(this.endDatetime);
+    if (!isNullOrUndefined(this._endDatetime)) {
+      data.datetime[ 'end' ] = Converter.dateToString(this._endDatetime);
     }
 
-    return new IntermediateExpressionRequest(data, this.endpoint, this.callback);
+    return new IntermediateExpressionRequest(data, this._endpoint, this._callback, this._errorCallback);
   }
 }

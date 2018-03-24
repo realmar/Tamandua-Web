@@ -46,6 +46,7 @@ import { DashboardSettingComponent } from './dashboard/dashboard-settings/dashbo
 import { DashboardSettingsComponent } from './dashboard/dashboard-settings/dashboard-settings.component';
 import { AboutComponent } from './about/about.component';
 import { FooterComponent } from './footer/footer.component';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -103,7 +104,12 @@ import { FooterComponent } from './footer/footer.component';
     MatTabsModule,
 
     NgxDnDModule,
-    ScrollbarModule
+    ScrollbarModule,
+    ToastrModule.forRoot({
+      timeOut: 5000,
+      positionClass: 'toast-bottom-center',
+      preventDuplicates: true,
+    }),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },

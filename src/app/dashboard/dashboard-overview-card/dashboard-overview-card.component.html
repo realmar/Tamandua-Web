@@ -1,19 +1,22 @@
 <ng-container *ngIf="isDoingRequest && summaryResponses.length === 0;else data_container">
   <mat-progress-bar mode="buffer"></mat-progress-bar>
 </ng-container>
+<p *ngIf="hasErrors && !isDoingRequest">No data found using the specified settings.</p>
 <ng-template #data_container>
-  <p id="total" class="mat-subheading-2">Total: {{formattedTotalResponse}}</p>
+  <ng-container *ngIf="!hasErrors">
+    <p id="total" class="mat-subheading-2">Total: {{formattedTotalResponse}}</p>
 
-  <ng-container *ngFor="let group of summaryResponses">
-    <ng-container *ngIf="group.data.amount > 0">
-      <app-dashboard-card-item [data]="group.data"></app-dashboard-card-item>
-      <ng-container *ngIf="group.children.length > 0">
-        <div class="indented">
-          <ng-container *ngFor="let child of group.children">
-            <app-dashboard-card-item *ngIf="child.data.amount > 0"
-                                     [data]="child.data"></app-dashboard-card-item>
-          </ng-container>
-        </div>
+    <ng-container *ngFor="let group of summaryResponses">
+      <ng-container *ngIf="group.data.amount > 0">
+        <app-dashboard-card-item [data]="group.data"></app-dashboard-card-item>
+        <ng-container *ngIf="group.children.length > 0">
+          <div class="indented">
+            <ng-container *ngFor="let child of group.children">
+              <app-dashboard-card-item *ngIf="child.data.amount > 0"
+                                       [data]="child.data"></app-dashboard-card-item>
+            </ng-container>
+          </div>
+        </ng-container>
       </ng-container>
     </ng-container>
   </ng-container>

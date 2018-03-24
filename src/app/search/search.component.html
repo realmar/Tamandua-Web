@@ -33,7 +33,7 @@
     <button mat-button
             (click)="search()"
             id="search-button"
-            [disabled]="anyFieldsEmpty()">
+            [disabled]="anyFieldsEmpty() || isLoading">
       <mat-spinner *ngIf="isLoading"
                    [diameter]="25"></mat-spinner>
       Search

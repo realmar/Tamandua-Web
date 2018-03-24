@@ -14,6 +14,9 @@ import { isNullOrUndefined } from 'util';
 import { AdvancedCountEndpoint } from '../../api/request/endpoints/advanced-count-endpoint';
 import { SearchStateService } from '../../search-state-service/search-state.service';
 import moment = require('moment');
+import { HttpErrorResponse } from '@angular/common/http';
+import { ActiveToast, ToastrService } from 'ngx-toastr';
+import { ErrorConstants } from '../../utils/error-constants';
 
 @Component({
   selector: 'app-dashboard-card',
@@ -46,11 +49,14 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     return this._data.requestResult.slice(0, this._endpoint.length > length ? length : this._endpoint.length);
   }
 
+  private _errorToast: ActiveToast;
+
   constructor (private _apiService: ApiService,
                private _dashboardSettingsService: DashboardSettingsService,
                private _searchSettingsService: SearchSettingsService,
                private _searchStateService: SearchStateService,
-               private _router: Router) {
+               private _router: Router,
+               private _toastr: ToastrService) {
     this._isDoingRequest = false;
 
     this._pastHoursChangeSubscription =
@@ -71,6 +77,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
 
     const isReadyCallback = () => {
       builder.setCallback(this.processApiResponse.bind(this));
+      builder.setErrorCallback(this.processApiError.bind(this));
       builder.setStartDatetime(this.createPastDate(this._dashboardSettingsService.getPastHours()));
       this._endpoint.length = this._dashboardSettingsService.getMaxItemCountPerCard();
 
@@ -107,6 +114,19 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   private processApiResponse (data: AdvancedCountResponse): void {
     this._isDoingRequest = false;
     this._data.requestResult = data.items.map(item => new DashboardCardItemData(item.key, item.value, data.total));
+
+    if (!isNullOrUndefined(this._errorToast)) {
+      this._toastr.clear(this._errorToast.toastId);
+      this._errorToast = undefined;
+    }
+  }
+
+  private processApiError (error: HttpErrorResponse): void {
+    this._isDoingRequest = false;
+    this._data.requestResult = [];
+    this._errorToast = this._toastr.error(ErrorConstants.GenericServerError, 'Error', {
+      disableTimeOut: true
+    });
   }
 
   private createRefreshIntervalSubscription () {

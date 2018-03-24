@@ -3,6 +3,14 @@
 @import '~material-design-icons/iconfont/material-icons.css';
 @import '~@angular/material/prebuilt-themes/indigo-pink.css';
 @import '~@angular/material/theming';
+//
+@import '~ngx-toastr/toastr.css';
+
+$config: mat-typography-config();
+
+.toast-container {
+  @include mat-typography-level-to-styles($config, body-1);
+}
 
 html, body, app-root {
   height: 100%;

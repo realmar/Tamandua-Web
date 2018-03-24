@@ -12,6 +12,9 @@ import { Scale } from 'chroma-js';
 import * as chroma from 'chroma-js';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
 import moment = require('moment');
+import { HttpErrorResponse } from '@angular/common/http';
+import { ErrorConstants } from '../../utils/error-constants';
+import { ActiveToast, ToastrService } from 'ngx-toastr';
 
 interface SummaryChild<T> {
   readonly name: string;
@@ -65,9 +68,17 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private _colorRange: Scale;
+  private _errorToast: ActiveToast;
+
+  private _hasErrors: boolean;
+  public get hasErrors (): boolean {
+    return this._hasErrors;
+  }
 
   constructor (private _dashboardState: DashboardSettingsService,
-               private _apiService: ApiService) {
+               private _apiService: ApiService,
+               private _toastr: ToastrService) {
+    this._hasErrors = false;
     this._summaryRequests = [];
     this._summaryResponses = [];
     this._colorRange = chroma.scale([ '#E1F5FE', '#03A9F4' ]);
@@ -129,6 +140,8 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     builder.setEndpoint(new CountEndpoint());
 
     builder.setCallback(this.processSummaryTotal.bind(this));
+    builder.setErrorCallback(this.processApiError.bind(this));
+
     this._totalRequest = builder.build();
 
     /*
@@ -245,7 +258,26 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     this._apiService.SubmitRequest(this._totalRequest);
   }
 
+  private processApiError (error: HttpErrorResponse): void {
+    this._isDoingRequest = false;
+    this._hasErrors = true;
+    this._errorToast = this._toastr.error(ErrorConstants.GenericServerError, 'Error', {
+      disableTimeOut: true
+    });
+  }
+
+  private resetErrorToast (): void {
+    this._hasErrors = false;
+    if (isNullOrUndefined(this._errorToast)) {
+      return;
+    }
+
+    this._toastr.clear(this._errorToast.toastId);
+    this._errorToast = undefined;
+  }
+
   private processSummaryTotal (result: CountResponse): void {
+    this.resetErrorToast();
     this._totalResponse = result;
 
     for (const group of this._summaryRequests) {
@@ -254,6 +286,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private processSummaryGroup (result: CountResponse, index: number): void {
+    this.resetErrorToast();
     const name = this._summaryRequests[ index ].name;
 
     if (isNullOrUndefined(this._summaryResponses[ index ])) {
@@ -271,6 +304,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private processSummaryChild (result: CountResponse, index: number, childIndex: number): void {
+    this.resetErrorToast();
     const name = this._summaryRequests[ index ].children[ childIndex ].name;
 
     if (isNullOrUndefined(this._summaryResponses[ index ].children[ childIndex ])) {

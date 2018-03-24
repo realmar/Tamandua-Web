@@ -10,6 +10,9 @@ import { ApiRequest } from '../api/request/request';
 import { Subscription } from 'rxjs/Subscription';
 import { Comparator, ComparatorType } from '../api/request/comparator';
 import { SearchStateService } from '../search-state-service/search-state.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ErrorConstants } from '../utils/error-constants';
+import { ActiveToast, ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-search',
@@ -53,11 +56,13 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   private _routerEventSubscription: Subscription;
+  private _errorToast: ActiveToast;
 
   constructor (private _apiService: ApiService,
                private _searchSettingsService: SearchSettingsService,
                private _searchStateService: SearchStateService,
-               private _router: Router) {
+               private _router: Router,
+               private _toastr: ToastrService) {
     this.restoreState();
   }
 
@@ -111,6 +116,18 @@ export class SearchComponent implements OnInit, OnDestroy {
   private processSearchResult (result: SearchResponse): void {
     this._isLoading = false;
     this._searchResult = result;
+
+    if (!isNullOrUndefined(this._errorToast)) {
+      this._toastr.clear(this._errorToast.toastId);
+      this._errorToast = undefined;
+    }
+  }
+
+  private processApiError (error: HttpErrorResponse): void {
+    this._isLoading = false;
+    this._errorToast = this._toastr.error(ErrorConstants.GenericServerError, 'Error', {
+      disableTimeOut: true
+    });
   }
 
   public anyFieldsEmpty (): boolean {
@@ -151,6 +168,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     const builder = this._apiService.getRequestBuilder();
 
     builder.setCallback(this.processSearchResult.bind(this));
+    builder.setErrorCallback(this.processApiError.bind(this));
+
     builder.setEndpoint(new SearchEndpoint(0, 1000));
     builder.setStartDatetime(this._startDateTime);
     builder.setEndDatetime(this._endDateTime);
