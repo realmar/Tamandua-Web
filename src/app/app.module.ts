@@ -44,6 +44,8 @@ import { SearchStateService } from './search-state-service/search-state.service'
 import { ScrollbarModule } from 'ngx-scrollbar';
 import { DashboardSettingComponent } from './dashboard/dashboard-settings/dashboard-setting/dashboard-setting.component';
 import { DashboardSettingsComponent } from './dashboard/dashboard-settings/dashboard-settings.component';
+import { AboutComponent } from './about/about.component';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
@@ -63,7 +65,9 @@ import { DashboardSettingsComponent } from './dashboard/dashboard-settings/dashb
     SafeHtmlPipe,
     SaveObjectComponent,
     DashboardSettingComponent,
-    DashboardSettingsComponent
+    DashboardSettingsComponent,
+    AboutComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,
