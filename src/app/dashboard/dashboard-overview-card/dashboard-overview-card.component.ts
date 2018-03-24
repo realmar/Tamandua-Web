@@ -53,6 +53,10 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   public get formattedTotalResponse (): string {
+    if (isNullOrUndefined(this.totalResponse)) {
+      return '';
+    }
+
     return this.totalResponse === 0 ? 'No data found.' : this.totalResponse.toString();
   }
 
