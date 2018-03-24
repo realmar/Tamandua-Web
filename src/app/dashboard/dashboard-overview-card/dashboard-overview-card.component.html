@@ -2,15 +2,19 @@
   <mat-progress-bar mode="buffer"></mat-progress-bar>
 </ng-container>
 <ng-template #data_container>
-  <p id="total" class="mat-subheading-2">Total: {{totalResponse}}</p>
+  <p id="total" class="mat-subheading-2">Total: {{formattedTotalResponse}}</p>
 
   <ng-container *ngFor="let group of summaryResponses">
-    <app-dashboard-card-item [data]="group.data"></app-dashboard-card-item>
-    <ng-container *ngIf="group.children.length > 0">
-      <div class="indented">
-        <app-dashboard-card-item *ngFor="let child of group.children"
-                                 [data]="child.data"></app-dashboard-card-item>
-      </div>
+    <ng-container *ngIf="group.data.amount > 0">
+      <app-dashboard-card-item [data]="group.data"></app-dashboard-card-item>
+      <ng-container *ngIf="group.children.length > 0">
+        <div class="indented">
+          <ng-container *ngFor="let child of group.children">
+            <app-dashboard-card-item *ngIf="child.data.amount > 0"
+                                     [data]="child.data"></app-dashboard-card-item>
+          </ng-container>
+        </div>
+      </ng-container>
     </ng-container>
   </ng-container>
 </ng-template>

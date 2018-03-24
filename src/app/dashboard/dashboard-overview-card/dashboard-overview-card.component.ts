@@ -11,6 +11,7 @@ import { Observable } from 'rxjs/Observable';
 import { Scale } from 'chroma-js';
 import * as chroma from 'chroma-js';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
+import moment = require('moment');
 
 interface SummaryChild<T> {
   readonly name: string;
@@ -51,6 +52,10 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     return this._totalResponse;
   }
 
+  public get formattedTotalResponse (): string {
+    return this.totalResponse === 0 ? 'No data found.' : this.totalResponse.toString();
+  }
+
   public get summaryResponses (): SummaryCollection<DashboardCardItemData> {
     return this._summaryResponses;
   }
@@ -73,7 +78,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
 
     const isReadyCallback = () => {
       this.createIntervalSubscription();
-      this.buildRequests();
       this.getData();
     };
 
@@ -95,7 +99,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private onPastHoursChange (value: number) {
-    this.buildRequests();
     this.getData();
   }
 
@@ -114,9 +117,11 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
 
     const builder = this._apiService.getRequestBuilder();
 
-    const date = new Date();
-    date.setHours(date.getHours() - this._dashboardState.getPastHours());
-    builder.setStartDatetime(date);
+    const startDate = moment().subtract(this._dashboardState.getPastHours(), 'hours').toDate();
+    const endDate = moment().add(1, 'hours').toDate();
+
+    builder.setStartDatetime(startDate);
+    builder.setEndDatetime(endDate);
     builder.setEndpoint(new CountEndpoint());
 
     builder.setCallback(this.processSummaryTotal.bind(this));
@@ -229,6 +234,8 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     if (this._isDoingRequest || !this._dashboardState.isInitialized) {
       return;
     }
+
+    this.buildRequests();
 
     this._isDoingRequest = true;
     this._apiService.SubmitRequest(this._totalRequest);

@@ -9,4 +9,7 @@
     [data]="item"
     [clickable]="true"
     (itemClick)="onItemClick($event)"></app-dashboard-card-item>
+  <div *ngIf="resultData.length === 0">
+    No data found using the specified settings.
+  </div>
 </ng-template>

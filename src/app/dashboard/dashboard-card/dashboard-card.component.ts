@@ -13,6 +13,7 @@ import { DashboardSettingsService } from '../../settings/dashboard-settings-serv
 import { isNullOrUndefined } from 'util';
 import { AdvancedCountEndpoint } from '../../api/request/endpoints/advanced-count-endpoint';
 import { SearchStateService } from '../../search-state-service/search-state.service';
+import moment = require('moment');
 
 @Component({
   selector: 'app-dashboard-card',
@@ -31,7 +32,6 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   }
 
   private _endpoint: AdvancedCountEndpoint;
-  private _request: ApiRequest;
   private _data: DashboardCardData;
   @Input() set data (value: DashboardCardData) {
     this._data = value;
@@ -74,8 +74,6 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
       builder.setStartDatetime(this.createPastDate(this._dashboardSettingsService.getPastHours()));
       this._endpoint.length = this._dashboardSettingsService.getMaxItemCountPerCard();
 
-      this._request = builder.build();
-
       this.createRefreshIntervalSubscription();
       this.getData();
     };
@@ -99,8 +97,11 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this._data.requestBuilder.setEndDatetime(moment().add(1, 'hours').toDate());
+    const request = this._data.requestBuilder.build();
+
     this._isDoingRequest = true;
-    this._apiService.SubmitRequest(this._request);
+    this._apiService.SubmitRequest(request);
   }
 
   private processApiResponse (data: AdvancedCountResponse): void {
@@ -137,14 +138,12 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     const builder = this._data.requestBuilder;
     builder.setStartDatetime(this.createPastDate(value));
 
-    this._request = builder.build();
     this.getData();
   }
 
   private onMaxItemCountChange (value: number): void {
     const oldLength = this._endpoint.length;
     this._endpoint.length = value;
-    this._request = this._data.requestBuilder.build();
 
     if (value > oldLength) {
       this.getData();
