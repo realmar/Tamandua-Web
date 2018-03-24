@@ -63,6 +63,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   ngOnInit () {
     this._routerEventSubscription = this._router.events.subscribe(this.onRouterEvents.bind(this));
+    this.checkSearchState();
   }
 
   ngOnDestroy (): void {
@@ -85,14 +86,20 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.endDateTime = this._searchStateService.endDatetime;
   }
 
+  private checkSearchState (): void {
+    if (this._searchStateService.doSearch) {
+      this._searchStateService.doSearch = false;
+      this.search();
+    }
+  }
+
   private onRouterEvents (event: Event): void {
     if (!(event instanceof NavigationEnd)) {
       return;
     }
 
-    if (this._router.url === '/search' && this._searchStateService.doSearch) {
-      this._searchStateService.doSearch = false;
-      this.search();
+    if (this._router.url === '/search') {
+      this.checkSearchState();
     }
   }
 
