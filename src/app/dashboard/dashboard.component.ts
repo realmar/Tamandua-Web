@@ -101,23 +101,27 @@ export class DashboardComponent implements OnInit {
     };
 
     /*
-     * Top delivered senders
-     */
+ * Top reject reasons
+ */
 
     addFilterToBuilder = (data: DashboardCardData) => {
-      data.requestBuilder.addField('deliverystatus', 'sent', new Comparator(ComparatorType.Equals));
+      data.requestBuilder.setEndpoint(new AdvancedCountEndpoint('rejectreason', this._dashboardSettingsService.getMaxItemCountPerCard()));
     };
 
     addFilterToBuilder(this._cards[ 0 ].cardData[ 0 ]);
-    addFilterToBuilder(this._cards[ 0 ].cardData[ 1 ]);
 
-    this._cards[ 0 ].title = this._deliveredTitle;
+    this._cards[ 0 ].title = this._rejectTitle;
+    this._cards[ 0 ].cardData[ 0 ].title = this._rejectReasons;
 
-    this._cards[ 0 ].cardData[ 0 ].title = this._deliveredSenders;
-    this._cards[ 0 ].cardData[ 1 ].title = this._deliveredSenderDomains;
-
-    this._cards[ 0 ].cardData[ 0 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilder;
-    this._cards[ 0 ].cardData[ 1 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilderDomainOnly;
+    // there is not a card for domain names only
+    this._cards[ 0 ].cardData.splice(1, 1);
+    this._cards[ 0 ].cardData[ 0 ].onItemClickFieldBuilder = value => {
+      return {
+        name: 'rejectreason',
+        value: '^' + value,
+        comparator: new Comparator(ComparatorType.Regex)
+      };
+    };
 
     /*
      * Top greylisted
@@ -158,27 +162,23 @@ export class DashboardComponent implements OnInit {
     this._cards[ 2 ].cardData[ 1 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilderDomainOnly;
 
     /*
-     * Top reject reasons
+     * Top delivered senders
      */
 
     addFilterToBuilder = (data: DashboardCardData) => {
-      data.requestBuilder.setEndpoint(new AdvancedCountEndpoint('rejectreason', this._dashboardSettingsService.getMaxItemCountPerCard()));
+      data.requestBuilder.addField('deliverystatus', 'sent', new Comparator(ComparatorType.Equals));
     };
 
     addFilterToBuilder(this._cards[ 3 ].cardData[ 0 ]);
+    addFilterToBuilder(this._cards[ 3 ].cardData[ 1 ]);
 
-    this._cards[ 3 ].title = this._rejectTitle;
-    this._cards[ 3 ].cardData[ 0 ].title = this._rejectReasons;
+    this._cards[ 3 ].title = this._deliveredTitle;
 
-    // there is not a card for domain names only
-    this._cards[ 3 ].cardData.splice(1, 1);
-    this._cards[ 3 ].cardData[ 0 ].onItemClickFieldBuilder = value => {
-      return {
-        name: 'rejectreason',
-        value: '^' + value,
-        comparator: new Comparator(ComparatorType.Regex)
-      };
-    };
+    this._cards[ 3 ].cardData[ 0 ].title = this._deliveredSenders;
+    this._cards[ 3 ].cardData[ 1 ].title = this._deliveredSenderDomains;
+
+    this._cards[ 3 ].cardData[ 0 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilder;
+    this._cards[ 3 ].cardData[ 1 ].onItemClickFieldBuilder = defaultOnItemClickFieldBuilderDomainOnly;
   }
 }
 
