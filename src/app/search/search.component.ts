@@ -12,7 +12,8 @@ import { Comparator, ComparatorType } from '../api/request/comparator';
 import { SearchStateService } from '../search-state-service/search-state.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorConstants } from '../utils/error-constants';
-import { ActiveToast, ToastrService } from 'ngx-toastr';
+import { ToastrService } from 'ngx-toastr';
+import { ToastrUtils } from '../utils/toastr-utils';
 
 @Component({
   selector: 'app-search',
@@ -56,7 +57,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   private _routerEventSubscription: Subscription;
-  private _errorToast: ActiveToast;
 
   constructor (private _apiService: ApiService,
                private _searchSettingsService: SearchSettingsService,
@@ -116,16 +116,12 @@ export class SearchComponent implements OnInit, OnDestroy {
   private processSearchResult (result: SearchResponse): void {
     this._isLoading = false;
     this._searchResult = result;
-
-    if (!isNullOrUndefined(this._errorToast)) {
-      this._toastr.clear(this._errorToast.toastId);
-      this._errorToast = undefined;
-    }
+    ToastrUtils.removeAllWithMessage(this._toastr, ErrorConstants.GenericServerError);
   }
 
   private processApiError (error: HttpErrorResponse): void {
     this._isLoading = false;
-    this._errorToast = this._toastr.error(ErrorConstants.GenericServerError, 'Error', {
+    this._toastr.error(ErrorConstants.GenericServerError, 'Error', {
       disableTimeOut: true
     });
   }

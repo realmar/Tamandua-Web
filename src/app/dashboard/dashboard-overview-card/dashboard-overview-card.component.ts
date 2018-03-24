@@ -15,6 +15,7 @@ import moment = require('moment');
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorConstants } from '../../utils/error-constants';
 import { ActiveToast, ToastrService } from 'ngx-toastr';
+import { ToastrUtils } from '../../utils/toastr-utils';
 
 interface SummaryChild<T> {
   readonly name: string;
@@ -268,12 +269,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
 
   private resetErrorToast (): void {
     this._hasErrors = false;
-    if (isNullOrUndefined(this._errorToast)) {
-      return;
-    }
-
-    this._toastr.clear(this._errorToast.toastId);
-    this._errorToast = undefined;
+    ToastrUtils.removeAllWithMessage(this._toastr, ErrorConstants.GenericServerError);
   }
 
   private processSummaryTotal (result: CountResponse): void {

@@ -2,7 +2,6 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { DashboardCardData } from './dashboard-card-data';
 import { ApiService } from '../../api/api-service';
 import { AdvancedCountResponse } from '../../api/response/advanced-count-response';
-import { ApiRequest } from '../../api/request/request';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/interval';
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
@@ -15,8 +14,9 @@ import { AdvancedCountEndpoint } from '../../api/request/endpoints/advanced-coun
 import { SearchStateService } from '../../search-state-service/search-state.service';
 import moment = require('moment');
 import { HttpErrorResponse } from '@angular/common/http';
-import { ActiveToast, ToastrService } from 'ngx-toastr';
+import { ToastrService } from 'ngx-toastr';
 import { ErrorConstants } from '../../utils/error-constants';
+import { ToastrUtils } from '../../utils/toastr-utils';
 
 @Component({
   selector: 'app-dashboard-card',
@@ -48,8 +48,6 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     const length = this._data.requestResult.length;
     return this._data.requestResult.slice(0, this._endpoint.length > length ? length : this._endpoint.length);
   }
-
-  private _errorToast: ActiveToast;
 
   constructor (private _apiService: ApiService,
                private _dashboardSettingsService: DashboardSettingsService,
@@ -115,16 +113,13 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     this._isDoingRequest = false;
     this._data.requestResult = data.items.map(item => new DashboardCardItemData(item.key, item.value, data.total));
 
-    if (!isNullOrUndefined(this._errorToast)) {
-      this._toastr.clear(this._errorToast.toastId);
-      this._errorToast = undefined;
-    }
+    ToastrUtils.removeAllWithMessage(this._toastr, ErrorConstants.GenericServerError);
   }
 
   private processApiError (error: HttpErrorResponse): void {
     this._isDoingRequest = false;
     this._data.requestResult = [];
-    this._errorToast = this._toastr.error(ErrorConstants.GenericServerError, 'Error', {
+    this._toastr.error(ErrorConstants.GenericServerError, 'Error', {
       disableTimeOut: true
     });
   }
