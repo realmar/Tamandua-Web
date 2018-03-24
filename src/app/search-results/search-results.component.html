@@ -1,7 +1,7 @@
 <app-search-result-tags-selection id="tags-selection"
                                   (selectedTagsChange)="setSelectedTags($event)"></app-search-result-tags-selection>
 
-<mat-table [dataSource]="rows"
+<mat-table [dataSource]="dataSource"
            matSort>
 
   <ng-container matColumnDef="details">
@@ -38,7 +38,7 @@
   <mat-row *matRowDef="let row; columns: visibleColumnsWithMetadata;"></mat-row>
 
 </mat-table>
-<mat-paginator [length]="rows.data.length"
+<mat-paginator [length]="dataSource.data.length"
                [pageSizeOptions]="pageSizeOptions"
                [pageSize]="pageSize"
                (page)="onPageSizeChange($event)"></mat-paginator>

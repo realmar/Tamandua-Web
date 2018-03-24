@@ -7,3 +7,17 @@
 html, body, app-root {
   height: 100%;
 }
+
+// Fix for regression in @angular/material 5.1.0
+// Source: https://github.com/angular/material2/issues/9939
+.mat-sort-header-sorted {
+  .mat-sort-header-arrow {
+    opacity: 1 !important;
+    transform: translateY(0px) !important;
+  }
+}
+
+// Fix sort arrow not centered with text
+.mat-sort-header-container {
+  align-items: center;
+}

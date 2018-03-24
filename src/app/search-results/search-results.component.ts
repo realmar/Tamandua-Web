@@ -36,8 +36,8 @@ interface TypeComparatorMap {
   styleUrls: [ './search-results.component.scss' ]
 })
 export class SearchResultsComponent implements OnInit, AfterViewInit {
-  @ViewChild(MatPaginator) private paginator: MatPaginator;
-  @ViewChild(MatSort) private sort: MatSort;
+  @ViewChild(MatPaginator) private _paginator: MatPaginator;
+  @ViewChild(MatSort) private _sort: MatSort;
 
   @Input()
   public set searchResult (value: SearchResponse) {
@@ -45,9 +45,9 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this.processRows(value);
   }
 
-  private _rows: TamanduaTableDataSource<SearchRow>;
-  public get rows (): TamanduaTableDataSource<SearchRow> {
-    return this._rows;
+  private _dataSource: TamanduaTableDataSource<SearchRow>;
+  public get dataSource (): TamanduaTableDataSource<SearchRow> {
+    return this._dataSource;
   }
 
   public get hasRows (): boolean {
@@ -119,7 +119,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
         debounceTime(500),
       ).subscribe(() => this.updateFilter());
 
-    this._rows = new TamanduaTableDataSource<SearchRow>();
+    this._dataSource = new TamanduaTableDataSource<SearchRow>();
     this._allRows = [];
     this._allColumns = [];
 
@@ -131,8 +131,9 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit () {
-    this._rows.paginator = this.paginator;
-    this._rows.sort = this.sort;
+    this._sort.disableClear = true;
+    this._dataSource.paginator = this._paginator;
+    this._dataSource.sort = this._sort;
   }
 
   public setSelectedTags (values: SelectedTags) {
@@ -187,7 +188,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
   public generateSaveDataObject (): SaveObjectData {
     const data = new Map<string, any>();
-    data.set('rows', this._rows.data);
+    data.set('dataSource', this._dataSource.data);
 
     return {
       filename: 'results',
@@ -338,7 +339,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
       }
     }
 
-    this._rows.data = rows;
+    this._dataSource.data = rows;
   }
 
   private clearFilters (): void {
@@ -366,16 +367,22 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
     this.updateFilter();
 
-    if (isNullOrUndefined(this._rows.sort)) {
+    if (isNullOrUndefined(this._dataSource.sort)) {
       return;
     }
 
-    const sortable = this._rows.sort.sortables.get('phdmxin_time');
-
-    if (!isNullOrUndefined(sortable)) {
-      sortable.start = 'desc';
-      this.sort.active = undefined;
-      this.sort.sort(sortable);
+    let initialSortKey = 'phdmxin_time';
+    if (!this._sort.sortables.has(initialSortKey)) {
+      initialSortKey = this._sort.sortables.keys().next().value;
     }
+
+    this._sort.active = initialSortKey;
+    this._sort.direction = 'asc';
+
+    this._sort.sort({
+      id: initialSortKey,
+      start: 'desc',
+      disableClear: true
+    });
   }
 }
