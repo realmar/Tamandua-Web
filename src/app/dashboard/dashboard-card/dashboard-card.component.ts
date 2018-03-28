@@ -12,11 +12,11 @@ import { DashboardSettingsService } from '../../settings/dashboard-settings-serv
 import { isNullOrUndefined } from 'util';
 import { AdvancedCountEndpoint } from '../../api/request/endpoints/advanced-count-endpoint';
 import { SearchStateService } from '../../search-state-service/search-state.service';
-import moment = require('moment');
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { ErrorConstants } from '../../utils/error-constants';
 import { ToastrUtils } from '../../utils/toastr-utils';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-dashboard-card',

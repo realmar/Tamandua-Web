@@ -11,11 +11,11 @@ import { Observable } from 'rxjs/Observable';
 import { Scale } from 'chroma-js';
 import * as chroma from 'chroma-js';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
-import moment = require('moment');
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorConstants } from '../../utils/error-constants';
 import { ActiveToast, ToastrService } from 'ngx-toastr';
 import { ToastrUtils } from '../../utils/toastr-utils';
+import * as moment from 'moment';
 
 interface SummaryChild<T> {
   readonly name: string;
