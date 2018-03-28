@@ -76,6 +76,8 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     return this._hasErrors;
   }
 
+  private _requestSubscriptions: Array<Subscription>;
+
   constructor (private _dashboardState: DashboardSettingsService,
                private _apiService: ApiService,
                private _toastr: ToastrService) {
@@ -83,6 +85,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     this._summaryRequests = [];
     this._summaryResponses = [];
     this._colorRange = chroma.scale([ '#E1F5FE', '#03A9F4' ]);
+    this._requestSubscriptions = [];
   }
 
   ngOnInit () {
@@ -115,6 +118,8 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private onPastHoursChange (value: number) {
+    this._requestSubscriptions.forEach(subscription => subscription.unsubscribe());
+    this._isDoingRequest = false;
     this.getData();
   }
 
@@ -227,13 +232,14 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this._requestSubscriptions = [];
     this.buildRequests();
 
     this._isDoingRequest = true;
-    this._apiService.SubmitRequest(this._totalRequest)
+    this._requestSubscriptions.push(this._apiService.SubmitRequest(this._totalRequest)
       .subscribe(
         this.processSummaryTotal.bind(this),
-        this.processApiError.bind(this));
+        this.processApiError.bind(this)));
   }
 
   private processApiError (error: HttpErrorResponse): void {
@@ -267,14 +273,14 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
 
       const summaryData = this._summaryResponses[ i ];
       const requestChildren = this._summaryRequests[ i ].children;
-      this._apiService.SubmitRequest<CountResponse>(this._summaryRequests[ i ].data)
+      this._requestSubscriptions.push(this._apiService.SubmitRequest<CountResponse>(this._summaryRequests[ i ].data)
         .subscribe(
           response => this.processSummaryGroup(
             response,
             summaryData,
             requestChildren,
             createItemData),
-          this.processApiError.bind(this));
+          this.processApiError.bind(this)));
     }
   }
 
@@ -296,11 +302,18 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
       }
 
       const summaryChildData = summaryData.children[ i ];
-      this._apiService.SubmitRequest<CountResponse>(children[ i ].data)
+      const iLocal = i;
+      this._requestSubscriptions.push(this._apiService.SubmitRequest<CountResponse>(children[ i ].data)
         .subscribe(
-          response => this.processSummaryChild(response, summaryChildData, createDataItem),
+          response => {
+            this.processSummaryChild(response, summaryChildData, createDataItem);
+
+            if (iLocal === children.length - 1) {
+              this._isDoingRequest = false;
+            }
+          },
           this.processApiError.bind(this)
-        );
+        ));
     }
   }
 

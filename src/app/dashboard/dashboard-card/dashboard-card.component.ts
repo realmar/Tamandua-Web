@@ -49,6 +49,8 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     return this._data.requestResult.slice(0, this._endpoint.length > length ? length : this._endpoint.length);
   }
 
+  private _requestSubscription: Subscription;
+
   constructor (private _apiService: ApiService,
                private _dashboardSettingsService: DashboardSettingsService,
                private _searchSettingsService: SearchSettingsService,
@@ -104,7 +106,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     const request = this._data.requestBuilder.build();
 
     this._isDoingRequest = true;
-    this._apiService.SubmitRequest(request).subscribe(
+    this._requestSubscription = this._apiService.SubmitRequest(request).subscribe(
       this.processApiResponse.bind(this),
       this.processApiError.bind(this));
   }
@@ -149,10 +151,19 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     return date;
   }
 
+  private cancelRequest (): void {
+    if (!isNullOrUndefined(this._requestSubscription)) {
+      this._requestSubscription.unsubscribe();
+    }
+
+    this._isDoingRequest = false;
+  }
+
   private onPastHoursChange (value: number): void {
     const builder = this._data.requestBuilder;
     builder.setStartDatetime(this.createPastDate(value));
 
+    this.cancelRequest();
     this.getData();
   }
 
@@ -161,6 +172,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     this._endpoint.length = value;
 
     if (value > oldLength) {
+      this.cancelRequest();
       this.getData();
     }
   }
