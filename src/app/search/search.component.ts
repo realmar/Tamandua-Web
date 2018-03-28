@@ -6,7 +6,7 @@ import { Event, NavigationEnd, Router } from '@angular/router';
 import { isNullOrUndefined } from 'util';
 import { SearchSettingsService } from '../settings/search-settings-service/search-settings.service';
 import { SearchResponse } from '../api/response/search-reponse';
-import { ApiRequest } from '../api/request/request';
+import { ApiRequestData } from '../api/request/request';
 import { Subscription } from 'rxjs/Subscription';
 import { Comparator, ComparatorType } from '../api/request/comparator';
 import { SearchStateService } from '../search-state-service/search-state.service';
@@ -108,9 +108,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
   }
 
-  private submitRequest (request: ApiRequest): void {
+  private submitRequest (request: ApiRequestData): void {
     this._isLoading = true;
-    this._apiService.SubmitRequest(request);
+    this._apiService.SubmitRequest(request).subscribe(
+      this.processSearchResult.bind(this),
+      this.processApiError.bind(this));
   }
 
   private processSearchResult (result: SearchResponse): void {
@@ -162,9 +164,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     const builder = this._apiService.getRequestBuilder();
-
-    builder.setCallback(this.processSearchResult.bind(this));
-    builder.setErrorCallback(this.processApiError.bind(this));
 
     builder.setEndpoint(new SearchEndpoint(0, 1000));
     builder.setStartDatetime(this._startDateTime);

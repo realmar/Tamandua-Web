@@ -5,7 +5,7 @@ import { TagsResponse } from './response/tags-response';
 import { FieldChoicesResponse } from './response/field-choices-response';
 import { RequestBuilder } from './request/request-builder';
 import { IntermediateExpressionRequest } from './request/intermediate-expression-request';
-import { ApiRequest } from './request/request';
+import { ApiRequestData } from './request/request';
 import { Observable } from 'rxjs/Observable';
 import { ApiResponse } from './response/api-response';
 import { HttpClient } from '@angular/common/http';
@@ -29,11 +29,11 @@ export class TamanduaService implements ApiService {
     return [ this._apiRoot, apiUrl ].join('/');
   }
 
-  private makeRequest<TResponse extends ApiResponse> (endpoint: Endpoint, data?: object): Observable<TResponse> {
+  private makeRequest<T extends ApiResponse> (endpoint: Endpoint, data?: object): Observable<T> {
     if (endpoint.method === EndpointMethod.Get) {
-      return this._httpClient.get<TResponse>(this.createFullUrl(endpoint.apiUrl));
+      return this._httpClient.get<T>(this.createFullUrl(endpoint.apiUrl));
     } else if (endpoint.method === EndpointMethod.Post) {
-      return this._httpClient.post<TResponse>(this.createFullUrl(endpoint.apiUrl), data);
+      return this._httpClient.post<T>(this.createFullUrl(endpoint.apiUrl), data);
     } else {
       throw new Error(`Endpoint method not supported: ${endpoint.method}`);
     }
@@ -55,15 +55,15 @@ export class TamanduaService implements ApiService {
     return this.makeRequest(new SupportedFieldchoicesEndpoint());
   }
 
-  public SubmitRequest (request: ApiRequest): void {
-    request.accept(this);
+  public SubmitRequest<T extends ApiResponse> (request: ApiRequestData): Observable<T> {
+    return request.accept(this);
   }
 
   public getRequestBuilder (): RequestBuilder {
     return new IntermediateExpressionRequestBuilder();
   }
 
-  public visitIE (request: IntermediateExpressionRequest): void {
-    this.makeRequest(request.endpoint, request.dataObject).subscribe(request.callback, request.errorCallback);
+  public visitIE<T extends ApiResponse> (request: IntermediateExpressionRequest): Observable<T> {
+    return this.makeRequest(request.endpoint, request.dataObject);
   }
 }

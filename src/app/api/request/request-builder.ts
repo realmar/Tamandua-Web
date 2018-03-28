@@ -1,35 +1,30 @@
 import { Comparator } from './comparator';
-import { ApiRequest } from './request';
+import { ApiRequestData } from './request';
 import { Endpoint } from './endpoints/endpoint';
 import { RequestBuilderField } from './request-builder-field';
-import { HttpErrorResponse } from '@angular/common/http';
 
 export interface RequestBuilder {
   addField (name: string, value: string | number, comparator: Comparator): void;
 
-  getFields(): Array<RequestBuilderField>;
+  getFields (): Array<RequestBuilderField>;
 
-  removeAllFields(): void;
+  removeAllFields (): void;
 
   setStartDatetime (datetime: Date): void;
 
-  getStartDatetime(): Date;
+  getStartDatetime (): Date;
 
   setEndDatetime (datetime: Date): void;
 
-  getEndDatetime(): Date;
+  getEndDatetime (): Date;
 
   removeStartDatetime (): void;
 
   removeEndDatetime (): void;
 
-  setEndpoint(endpoint: Endpoint): void;
+  setEndpoint (endpoint: Endpoint): void;
 
-  getEndpoint(): Endpoint;
+  getEndpoint (): Endpoint;
 
-  setCallback(callback: (object) => void): void;
-
-  setErrorCallback(callback: (HttpErrorResponse) => void): void;
-
-  build(): ApiRequest;
+  build (): ApiRequestData;
 }

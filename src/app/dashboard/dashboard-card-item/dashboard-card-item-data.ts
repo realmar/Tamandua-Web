@@ -3,10 +3,10 @@ import * as chroma from 'chroma-js';
 import { isNullOrUndefined } from 'util';
 
 export class DashboardCardItemData {
-  private _key;
-  private _amount;
-  private _totalAmount;
-  private _colorRange: Scale;
+  private readonly _key;
+  private readonly _amount;
+  private readonly _totalAmount;
+  private readonly _colorRange: Scale;
 
   public get key () {
     return this._key;

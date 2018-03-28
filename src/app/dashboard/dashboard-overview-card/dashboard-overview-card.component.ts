@@ -1,6 +1,6 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
-import { ApiRequest } from '../../api/request/request';
+import { ApiRequestData } from '../../api/request/request';
 import { ApiService } from '../../api/api-service';
 import { Comparator, ComparatorType } from '../../api/request/comparator';
 import { CountResponse } from '../../api/response/count-response';
@@ -45,11 +45,11 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     return this._isDoingRequest;
   }
 
-  private _totalRequest: ApiRequest;
-  private _summaryRequests: SummaryCollection<ApiRequest>;
+  private _totalRequest: ApiRequestData;
+  private readonly _summaryRequests: SummaryCollection<ApiRequestData>;
 
   private _totalResponse: CountResponse;
-  private _summaryResponses: SummaryCollection<DashboardCardItemData>;
+  private readonly _summaryResponses: SummaryCollection<DashboardCardItemData>;
 
 
   public get totalResponse (): CountResponse {
@@ -68,7 +68,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     return this._summaryResponses;
   }
 
-  private _colorRange: Scale;
+  private readonly _colorRange: Scale;
   private _errorToast: ActiveToast;
 
   private _hasErrors: boolean;
@@ -140,9 +140,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     builder.setEndDatetime(endDate);
     builder.setEndpoint(new CountEndpoint());
 
-    builder.setCallback(this.processSummaryTotal.bind(this));
-    builder.setErrorCallback(this.processApiError.bind(this));
-
     this._totalRequest = builder.build();
 
     /*
@@ -150,9 +147,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
      */
 
     builder.addField('action', 'reject', new Comparator(ComparatorType.Equals));
-    builder.setCallback(function (result) {
-      this.processSummaryGroup(result, 0);
-    }.bind(this));
     this._summaryRequests[ 0 ] = {
       name: 'Rejected',
       data: builder.build(),
@@ -162,11 +156,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     builder.removeAllFields();
 
     builder.addField('rejectreason', '^Recipient address rejected: Greylisted', new Comparator(ComparatorType.Regex));
-    builder.setCallback(result => {
-      this.processSummaryChild(result, 0, 0);
-      this._isDoingRequest = false;
-    });
-
     this._summaryRequests[ 0 ].children.push({
       name: 'Greylisted',
       data: builder.build()
@@ -179,9 +168,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
      */
 
     builder.addField('deliverystatus', 'sent', new Comparator(ComparatorType.Equals));
-    builder.setCallback(function (result) {
-      this.processSummaryGroup(result, 1);
-    }.bind(this));
     this._summaryRequests[ 1 ] = {
       name: 'Delivered',
       data: builder.build(),
@@ -191,9 +177,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     builder.removeAllFields();
 
     builder.addField('spamscore', 5, new Comparator(ComparatorType.GreaterOrEqual));
-    builder.setCallback(function (result) {
-      this.processSummaryChild(result, 1, 0);
-    }.bind(this));
     this._summaryRequests[ 1 ].children.push({
       name: 'Spam',
       data: builder.build()
@@ -206,9 +189,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
      */
 
     builder.addField('deliverystatus', 'deferred', new Comparator(ComparatorType.Equals));
-    builder.setCallback(function (result) {
-      this.processSummaryGroup(result, 2);
-    }.bind(this));
     this._summaryRequests[ 2 ] = {
       name: 'Deferred',
       data: builder.build(),
@@ -222,9 +202,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
      */
 
     builder.addField('deliverystatus', 'bounced', new Comparator(ComparatorType.Equals));
-    builder.setCallback(function (result) {
-      this.processSummaryGroup(result, 3);
-    }.bind(this));
     this._summaryRequests[ 3 ] = {
       name: 'Bounced',
       data: builder.build(),
@@ -238,9 +215,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
      */
 
     builder.addField('virusresult', '^Blocked INFECTED', new Comparator(ComparatorType.Regex));
-    builder.setCallback(function (result) {
-      this.processSummaryGroup(result, 4);
-    }.bind(this));
     this._summaryRequests[ 4 ] = {
       name: 'Virus',
       data: builder.build(),
@@ -256,7 +230,10 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     this.buildRequests();
 
     this._isDoingRequest = true;
-    this._apiService.SubmitRequest(this._totalRequest);
+    this._apiService.SubmitRequest(this._totalRequest)
+      .subscribe(
+        this.processSummaryTotal.bind(this),
+        this.processApiError.bind(this));
   }
 
   private processApiError (error: HttpErrorResponse): void {
@@ -276,44 +253,62 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     this.resetErrorToast();
     this._totalResponse = result;
 
-    for (const group of this._summaryRequests) {
-      this._apiService.SubmitRequest(group.data);
+    for (let i = 0; i < this._summaryRequests.length; ++i) {
+      const createItemData = d => new DashboardCardItemData(name, d, this._totalResponse, this._colorRange);
+
+      const name = this._summaryRequests[ i ].name;
+      if (isNullOrUndefined(this._summaryResponses[ i ])) {
+        this._summaryResponses[ i ] = {
+          name: name,
+          data: createItemData(0),
+          children: []
+        };
+      }
+
+      const summaryData = this._summaryResponses[ i ];
+      const requestChildren = this._summaryRequests[ i ].children;
+      this._apiService.SubmitRequest<CountResponse>(this._summaryRequests[ i ].data)
+        .subscribe(
+          response => this.processSummaryGroup(
+            response,
+            summaryData,
+            requestChildren,
+            createItemData),
+          this.processApiError.bind(this));
     }
   }
 
-  private processSummaryGroup (result: CountResponse, index: number): void {
+  private processSummaryGroup (
+    result: CountResponse,
+    summaryData: SummaryGroup<DashboardCardItemData>,
+    children: Array<SummaryChild<ApiRequestData>>,
+    createDataItem: (number) => DashboardCardItemData): void {
+
     this.resetErrorToast();
-    const name = this._summaryRequests[ index ].name;
+    summaryData.data = createDataItem(result);
 
-    if (isNullOrUndefined(this._summaryResponses[ index ])) {
-      this._summaryResponses[ index ] = {
-        name: name,
-        data: undefined,
-        children: []
-      };
-    }
+    for (let i = 0; i < children.length; ++i) {
+      if (isNullOrUndefined(summaryData.children[ i ])) {
+        summaryData.children[ i ] = {
+          name: summaryData.data.key,
+          data: createDataItem(0)
+        };
+      }
 
-    this._summaryResponses[ index ].data = new DashboardCardItemData(name, result, this._totalResponse, this._colorRange);
-    for (const child of this._summaryRequests[ index ].children) {
-      this._apiService.SubmitRequest(child.data);
+      const summaryChildData = summaryData.children[ i ];
+      this._apiService.SubmitRequest<CountResponse>(children[ i ].data)
+        .subscribe(
+          response => this.processSummaryChild(response, summaryChildData, createDataItem),
+          this.processApiError.bind(this)
+        );
     }
   }
 
-  private processSummaryChild (result: CountResponse, index: number, childIndex: number): void {
+  private processSummaryChild (
+    result: CountResponse,
+    data: SummaryChild<DashboardCardItemData>,
+    createDataItem: (number) => DashboardCardItemData): void {
     this.resetErrorToast();
-    const name = this._summaryRequests[ index ].children[ childIndex ].name;
-
-    if (isNullOrUndefined(this._summaryResponses[ index ].children[ childIndex ])) {
-      this._summaryResponses[ index ].children[ childIndex ] = {
-        name: name,
-        data: undefined
-      };
-    }
-
-    this._summaryResponses[ index ].children[ childIndex ].data =
-      new DashboardCardItemData(
-        name,
-        result,
-        this._totalResponse, this._colorRange);
+    data.data = createDataItem(result);
   }
 }

@@ -74,8 +74,6 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     this._endpoint = builder.getEndpoint() as AdvancedCountEndpoint;
 
     const isReadyCallback = () => {
-      builder.setCallback(this.processApiResponse.bind(this));
-      builder.setErrorCallback(this.processApiError.bind(this));
       builder.setStartDatetime(this.createPastDate(this._dashboardSettingsService.getPastHours()));
       this._endpoint.length = this._dashboardSettingsService.getMaxItemCountPerCard();
 
@@ -106,7 +104,9 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     const request = this._data.requestBuilder.build();
 
     this._isDoingRequest = true;
-    this._apiService.SubmitRequest(request);
+    this._apiService.SubmitRequest(request).subscribe(
+      this.processApiResponse.bind(this),
+      this.processApiError.bind(this));
   }
 
   private processApiResponse (data: AdvancedCountResponse): void {

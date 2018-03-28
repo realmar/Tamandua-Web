@@ -3,7 +3,7 @@ import { ApiService } from './api-service';
 import { IntermediateExpressionRequestBuilder } from './request/intermediate-expression-request-builder';
 import { RequestBuilder } from './request/request-builder';
 import { of } from 'rxjs/observable/of';
-import { ApiRequest } from './request/request';
+import { ApiRequestData } from './request/request';
 import { IntermediateExpressionRequest } from './request/intermediate-expression-request';
 import { SearchResponse } from './response/search-reponse';
 import { CountResponse } from './response/count-response';
@@ -17,6 +17,7 @@ import { CountEndpoint } from './request/endpoints/count-endpoint';
 import { Observable } from 'rxjs/Observable';
 import { Endpoint } from './request/endpoints/endpoint';
 import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
+import { ApiResponse } from './response/api-response';
 
 @Injectable()
 export class TamanduaMockService extends ApiService {
@@ -92,21 +93,21 @@ export class TamanduaMockService extends ApiService {
     ]);
   }
 
-  public SubmitRequest (request: ApiRequest): void {
-    request.accept(this);
+  public SubmitRequest<T extends ApiResponse> (request: ApiRequestData): Observable<T> {
+    return request.accept(this);
   }
 
   public getRequestBuilder (): RequestBuilder {
     return new IntermediateExpressionRequestBuilder();
   }
 
-  public visitIE (request: IntermediateExpressionRequest): void {
+  public visitIE<T extends ApiResponse> (request: IntermediateExpressionRequest): Observable<T> {
     if (request.endpoint instanceof SearchEndpoint) {
-      this.search(request.data, request.endpoint).subscribe(request.callback);
+      return this.search(request.data, request.endpoint) as any as Observable<T>;
     } else if (request.endpoint instanceof CountEndpoint) {
-      this.count(request.data, request.endpoint).subscribe(request.callback);
+      return this.count(request.data, request.endpoint)  as any as Observable<T>;
     } else if (request.endpoint instanceof AdvancedCountEndpoint) {
-      this.advancedCount(request.data, request.endpoint).subscribe(request.callback);
+      return this.advancedCount(request.data, request.endpoint) as any as Observable<T>;
     }
   }
 

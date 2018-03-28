@@ -1,10 +1,11 @@
-import { ApiRequest } from './request';
+import { ApiRequestData } from './request';
 import { Endpoint } from './endpoints/endpoint';
 import { ApiService } from '../api-service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { Observable } from 'rxjs/Observable';
+import { ApiResponse } from '../response/api-response';
 
-export class IntermediateExpressionRequest implements ApiRequest {
-  private _dataObject: object;
+export class IntermediateExpressionRequest implements ApiRequestData {
+  private readonly _dataObject: object;
   public get dataObject (): object {
     return this._dataObject;
   }
@@ -13,29 +14,17 @@ export class IntermediateExpressionRequest implements ApiRequest {
     return JSON.stringify(this._dataObject);
   }
 
-  private _callback: (object) => void;
-  public get callback (): (object) => void {
-    return this._callback;
-  }
-
-  private _errorCallback: (HttpErrorResponse) => void;
-  public get errorCallback (): (HttpErrorResponse) => void {
-    return this._errorCallback;
-  }
-
-  private _endpoint: Endpoint;
+  private readonly _endpoint: Endpoint;
   public get endpoint (): Endpoint {
     return this._endpoint;
   }
 
-  constructor (dataObject: object, endpoint: Endpoint, callback: (object) => void, errorCallback: (HttpErrorResponse) => void) {
+  constructor (dataObject: object, endpoint: Endpoint) {
     this._dataObject = dataObject;
     this._endpoint = endpoint;
-    this._callback = callback;
-    this._errorCallback = errorCallback;
   }
 
-  public accept (apiService: ApiService): void {
-    apiService.visitIE(this);
+  public accept<T extends ApiResponse> (apiService: ApiService): Observable<T> {
+    return apiService.visitIE(this);
   }
 }

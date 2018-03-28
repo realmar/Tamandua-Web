@@ -1,18 +1,17 @@
 import { RequestBuilder } from './request-builder';
 import { Comparator } from './comparator';
 import { IntermediateExpressionRequest } from './intermediate-expression-request';
-import { ApiRequest } from './request';
+import { ApiRequestData } from './request';
 import { isNullOrUndefined } from 'util';
 import { Endpoint } from './endpoints/endpoint';
 import { EndpointIsUndefinedError } from './endpoint-is-undefined-error';
 import { Converter } from '../../utils/converter';
 import { RequestBuilderField } from './request-builder-field';
-import { HttpErrorResponse } from '@angular/common/http';
 
 class Field implements RequestBuilderField {
-  private _comparator: Comparator;
-  private _name: string;
-  private _value: string | number;
+  private readonly _comparator: Comparator;
+  private readonly _name: string;
+  private readonly _value: string | number;
 
   get comparator (): Comparator {
     return this._comparator;
@@ -48,8 +47,6 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
   private _startDatetime: Date;
   private _endDatetime: Date;
   private _endpoint: Endpoint;
-  private _callback: (object) => void;
-  private _errorCallback: (HttpErrorResponse) => void;
 
   constructor () {
     this._fields = [];
@@ -99,21 +96,13 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
     return this._endpoint;
   }
 
-  public setCallback (callback: (object) => void): void {
-    this._callback = callback;
-  }
-
-  public setErrorCallback (callback: (HttpErrorResponse) => void): void {
-    this._errorCallback = callback;
-  }
-
   /**
    * Build request.
    *
    * @throws {EndpointIsUndefinedError} thrown when the endpoint has not been set.
-   * @returns {ApiRequest} Assembled request object.
+   * @returns {ApiRequestData} Assembled request object.
    */
-  public build (): ApiRequest {
+  public build (): ApiRequestData {
     if (isNullOrUndefined(this._endpoint)) {
       throw new EndpointIsUndefinedError();
     }
@@ -135,6 +124,6 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
       data.datetime[ 'end' ] = Converter.dateToString(this._endDatetime);
     }
 
-    return new IntermediateExpressionRequest(data, this._endpoint, this._callback, this._errorCallback);
+    return new IntermediateExpressionRequest(data, this._endpoint);
   }
 }

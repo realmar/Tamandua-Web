@@ -6,7 +6,6 @@ import { isNullOrUndefined } from 'util';
 import { DashboardCardData } from './dashboard-card/dashboard-card-data';
 import { DashboardSettingsService } from '../settings/dashboard-settings-service/dashboard-settings.service';
 import { CardRow } from './card-row';
-import { SettingValidationResult } from '../settings/setting-validation-result';
 
 @Component({
   selector: 'app-dashboard',

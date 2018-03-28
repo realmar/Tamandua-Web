@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { ApiService } from '../../api/api-service';
 import { TagsResponse } from '../../api/response/tags-response';
 import { SelectedTags } from './selected-tags';
