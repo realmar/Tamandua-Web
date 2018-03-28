@@ -17,10 +17,11 @@ import { Endpoint } from './request/endpoints/endpoint';
 import { EndpointMethod } from './request/endpoints/endpoint-method.enum';
 import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
 import { SupportedFieldchoicesEndpoint } from './request/endpoints/supported-fieldchoices-endpoint';
+import { environment } from '../../environments/environment';
 
 @Injectable()
 export class TamanduaService implements ApiService {
-  private readonly _apiRoot = 'http://localhost:8080';
+  private readonly _apiRoot = environment.apiRoot;
 
   constructor (private _httpClient: HttpClient) {
   }
