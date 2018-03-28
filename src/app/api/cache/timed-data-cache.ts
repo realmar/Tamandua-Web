@@ -3,13 +3,26 @@ import { isNullOrUndefined } from 'util';
 import * as moment from 'moment';
 import { Transform, Type } from 'class-transformer';
 
+// AOT compilation has problems with arrow functions in decorators.
+// This here is a workaround.
+//
+// Source: https://github.com/angular/angular-cli/issues/8434
+
+function typeFunc () {
+  return Date;
+}
+
+function transformFunc (value) {
+  return moment(value);
+}
+
 export class TimedDataCache<T> implements DataCache<T> {
   private _data: T;
 
-  @Type(() => Date)
-  @Transform(value => moment(value), { toClassOnly: true })
+  @Type(typeFunc)
+  @Transform(transformFunc, { toClassOnly: true })
   private _lastDataUpdate: moment.Moment;
-  private _validityDurationDays: number;
+  private readonly _validityDurationDays: number;
 
   public get isValid (): boolean {
     if (isNullOrUndefined(this._lastDataUpdate) || isNullOrUndefined(this._data)) {
