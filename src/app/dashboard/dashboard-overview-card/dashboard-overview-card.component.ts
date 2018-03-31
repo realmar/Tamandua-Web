@@ -258,13 +258,13 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     this._totalResponse = result;
 
     for (let i = 0; i < this._summaryRequests.length; ++i) {
-      const createItemData = d => new DashboardCardItemData(name, d, this._totalResponse, this._colorRange);
+      const createItemData = (n, d) => new DashboardCardItemData(n, d, this._totalResponse, this._colorRange);
 
       const name = this._summaryRequests[ i ].name;
       if (isNullOrUndefined(this._summaryResponses[ i ])) {
         this._summaryResponses[ i ] = {
           name: name,
-          data: createItemData(0),
+          data: createItemData(name, 0),
           children: []
         };
       }
@@ -286,16 +286,17 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     result: CountResponse,
     summaryData: SummaryGroup<DashboardCardItemData>,
     children: Array<SummaryChild<ApiRequestData>>,
-    createDataItem: (number) => DashboardCardItemData): void {
+    createDataItem: (string, number) => DashboardCardItemData): void {
 
     this.resetErrorToast();
-    summaryData.data = createDataItem(result);
+    summaryData.data = createDataItem(summaryData.name, result);
 
     for (let i = 0; i < children.length; ++i) {
+      const name = children[ i ].name;
       if (isNullOrUndefined(summaryData.children[ i ])) {
         summaryData.children[ i ] = {
-          name: summaryData.data.key,
-          data: createDataItem(0)
+          name: name,
+          data: createDataItem(name, 0)
         };
       }
 
@@ -318,8 +319,8 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   private processSummaryChild (
     result: CountResponse,
     data: SummaryChild<DashboardCardItemData>,
-    createDataItem: (number) => DashboardCardItemData): void {
+    createDataItem: (string, number) => DashboardCardItemData): void {
     this.resetErrorToast();
-    data.data = createDataItem(result);
+    data.data = createDataItem(data.name, result);
   }
 }
