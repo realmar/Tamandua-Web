@@ -87,8 +87,8 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     this._searchStateService.fields = this._fields;
 
-    this.startDateTime = this._searchStateService.startDatetime;
-    this.endDateTime = this._searchStateService.endDatetime;
+    this.startDateTime = new Date(this._searchStateService.startDatetime.getTime());
+    this.endDateTime = new Date(this._searchStateService.endDatetime.getTime());
   }
 
   private checkSearchState (): void {
