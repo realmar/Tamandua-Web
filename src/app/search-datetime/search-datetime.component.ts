@@ -41,7 +41,12 @@ export class SearchDatetimeComponent implements OnInit {
   }
 
   set date (value: Date) {
+    // this._date.setDate(value.getDate());
+
+    this._date.setFullYear(value.getFullYear());
+    this._date.setMonth(value.getMonth());
     this._date.setDate(value.getDate());
+
     this.emitDatetimeChange();
   }
 
