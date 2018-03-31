@@ -168,7 +168,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     const builder = this._apiService.getRequestBuilder();
 
-    builder.setEndpoint(new SearchEndpoint(0, 1000));
+    builder.setEndpoint(new SearchEndpoint(0, this._searchSettingsService.getResultCount()));
     builder.setStartDatetime(this._startDateTime);
     builder.setEndDatetime(this._endDateTime);
 

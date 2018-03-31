@@ -14,6 +14,7 @@ export class SearchSettingsService {
   private _selectedTags: Setting<SelectedTags>;
   private _pageSizeOptions = [ 5, 10, 25, 100 ];
   private _paginatorPageSize: Setting<number>;
+  private _resultCount: Setting<number>;
 
   protected onReadySubject: Subject<any>;
 
@@ -34,6 +35,7 @@ export class SearchSettingsService {
       'recipient',
       'tags'
     ], this.visibleColumnsValidator.bind(this));
+    this._resultCount = new Setting<number>(200, this.resultCountValidator.bind(this));
 
     this.onReadySubject = new Subject<any>();
     this.onReadyCallback();
@@ -60,6 +62,10 @@ export class SearchSettingsService {
   }
 
   private pageSizeValidator (data: number): SettingValidationResult {
+    return new SettingValidationResult(!isNullOrUndefined(data) && data > 0);
+  }
+
+  private resultCountValidator (data: number): SettingValidationResult {
     return new SettingValidationResult(!isNullOrUndefined(data) && data > 0);
   }
 
@@ -102,6 +108,14 @@ export class SearchSettingsService {
 
   public getPageSizeOptions (): Array<number> {
     return this._pageSizeOptions;
+  }
+
+  public getResultCount (): number {
+    return this._resultCount.getData();
+  }
+
+  public setResultCount (value: number): SettingValidationResult {
+    return this._resultCount.setData(value);
   }
 
 // endregion
