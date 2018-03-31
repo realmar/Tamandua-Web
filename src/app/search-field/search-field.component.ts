@@ -4,6 +4,9 @@ import { ApiService } from '../api/api-service';
 import { SearchFieldData } from './search-field-data';
 import { isNullOrUndefined } from 'util';
 import { FieldChoicesResponse } from '../api/response/field-choices-response';
+import { ToastrService } from 'ngx-toastr';
+import { ErrorConstants } from '../utils/error-constants';
+import { ToastrUtils } from '../utils/toastr-utils';
 
 @Component({
   selector: 'app-search-field',
@@ -74,7 +77,8 @@ export class SearchFieldComponent implements OnInit {
     return !isNullOrUndefined(this._fieldChoicesMap.get(this.field));
   }
 
-  constructor (private _apiService: ApiService) {
+  constructor (private _apiService: ApiService,
+               private _toastr: ToastrService) {
     this._maxFieldChoicesPerField = 10;
     this._fieldChoicesMap = new Map<string, FieldChoicesResponse>();
     this._fields = [ 'loading ...' ];
@@ -97,6 +101,8 @@ export class SearchFieldComponent implements OnInit {
     this.dataChange.emit(this._data);
 
     this._apiService.getColumns().subscribe(data => {
+      ToastrUtils.removeAllGenericServerErrors(this._toastr);
+
       const reassignName = this._fields[ 0 ].startsWith('loading');
       this._fields = data;
       if (reassignName) {
@@ -104,14 +110,19 @@ export class SearchFieldComponent implements OnInit {
       }
 
       this.getFieldChoices();
-    });
+    }, () => ToastrUtils.showGenericServerError(this._toastr));
   }
 
   private getFieldChoices (): void {
     this._apiService.getSupportedFieldChoices().subscribe(response => {
       for (const column of this._fields.filter(x => response.indexOf(x) !== -1)) {
         this._apiService.getFieldChoices(column, this._maxFieldChoicesPerField)
-          .subscribe(result => this.processFieldChoicesResponse(result, column));
+          .subscribe(
+            result => {
+              ToastrUtils.removeAllGenericServerErrors(this._toastr);
+              this.processFieldChoicesResponse(result, column);
+            },
+            () => ToastrUtils.showGenericServerError(this._toastr));
       }
     });
   }

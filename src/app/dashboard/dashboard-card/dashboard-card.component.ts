@@ -115,15 +115,13 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     this._isDoingRequest = false;
     this._data.requestResult = data.items.map(item => new DashboardCardItemData(item.key, item.value, data.total));
 
-    ToastrUtils.removeAllWithMessage(this._toastr, ErrorConstants.GenericServerError);
+    ToastrUtils.removeAllGenericServerErrors(this._toastr);
   }
 
   private processApiError (error: HttpErrorResponse): void {
     this._isDoingRequest = false;
     this._data.requestResult = [];
-    this._toastr.error(ErrorConstants.GenericServerError, 'Error', {
-      disableTimeOut: true
-    });
+    ToastrUtils.showGenericServerError(this._toastr);
   }
 
   private createRefreshIntervalSubscription () {

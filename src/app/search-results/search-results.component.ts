@@ -16,6 +16,8 @@ import { JsonSaveStrategy } from '../save-object/strategies/json-save-strategy';
 import { YamlSaveStrategy } from '../save-object/strategies/yaml-save-strategy';
 import { debounceTime } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
+import { ToastrUtils } from '../utils/toastr-utils';
+import { ToastrService } from 'ngx-toastr';
 
 interface TypeComparatorArguments {
   key: string;
@@ -27,7 +29,7 @@ interface TypeComparatorArguments {
 type TypeComparator = (args: TypeComparatorArguments) => boolean;
 
 interface TypeComparatorMap {
-  [index: string]: TypeComparator;
+  [ index: string ]: TypeComparator;
 }
 
 @Component({
@@ -111,7 +113,8 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
   constructor (private _apiService: ApiService,
                private _searchSettingsService: SearchSettingsService,
-               private _dialog: MatDialog) {
+               private _dialog: MatDialog,
+               private _toastr: ToastrService) {
     this._onFilterChange = new Subject<any>();
     this._onFilterChange
       .asObservable()
@@ -127,7 +130,13 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit () {
-    this._apiService.getColumns().subscribe(this.processColumns.bind(this));
+    this._apiService.getColumns().subscribe(
+      data => {
+        ToastrUtils.removeAllGenericServerErrors(this._toastr);
+        this.processColumns(data);
+      },
+      () => ToastrUtils.showGenericServerError(this._toastr)
+    );
   }
 
   ngAfterViewInit () {

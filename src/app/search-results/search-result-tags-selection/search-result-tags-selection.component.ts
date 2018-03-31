@@ -6,6 +6,8 @@ import { MatButtonToggleChange } from '@angular/material/button-toggle/typings/b
 import { isNullOrUndefined } from 'util';
 import { SearchSettingsService } from '../../settings/search-settings-service/search-settings.service';
 import { Subscription } from 'rxjs/Subscription';
+import { ToastrUtils } from '../../utils/toastr-utils';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-search-result-tags-selection',
@@ -26,13 +28,20 @@ export class SearchResultTagsSelectionComponent implements OnInit, OnDestroy {
   @Output() selectedTagsChange: EventEmitter<SelectedTags>;
 
   constructor (private apiService: ApiService,
-               private searchSettingsService: SearchSettingsService) {
+               private searchSettingsService: SearchSettingsService,
+               private _toastr: ToastrService) {
     this.selectedTagsChange = new EventEmitter<SelectedTags>();
   }
 
   ngOnInit () {
     const onReadyCallback = () => {
-      this.apiService.getTags().subscribe(this.mergeSelectedTags.bind(this));
+      this.apiService.getTags().subscribe(
+        data => {
+          ToastrUtils.removeAllGenericServerErrors(this._toastr);
+          this.mergeSelectedTags(data);
+        },
+        () => ToastrUtils.showGenericServerError(this._toastr)
+      );
       this.selectedTagsChange.emit(this.searchSettingsService.getSelectedTags());
     };
 

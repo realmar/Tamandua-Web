@@ -87,8 +87,13 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     this._searchStateService.fields = this._fields;
 
-    this.startDateTime = new Date(this._searchStateService.startDatetime.getTime());
-    this.endDateTime = new Date(this._searchStateService.endDatetime.getTime());
+    if (!isNullOrUndefined(this._searchStateService.startDatetime)) {
+      this.startDateTime = new Date(this._searchStateService.startDatetime.getTime());
+    }
+
+    if (!isNullOrUndefined(this._searchStateService.endDatetime)) {
+      this.endDateTime = new Date(this._searchStateService.endDatetime.getTime());
+    }
   }
 
   private checkSearchState (): void {
@@ -118,14 +123,12 @@ export class SearchComponent implements OnInit, OnDestroy {
   private processSearchResult (result: SearchResponse): void {
     this._isLoading = false;
     this._searchResult = result;
-    ToastrUtils.removeAllWithMessage(this._toastr, ErrorConstants.GenericServerError);
+    ToastrUtils.removeAllGenericServerErrors(this._toastr);
   }
 
   private processApiError (error: HttpErrorResponse): void {
     this._isLoading = false;
-    this._toastr.error(ErrorConstants.GenericServerError, 'Error', {
-      disableTimeOut: true
-    });
+    ToastrUtils.showGenericServerError(this._toastr);
   }
 
   public anyFieldsEmpty (): boolean {

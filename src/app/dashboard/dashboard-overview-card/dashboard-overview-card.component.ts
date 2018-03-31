@@ -245,14 +245,12 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   private processApiError (error: HttpErrorResponse): void {
     this._isDoingRequest = false;
     this._hasErrors = true;
-    this._errorToast = this._toastr.error(ErrorConstants.GenericServerError, 'Error', {
-      disableTimeOut: true
-    });
+    ToastrUtils.showGenericServerError(this._toastr);
   }
 
   private resetErrorToast (): void {
     this._hasErrors = false;
-    ToastrUtils.removeAllWithMessage(this._toastr, ErrorConstants.GenericServerError);
+    ToastrUtils.removeAllGenericServerErrors(this._toastr);
   }
 
   private processSummaryTotal (result: CountResponse): void {
