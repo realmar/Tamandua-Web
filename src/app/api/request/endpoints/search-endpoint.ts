@@ -11,7 +11,7 @@ export class SearchEndpoint implements Endpoint {
   }
 
   public get apiUrl (): string {
-    return `api/search/${this._page}/${this._size}`;
+    return `search/${this._page}/${this._size}`;
   }
 
   public get method (): EndpointMethod {

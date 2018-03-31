@@ -3,7 +3,7 @@ import { EndpointMethod } from './endpoint-method.enum';
 
 export class SupportedFieldchoicesEndpoint implements Endpoint {
   public get apiUrl (): string {
-    return 'api/supported_fieldchoices';
+    return 'supported_fieldchoices';
   }
 
   public get method (): EndpointMethod {

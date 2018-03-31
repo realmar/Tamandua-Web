@@ -11,7 +11,7 @@ export class FieldchoicesEndpoint implements Endpoint {
   }
 
   public get apiUrl (): string {
-    return `api/fieldchoices/${this._field}/${this._maxChoices}`;
+    return `fieldchoices/${this._field}/${this._maxChoices}`;
   }
 
   public get method (): EndpointMethod {

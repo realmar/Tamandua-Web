@@ -3,7 +3,7 @@ import { EndpointMethod } from './endpoint-method.enum';
 
 export class CountEndpoint implements Endpoint {
   public get apiUrl (): string {
-    return 'api/count';
+    return 'count';
   }
 
   public get method (): EndpointMethod {

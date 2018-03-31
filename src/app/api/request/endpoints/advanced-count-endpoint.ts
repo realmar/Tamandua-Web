@@ -22,7 +22,7 @@ export class AdvancedCountEndpoint implements Endpoint {
   }
 
   public get apiUrl (): string {
-    let url = `api/advcount/${this._field}/${this._length}`;
+    let url = `advcount/${this._field}/${this._length}`;
     if (!isNullOrUndefined(this._separator)) {
       url += `/${this._separator}`;
     }

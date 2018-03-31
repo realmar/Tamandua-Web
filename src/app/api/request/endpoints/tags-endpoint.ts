@@ -3,7 +3,7 @@ import { EndpointMethod } from './endpoint-method.enum';
 
 export class TagsEndpoint implements Endpoint {
   public get apiUrl (): string {
-    return 'api/tags';
+    return 'tags';
   }
 
   public get method (): EndpointMethod {
