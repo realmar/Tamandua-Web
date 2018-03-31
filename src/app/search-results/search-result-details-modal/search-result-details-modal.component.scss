@@ -46,7 +46,7 @@ mat-dialog-actions {
 
 .left-cell {
   font-weight: bold;
-  width: 4rem;
+  word-break: keep-all;
   vertical-align: top;
 }
 
@@ -65,6 +65,7 @@ mat-dialog-actions {
 
 #content {
   max-height: 84vh;
+  word-break: break-all;
 }
 
 #code {
