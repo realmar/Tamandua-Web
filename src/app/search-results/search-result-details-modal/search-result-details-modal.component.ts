@@ -1,9 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { SearchRow, SearchRowValue } from '../../api/response/search-reponse';
-import { Color } from 'chroma-js';
-import * as chroma from 'chroma-js';
 import { isNullOrUndefined } from 'util';
+import * as chroma from 'chroma-js';
+import { Color } from 'chroma-js';
 import { SaveObjectData } from '../../save-object/save-object-data';
 import { JsonSaveStrategy } from '../../save-object/strategies/json-save-strategy';
 import { PngSaveStrategy } from '../../save-object/strategies/png-save-strategy';
@@ -21,13 +21,14 @@ interface Row {
 })
 export class SearchResultDetailsModalComponent implements OnInit {
 
-  private _rows: Array<Row>;
+  private readonly _rows: Array<Row>;
   public get rows (): Array<Row> {
     return this._rows;
   }
 
-  public get loglines (): string {
-    return this.formatLoglines();
+  public get loglines (): Array<string> {
+    const lines = this._rows.find(row => row.key === 'loglines').value as string[];
+    return lines.map<string>(this.formatLogline.bind(this));
   }
 
   public get hasLoglines (): boolean {
@@ -68,39 +69,32 @@ export class SearchResultDetailsModalComponent implements OnInit {
   ngOnInit () {
   }
 
+  private formatLogline (line: string): string {
+    let formatted = line
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    const pieces = formatted.split(' ');
+    const dateHostService = pieces.slice(0, 5).join(' ');
+    const rest = pieces.slice(5, pieces.length).join(' ');
+
+    formatted = `<span class="code-date-host-service">${dateHostService}</span> ${rest}`;
+    this._highlightedWords.forEach((color, word) => {
+      formatted = formatted.replace(
+        new RegExp(word, 'g'),
+        `<span style=\"background-color: ${color.hex()};\">${word}</span>`);
+    });
+
+    return formatted;
+  }
+
   public getHighlightColor (key: string): string {
+    // const color = this._highlightedWords.get(key);
     const color = this._highlightedWords.get(key);
     const val = isNullOrUndefined(color) ? '' : color.hex();
 
     return val;
 
-  }
-
-  public formatLoglines (): string {
-    if (!this.hasLoglines) {
-      return '';
-    }
-
-    const logs = this._rows.find(row => row.key === 'loglines');
-    if (!(logs.value instanceof Array)) {
-      return '';
-    }
-
-    let loglines = '';
-
-    for (const line of logs.value) {
-      loglines += line.toString()
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;') + '<br>';
-    }
-
-    this._highlightedWords.forEach((color, word) => {
-      loglines = loglines.replace(
-        new RegExp(word, 'g'),
-        `<span style=\"background-color: ${color.hex()};\">${word}</span>`);
-    });
-
-    return loglines;
   }
 
   public isArray (obj: object): boolean {

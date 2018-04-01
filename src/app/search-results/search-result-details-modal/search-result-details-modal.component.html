@@ -30,7 +30,12 @@
 
           <ng-template #loglines_container>
             <ng-container *ngIf="hasLoglines">
-              <div id="code"><code [innerHTML]="loglines | safeHtml"></code></div>
+              <div id="code">
+                <ng-container *ngFor="let line of loglines; let lst = last">
+                  <p [innerHTML]="line | safeHtml"></p>
+                  <mat-divider *ngIf="!lst" class="code-divider"></mat-divider>
+                </ng-container>
+              </div>
             </ng-container>
           </ng-template>
 

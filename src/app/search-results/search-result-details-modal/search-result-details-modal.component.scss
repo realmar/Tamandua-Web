@@ -63,6 +63,14 @@ mat-dialog-actions {
   margin-right: .2em;
 }
 
+.code-divider {
+  margin: .2rem 0 .2rem 0;
+}
+
+:host ::ng-deep .code-date-host-service {
+  font-style: italic;
+}
+
 #content {
   max-height: 84vh;
   word-break: break-all;
