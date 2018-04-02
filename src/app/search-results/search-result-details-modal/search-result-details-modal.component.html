@@ -23,7 +23,7 @@
               <div>
                 <ng-container *ngFor="let value of row.value; let lst = last;">
                   <p class="mat-body-1 row-value"
-                     [style.background-color]="getHighlightColor(value)"
+                     [style.background-color]="highlightedWords.getColor(value)"
                      (click)="onValueClick(value)">{{value}}</p>
                   <span *ngIf="!lst" class="spacer">,</span>
                 </ng-container>
@@ -31,7 +31,7 @@
             </ng-container>
             <ng-template #simple_value_container>
               <p class="mat-body-1 row-value"
-                 [style.background-color]="getHighlightColor(row.value)"
+                 [style.background-color]="highlightedWords.getColor(row.value)"
                  (click)="onValueClick(row.value)">{{row.value}}</p>
             </ng-template>
 

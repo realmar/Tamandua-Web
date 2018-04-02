@@ -1,15 +1,12 @@
-import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { SearchRow, SearchRowValue } from '../../api/response/search-reponse';
 import { isNullOrUndefined } from 'util';
-import * as chroma from 'chroma-js';
-import { Color } from 'chroma-js';
 import { SaveObjectData } from '../../save-object/save-object-data';
 import { JsonSaveStrategy } from '../../save-object/strategies/json-save-strategy';
 import { PngSaveStrategy } from '../../save-object/strategies/png-save-strategy';
 import { YamlSaveStrategy } from '../../save-object/strategies/yaml-save-strategy';
 import { HighlightedWords } from './highlighted-words';
-import { copyObj } from '@angular/animations/browser/src/util';
 
 interface Row {
   key: string;
@@ -88,27 +85,15 @@ export class SearchResultDetailsModalComponent implements OnInit {
     this._highlightedWordsChange.emit(this._highlightedWords);
   }
 
-  public getHighlightColor (key: string): string {
-    // const color = this._highlightedWords.get(key);
-    const color = this._highlightedWords.words.get(key);
-    const val = isNullOrUndefined(color) ? '' : color.hex();
-
-    return val;
-
-  }
-
   public isArray (obj: object): boolean {
     return obj instanceof Array;
   }
 
   public onValueClick (value: string): void {
-    if (this._highlightedWords.words.has(value)) {
-      this._highlightedWords.words.delete(value);
+    if (this._highlightedWords.hasValue(value)) {
+      this._highlightedWords.removeValue(value);
     } else {
-      this._highlightedWords.words.set(value, chroma.lch(100, 100, this._highlightedWords.currentHue));
-
-      this._highlightedWords.currentHue += 20;
-      this._highlightedWords.currentHue %= 180;
+      this._highlightedWords.addValue(value);
     }
 
     // break reference so that the formatLogline pipe updates
