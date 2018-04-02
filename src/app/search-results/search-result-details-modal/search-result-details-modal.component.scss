@@ -13,16 +13,16 @@ p {
   margin: 0;
 }
 
-app-save-object {
-  position: relative;
-  float: right;
-}
-
 h2 {
   display: inline-block;
 }
 
 mat-dialog-actions {
+  float: right;
+}
+
+.top-button {
+  position: relative;
   float: right;
 }
 

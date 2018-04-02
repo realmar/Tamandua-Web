@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { SearchRow, SearchRowValue } from '../../api/response/search-reponse';
 import { isNullOrUndefined } from 'util';
@@ -8,6 +8,8 @@ import { SaveObjectData } from '../../save-object/save-object-data';
 import { JsonSaveStrategy } from '../../save-object/strategies/json-save-strategy';
 import { PngSaveStrategy } from '../../save-object/strategies/png-save-strategy';
 import { YamlSaveStrategy } from '../../save-object/strategies/yaml-save-strategy';
+import { HighlightedWords } from './highlighted-words';
+import { copyObj } from '@angular/animations/browser/src/util';
 
 interface Row {
   key: string;
@@ -27,8 +29,7 @@ export class SearchResultDetailsModalComponent implements OnInit {
   }
 
   public get loglines (): Array<string> {
-    const lines = this._rows.find(row => row.key === 'loglines').value as string[];
-    return lines.map<string>(this.formatLogline.bind(this));
+    return this._rows.find(row => row.key === 'loglines').value as string[];
   }
 
   public get hasLoglines (): boolean {
@@ -41,20 +42,34 @@ export class SearchResultDetailsModalComponent implements OnInit {
     return false;
   }
 
-  private _highlightedWords: Map<string, Color>;
-  private _currentHighlightedColor: number;
+  private _highlightedWords: HighlightedWords;
+  public set highlightedWords (value: HighlightedWords) {
+    if (isNullOrUndefined(value)) {
+      return;
+    }
+
+    this._highlightedWords = value;
+  }
+
+  public get highlightedWords (): HighlightedWords {
+    return this._highlightedWords;
+  }
+
+  private readonly _highlightedWordsChange: EventEmitter<HighlightedWords>;
+  public get highlightedWordsChange (): EventEmitter<HighlightedWords> {
+    return this._highlightedWordsChange;
+  }
 
   constructor (private _dialogRef: MatDialogRef<SearchResultDetailsModalComponent>,
                @Inject(MAT_DIALOG_DATA) private _rowData: SearchRow) {
-    this._highlightedWords = new Map<string, Color>();
-    this._currentHighlightedColor = 0;
-
+    this._highlightedWordsChange = new EventEmitter<HighlightedWords>();
+    this._highlightedWords = new HighlightedWords();
     const keys = Object.keys(_rowData).sort();
 
     // move loglines to the end
-    const logslinesIndex = keys.indexOf('loglines');
-    if (logslinesIndex !== -1) {
-      keys.splice(logslinesIndex, 1);
+    const loglinesIndex = keys.indexOf('loglines');
+    if (loglinesIndex !== -1) {
+      keys.splice(loglinesIndex, 1);
       keys.push('loglines');
     }
 
@@ -69,28 +84,13 @@ export class SearchResultDetailsModalComponent implements OnInit {
   ngOnInit () {
   }
 
-  private formatLogline (line: string): string {
-    let formatted = line
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-
-    const pieces = formatted.split(' ');
-    const dateHostService = pieces.slice(0, 5).join(' ');
-    const rest = pieces.slice(5, pieces.length).join(' ');
-
-    formatted = `<span class="code-date-host-service">${dateHostService}</span> ${rest}`;
-    this._highlightedWords.forEach((color, word) => {
-      formatted = formatted.replace(
-        new RegExp(word, 'g'),
-        `<span style=\"background-color: ${color.hex()};\">${word}</span>`);
-    });
-
-    return formatted;
+  private emitHighlightedWords (): void {
+    this._highlightedWordsChange.emit(this._highlightedWords);
   }
 
   public getHighlightColor (key: string): string {
     // const color = this._highlightedWords.get(key);
-    const color = this._highlightedWords.get(key);
+    const color = this._highlightedWords.words.get(key);
     const val = isNullOrUndefined(color) ? '' : color.hex();
 
     return val;
@@ -102,14 +102,21 @@ export class SearchResultDetailsModalComponent implements OnInit {
   }
 
   public onValueClick (value: string): void {
-    if (this._highlightedWords.has(value)) {
-      this._highlightedWords.delete(value);
+    if (this._highlightedWords.words.has(value)) {
+      this._highlightedWords.words.delete(value);
     } else {
-      this._highlightedWords.set(value, chroma.lch(100, 100, this._currentHighlightedColor));
+      this._highlightedWords.words.set(value, chroma.lch(100, 100, this._highlightedWords.currentHue));
 
-      this._currentHighlightedColor += 20;
-      this._currentHighlightedColor %= 180;
+      this._highlightedWords.currentHue += 20;
+      this._highlightedWords.currentHue %= 180;
     }
+
+    // break reference so that the formatLogline pipe updates
+    const h = this._highlightedWords;
+    this._highlightedWords = new HighlightedWords();
+    Object.assign(this._highlightedWords, h);
+
+    this.emitHighlightedWords();
   }
 
   public generateSaveDataObject (): SaveObjectData {
@@ -128,5 +135,10 @@ export class SearchResultDetailsModalComponent implements OnInit {
         new PngSaveStrategy()
       ]
     };
+  }
+
+  public clearColors (): void {
+    this._highlightedWords = new HighlightedWords();
+    this.emitHighlightedWords();
   }
 }

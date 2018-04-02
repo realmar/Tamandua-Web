@@ -2,10 +2,12 @@ import { MatSort, MatTableDataSource } from '@angular/material';
 import { Converter } from '../utils/converter';
 import { isNullOrUndefined } from 'util';
 import { _isNumberValue } from '@angular/cdk/coercion';
+import { TableSearchRow } from './table-search-row';
+import { SearchRow } from '../api/response/search-reponse';
 
 // copy pasta from https://github.com/angular/material2/blob/master/src/lib/table/table-data-source.ts
 // with added support for tamandua specific data (arrays, datetime as strings, undefined, null)
-export class TamanduaTableDataSource<T> extends MatTableDataSource<T> {
+export class TamanduaTableDataSource extends MatTableDataSource<TableSearchRow> {
   private convertValue (value: any, headerId: string): any {
     if (!isNullOrUndefined(value) && headerId.endsWith('_time') && value) {
       return Converter.stringToDate(value).getTime();
@@ -24,9 +26,9 @@ export class TamanduaTableDataSource<T> extends MatTableDataSource<T> {
   // We cannot just do super.sortingDataAccessor because
   // sortingDataAccessor is a property and not a method, so super
   // does not work, see: https://github.com/Microsoft/TypeScript/issues/4465
-  sortingDataAccessor: ((data: T, sortHeaderId: string) => string | number) =
-    (data: T, sortHeaderId: string): string | number => {
-      const value = data[ sortHeaderId ];
+  sortingDataAccessor: ((data: TableSearchRow, sortHeaderId: string) => string | number) =
+    (data: TableSearchRow, sortHeaderId: string): string | number => {
+      const value = data.row[ sortHeaderId ];
       if (value instanceof Array) {
         // this is a rare case where I don't care about the type because I implicitly know what type
         // I'm working with. I cannot change the return type of this method as then it would
@@ -39,7 +41,7 @@ export class TamanduaTableDataSource<T> extends MatTableDataSource<T> {
       }
     };
 
-  sortData: ((data: T[], sort: MatSort) => T[]) = (data: T[], sort: MatSort): T[] => {
+  sortData: ((data: TableSearchRow[], sort: MatSort) => TableSearchRow[]) = (data: TableSearchRow[], sort: MatSort): TableSearchRow[] => {
     // Source: https://github.com/angular/material2/blob/master/src/lib/table/table-data-source.ts#L115
     // this implementation adds support for T potentially being an array and handles undefined or null data
 
@@ -95,8 +97,8 @@ export class TamanduaTableDataSource<T> extends MatTableDataSource<T> {
       const valueA = this.sortingDataAccessor(a, active) as any;
       const valueB = this.sortingDataAccessor(b, active) as any;
 
-      let finalA: T;
-      let finalB: T;
+      let finalA: SearchRow;
+      let finalB: SearchRow;
 
       if (valueA instanceof Array) {
         finalA = valueA.sort(sorter)[ 0 ];

@@ -18,6 +18,9 @@ import { debounceTime } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
 import { ToastrUtils } from '../utils/toastr-utils';
 import { ToastrService } from 'ngx-toastr';
+import { ISubscription } from 'rxjs/Subscription';
+import { HighlightedWords } from './search-result-details-modal/highlighted-words';
+import { TableSearchRow } from './table-search-row';
 
 interface TypeComparatorArguments {
   key: string;
@@ -47,8 +50,8 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this.processRows(value);
   }
 
-  private _dataSource: TamanduaTableDataSource<SearchRow>;
-  public get dataSource (): TamanduaTableDataSource<SearchRow> {
+  private readonly _dataSource: TamanduaTableDataSource;
+  public get dataSource (): TamanduaTableDataSource {
     return this._dataSource;
   }
 
@@ -74,7 +77,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
   private _totalRows: number;
   private _allColumns: Array<string>;
-  private _allRows: Array<SearchRow>;
+  private _allRows: Array<TableSearchRow>;
 
   private _filter: Map<string, string>;
   private _filterAsRegex: Map<string, RegExp>;
@@ -122,7 +125,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
         debounceTime(500),
       ).subscribe(() => this.updateFilter());
 
-    this._dataSource = new TamanduaTableDataSource<SearchRow>();
+    this._dataSource = new TamanduaTableDataSource();
     this._allRows = [];
     this._allColumns = [];
 
@@ -168,11 +171,18 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  public showDetails (row: SearchRow) {
-    this._dialog.open(SearchResultDetailsModalComponent, {
+  public showDetails (tableRow: TableSearchRow) {
+    const ref = this._dialog.open(SearchResultDetailsModalComponent, {
       width: '98%',
-      data: row
+      data: tableRow.row
     });
+
+    ref.componentInstance.highlightedWords = tableRow.highlightedWords;
+    const sub = ref.componentInstance.highlightedWordsChange.subscribe(value => {
+      tableRow.highlightedWords = value;
+    }) as ISubscription;
+
+    ref.afterClosed().subscribe(() => sub.unsubscribe());
   }
 
   public getFilter (column: string): string {
@@ -191,7 +201,6 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this._filter.forEach(
       (value, key) => this._filterAsRegex.set(key, new RegExp(this._filter.get(key), 'i')));
 
-    // this.updateFilter();
     this._onFilterChange.next();
   }
 
@@ -313,15 +322,17 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
       // Check all filters. All filters need to match.
       for (let j = 0; j < filterKeyLength; ++j) {
         const key = filterKeys[ j ];
-        const value = this._allRows[ i ][ key ];
+        const value = this._allRows[ i ].row[ key ];
         let typeStr: string;
 
-        if (value instanceof Array) {
+        if (isNullOrUndefined(value)) {
+          typeStr = typeof value;
+        } else if (value instanceof Array) {
           typeStr = 'array';
         } else if (this.isKeyDatetime(key)) {
           typeStr = 'datetime';
         } else {
-          typeStr = typeof(value);
+          typeStr = typeof value;
         }
 
         const comparer = this.typeCompareFunctionMap[ typeStr ];
@@ -372,7 +383,12 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     // process result
 
     this._totalRows = result.total_rows;
-    this._allRows = result.rows;
+    this._allRows = result.rows.map(row => {
+      return {
+        highlightedWords: new HighlightedWords(),
+        row: row
+      };
+    });
 
     this.updateFilter();
 

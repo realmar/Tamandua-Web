@@ -11,7 +11,7 @@ import {
   MatIconModule,
   MatInputModule, MatListModule, MatMenuModule,
   MatNativeDateModule, MatPaginatorModule, MatProgressBarModule, MatProgressSpinnerModule,
-  MatSelectModule, MatSortModule, MatTableModule, MatTabsModule, MatToolbarModule
+  MatSelectModule, MatSortModule, MatTableModule, MatTabsModule, MatToolbarModule, MatTooltipModule
 } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationComponent } from './navigation/navigation.component';
@@ -47,6 +47,7 @@ import { DashboardSettingsComponent } from './dashboard/dashboard-settings/dashb
 import { AboutComponent } from './about/about.component';
 import { FooterComponent } from './footer/footer.component';
 import { ToastrModule } from 'ngx-toastr';
+import { FormatLoglinePipe } from './search-results/search-result-details-modal/format-logline.pipe';
 
 @NgModule({
   declarations: [
@@ -68,7 +69,8 @@ import { ToastrModule } from 'ngx-toastr';
     DashboardSettingComponent,
     DashboardSettingsComponent,
     AboutComponent,
-    FooterComponent
+    FooterComponent,
+    FormatLoglinePipe
   ],
   imports: [
     BrowserModule,
@@ -102,6 +104,7 @@ import { ToastrModule } from 'ngx-toastr';
     MatAutocompleteModule,
     MatMenuModule,
     MatTabsModule,
+    MatTooltipModule,
 
     NgxDnDModule,
     ScrollbarModule,

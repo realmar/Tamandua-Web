@@ -1,5 +1,14 @@
 <h2 mat-dialog-title>Details</h2>
-<app-save-object [data]="generateSaveDataObject()"></app-save-object>
+
+<app-save-object class="top-button"
+                 matTooltip="Save"
+                 [data]="generateSaveDataObject()"></app-save-object>
+<button mat-icon-button
+        matTooltip="Clear Colors"
+        class="top-button"
+        (click)="clearColors()">
+  <mat-icon>format_color_reset</mat-icon>
+</button>
 
 <div id="image-canvas">
   <mat-dialog-content id="content">
@@ -32,7 +41,7 @@
             <ng-container *ngIf="hasLoglines">
               <div id="code">
                 <ng-container *ngFor="let line of loglines; let lst = last">
-                  <p [innerHTML]="line | safeHtml"></p>
+                  <p [innerHTML]="line | formatLogline: highlightedWords | safeHtml"></p>
                   <mat-divider *ngIf="!lst" class="code-divider"></mat-divider>
                 </ng-container>
               </div>
