@@ -79,7 +79,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   private restoreState (): void {
     // restore state
-    if (isNullOrUndefined(this._searchStateService.fields)) {
+    if (isNullOrUndefined(this._searchStateService.fields) || this._searchStateService.fields.length === 0) {
       this._fields = [ new SearchFieldData(undefined, undefined, new Comparator(ComparatorType.Regex)) ];
     } else {
       this._fields = this._searchStateService.fields.map(field => new SearchFieldData(field.name, field.value, field.comparator));
@@ -89,10 +89,14 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     if (!isNullOrUndefined(this._searchStateService.startDatetime)) {
       this.startDateTime = new Date(this._searchStateService.startDatetime.getTime());
+    } else {
+      this.startDateTime = undefined;
     }
 
     if (!isNullOrUndefined(this._searchStateService.endDatetime)) {
       this.endDateTime = new Date(this._searchStateService.endDatetime.getTime());
+    } else {
+      this.endDateTime = undefined;
     }
   }
 
@@ -177,5 +181,13 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     this.submitRequest(builder.build());
+  }
+
+  public clearSearchMask (): void {
+    this._searchStateService.endDatetime = undefined;
+    this._searchStateService.startDatetime = undefined;
+    this._searchStateService.fields = undefined;
+
+    this.restoreState();
   }
 }

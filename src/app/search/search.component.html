@@ -29,7 +29,10 @@
   </div>
 
   <div id="search-button-container">
-
+    <button mat-button
+            id="clear-button"
+            (click)="clearSearchMask()">Clear
+    </button>
     <button mat-button
             (click)="search()"
             id="search-button"
