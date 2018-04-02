@@ -3,6 +3,7 @@ import { Route, RouterModule } from '@angular/router';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { SearchComponent } from '../search/search.component';
 import { AboutComponent } from '../about/about.component';
+import { NotFoundComponent } from '../not-found/not-found.component';
 
 interface CachedRoute extends Route {
   isCached: boolean;
@@ -15,6 +16,7 @@ export const routes: CachedRoutes = [
   { path: 'dashboard', component: DashboardComponent, isCached: true },
   { path: 'search', component: SearchComponent, isCached: true },
   { path: 'about', component: AboutComponent, isCached: true },
+  { path: '**', component: NotFoundComponent, isCached: true },
 ];
 
 @NgModule({

@@ -48,6 +48,7 @@ import { AboutComponent } from './about/about.component';
 import { FooterComponent } from './footer/footer.component';
 import { ToastrModule } from 'ngx-toastr';
 import { FormatLoglinePipe } from './search-results/search-result-details-modal/format-logline.pipe';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 @NgModule({
   declarations: [
@@ -70,7 +71,8 @@ import { FormatLoglinePipe } from './search-results/search-result-details-modal/
     DashboardSettingsComponent,
     AboutComponent,
     FooterComponent,
-    FormatLoglinePipe
+    FormatLoglinePipe,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,
