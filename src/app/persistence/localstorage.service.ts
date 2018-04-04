@@ -14,4 +14,8 @@ export class LocalstorageService implements PersistentStorageService {
   public load<T> (type: Type<T>, key: string): Observable<T> {
     return of(deserialize(type, localStorage.getItem(key)));
   }
+
+  public delete (key: string): void {
+    localStorage.removeItem(key);
+  }
 }

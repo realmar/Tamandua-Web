@@ -1,11 +1,14 @@
 import { Comparator, ComparatorType } from '../api/request/comparator';
 import { RequestBuilderField } from '../api/request/request-builder-field';
 import { isNullOrUndefined } from 'util';
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 
 export class SearchFieldData implements RequestBuilderField {
   private _name: string;
   private _value: string | number;
   private _comparator: Comparator;
+  private readonly _onRefreshFields: Subject<any>;
 
   get name (): string {
     return this._name;
@@ -31,6 +34,10 @@ export class SearchFieldData implements RequestBuilderField {
     this._comparator = value;
   }
 
+  get onRefreshFields (): Observable<any> {
+    return this._onRefreshFields.asObservable();
+  }
+
   constructor (name?: string, value?: string | number, comparator?: Comparator) {
     if (!value) {
       if (!isNullOrUndefined(comparator) && comparator.type === ComparatorType.Regex) {
@@ -44,5 +51,10 @@ export class SearchFieldData implements RequestBuilderField {
 
     this._name = name;
     this._comparator = comparator;
+    this._onRefreshFields = new Subject<any>();
+  }
+
+  public emitOnRefreshFields (): void {
+    this._onRefreshFields.next(true);
   }
 }

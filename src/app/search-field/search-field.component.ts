@@ -1,23 +1,30 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Comparator, ComparatorType } from '../api/request/comparator';
 import { ApiService } from '../api/api-service';
 import { SearchFieldData } from './search-field-data';
 import { isNullOrUndefined } from 'util';
 import { FieldChoicesResponse } from '../api/response/field-choices-response';
 import { ToastrService } from 'ngx-toastr';
-import { ErrorConstants } from '../utils/error-constants';
 import { ToastrUtils } from '../utils/toastr-utils';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-search-field',
   templateUrl: './search-field.component.html',
   styleUrls: [ './search-field.component.scss' ]
 })
-export class SearchFieldComponent implements OnInit {
+export class SearchFieldComponent implements OnInit, OnDestroy {
+  private _onFieldsRefreshSubscription: Subscription;
   private readonly _maxFieldChoicesPerField: number;
   private _data: SearchFieldData;
 
   @Input() set data (value: SearchFieldData) {
+    if (!isNullOrUndefined(this._onFieldsRefreshSubscription)) {
+      this._onFieldsRefreshSubscription.unsubscribe();
+    }
+
+    this._onFieldsRefreshSubscription = value.onRefreshFields.subscribe(() => this.getColumns());
+
     this._data = value;
     this.dataChange.emit(this._data);
   }
@@ -58,7 +65,7 @@ export class SearchFieldComponent implements OnInit {
     this.dataChange.emit(this._data);
   }
 
-  private _comparators: Array<ComparatorType>;
+  private readonly _comparators: Array<ComparatorType>;
   get comparators (): Array<ComparatorType> {
     return this._comparators;
   }
@@ -68,7 +75,7 @@ export class SearchFieldComponent implements OnInit {
     return this._fields;
   }
 
-  private _fieldChoicesMap: Map<string, FieldChoicesResponse>;
+  private readonly _fieldChoicesMap: Map<string, FieldChoicesResponse>;
   get fieldChoicesMap (): Map<string, FieldChoicesResponse> {
     return this._fieldChoicesMap;
   }
@@ -86,7 +93,7 @@ export class SearchFieldComponent implements OnInit {
       key => ComparatorType[ key ] as ComparatorType);
   }
 
-  ngOnInit () {
+  public ngOnInit () {
     // assign default values if they are not set
     if (isNullOrUndefined(this._data.name)) {
       this._data.name = this.fields[ 0 ];
@@ -99,7 +106,16 @@ export class SearchFieldComponent implements OnInit {
     }
 
     this.dataChange.emit(this._data);
+    this.getColumns();
+  }
 
+  public ngOnDestroy (): void {
+    if (!isNullOrUndefined(this._onFieldsRefreshSubscription)) {
+      this._onFieldsRefreshSubscription.unsubscribe();
+    }
+  }
+
+  private getColumns (): void {
     this._apiService.getColumns().subscribe(data => {
       ToastrUtils.removeAllGenericServerErrors(this._toastr);
 

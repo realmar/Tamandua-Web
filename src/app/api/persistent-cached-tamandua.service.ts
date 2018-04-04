@@ -26,7 +26,7 @@ enum CachedKeys {
 
 @Injectable()
 export class PersistentCachedTamanduaService extends CachedTamanduaService {
-  private readonly dataCacheMetaData = new Map<CachedKeys, DataCacheMetaData>([
+  private readonly _dataCacheMetaData = new Map<CachedKeys, DataCacheMetaData>([
     [ CachedKeys.Columns, {
       key: 'api_columns',
       cacheSetter: data => this.columnsCache = data,
@@ -66,7 +66,7 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
 
     let dataCounter = 0;
 
-    this.dataCacheMetaData
+    this._dataCacheMetaData
       .forEach(value => {
         this._storage.load<any>(value.type, value.key).subscribe(
           result => {
@@ -83,7 +83,7 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
             }
 
             dataCounter++;
-            if (dataCounter === this.dataCacheMetaData.size) {
+            if (dataCounter === this._dataCacheMetaData.size) {
               this._isReady = true;
               this._onReadySubject.next();
             }
@@ -96,7 +96,7 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
     let resultObservable: Observable<T>;
 
     const transaction = () => {
-      const metaData = this.dataCacheMetaData.get(metadataKey);
+      const metaData = this._dataCacheMetaData.get(metadataKey);
       if (!cacheGetter().isValid) {
         metaData.needsPersistence = true;
       }
@@ -145,7 +145,7 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
       const cache = this.fieldChoiceCaches;
       let needsPersistence = false;
       if (isNullOrUndefined(cache) || !Array.from(cache.values()).some(x => x.isValid)) {
-        this.dataCacheMetaData.get(CachedKeys.FieldChoices).needsPersistence = true;
+        this._dataCacheMetaData.get(CachedKeys.FieldChoices).needsPersistence = true;
         needsPersistence = true;
       }
 
@@ -157,7 +157,7 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
           const fcCache = this.getOrCreateFieldChoiceCache(field);
           fcCache.data.response = data;
 
-          const metadata = this.dataCacheMetaData.get(CachedKeys.FieldChoices);
+          const metadata = this._dataCacheMetaData.get(CachedKeys.FieldChoices);
           this._storage.save(metadata.key, this.fieldChoiceCaches.valuesToArray());
         }
 
@@ -176,5 +176,11 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
 
   public getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse> {
     return this.getData(CachedKeys.SupportedFieldChoices, () => this.supportedFieldChoicesCache, super.getSupportedFieldChoices.bind(this));
+  }
+
+  public invalidateAllCaches (): void {
+    super.invalidateAllCaches();
+
+    this._dataCacheMetaData.forEach(value => this._storage.delete(value.key));
   }
 }

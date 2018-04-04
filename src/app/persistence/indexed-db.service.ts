@@ -56,4 +56,10 @@ export class IndexedDbService implements PersistentStorageService {
 
     return subject.asObservable();
   }
+
+  public delete (key: string): void {
+    this._db.transaction('rw', this._db.store, () => {
+      this._db.store.where('key').equals(key).delete();
+    });
+  }
 }

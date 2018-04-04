@@ -49,6 +49,7 @@ import { FooterComponent } from './footer/footer.component';
 import { ToastrModule } from 'ngx-toastr';
 import { FormatLoglinePipe } from './search-results/search-result-details-modal/format-logline.pipe';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { CachedApiService } from './api/cached-api-service';
 
 @NgModule({
   declarations: [
@@ -119,6 +120,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
   providers: [
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
     { provide: ApiService, useClass: PersistentCachedTamanduaService },
+    { provide: CachedApiService, useExisting: ApiService },
     { provide: PersistentStorageService, useClass: IndexedDbService },
     { provide: SearchSettingsService, useClass: SearchPersistentSettingsService },
     { provide: DashboardSettingsService, useClass: DashboardPersistentSettingsService },

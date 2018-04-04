@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 import { SearchFieldData } from '../search-field/search-field-data';
 import { ApiService } from '../api/api-service';
 import { SearchEndpoint } from '../api/request/endpoints/search-endpoint';
@@ -11,9 +11,9 @@ import { Subscription } from 'rxjs/Subscription';
 import { Comparator, ComparatorType } from '../api/request/comparator';
 import { SearchStateService } from '../search-state-service/search-state.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorConstants } from '../utils/error-constants';
 import { ToastrService } from 'ngx-toastr';
 import { ToastrUtils } from '../utils/toastr-utils';
+import { CachedApiService } from '../api/cached-api-service';
 
 @Component({
   selector: 'app-search',
@@ -59,6 +59,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   private _routerEventSubscription: Subscription;
 
   constructor (private _apiService: ApiService,
+               @Optional() private _cachedApiService: CachedApiService,
                private _searchSettingsService: SearchSettingsService,
                private _searchStateService: SearchStateService,
                private _router: Router,
@@ -189,5 +190,13 @@ export class SearchComponent implements OnInit, OnDestroy {
     this._searchStateService.fields = undefined;
 
     this.restoreState();
+  }
+
+  public refreshCache (): void {
+    if (!isNullOrUndefined(this._cachedApiService)) {
+      this._cachedApiService.invalidateAllCaches();
+    }
+
+    this._fields.forEach(field => field.emitOnRefreshFields());
   }
 }

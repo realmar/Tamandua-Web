@@ -11,6 +11,7 @@ import { TagsResponse } from './response/tags-response';
 import { FieldChoicesResponse } from './response/field-choices-response';
 import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
 import { DataCache } from './cache/data-cache';
+import { CachedApiService } from './cached-api-service';
 
 export interface FieldChoicesCache {
   readonly limit: number;
@@ -20,7 +21,7 @@ export interface FieldChoicesCache {
 }
 
 @Injectable()
-export class CachedTamanduaService extends TamanduaService {
+export class CachedTamanduaService extends TamanduaService implements CachedApiService {
   private _columnsCache: DataCache<ColumnsResponse>;
   private _tagsCache: DataCache<TagsResponse>;
 
@@ -61,7 +62,10 @@ export class CachedTamanduaService extends TamanduaService {
 
   constructor (httpClient: HttpClient) {
     super(httpClient);
+    this.createCaches();
+  }
 
+  private createCaches (): void {
     this._columnsCache = new TimedDataCache<ColumnsResponse>();
     this._tagsCache = new TimedDataCache<TagsResponse>();
 
@@ -119,5 +123,9 @@ export class CachedTamanduaService extends TamanduaService {
 
   public getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse> {
     return this.cacheGeneric(this._supportedFieldChoicesCache, super.getSupportedFieldChoices.bind(this));
+  }
+
+  public invalidateAllCaches (): void {
+    this.createCaches();
   }
 }
