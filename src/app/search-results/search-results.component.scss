@@ -39,6 +39,10 @@ mat-row {
   border-bottom-style: none;
 }
 
+mat-row:hover {
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.40);
+}
+
 mat-row:nth-child(odd) {
   background-color: #ECEFF1;
 }
