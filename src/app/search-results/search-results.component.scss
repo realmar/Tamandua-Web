@@ -36,6 +36,11 @@
 mat-row {
   height: 2rem;
   min-height: 0;
+  border-bottom-style: none;
+}
+
+mat-row:nth-child(odd) {
+  background-color: #ECEFF1;
 }
 
 app-save-object {
