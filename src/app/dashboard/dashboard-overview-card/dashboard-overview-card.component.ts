@@ -69,7 +69,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private readonly _colorRange: Scale;
-  private _errorToast: ActiveToast;
 
   private _hasErrors: boolean;
   public get hasErrors (): boolean {
