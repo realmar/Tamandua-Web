@@ -14,7 +14,6 @@ import { AdvancedCountEndpoint } from '../../api/request/endpoints/advanced-coun
 import { SearchStateService } from '../../search-state-service/search-state.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
-import { ErrorConstants } from '../../utils/error-constants';
 import { ToastrUtils } from '../../utils/toastr-utils';
 import * as moment from 'moment';
 

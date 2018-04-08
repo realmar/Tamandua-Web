@@ -5,7 +5,7 @@ import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-ite
 export class DashboardCardData {
   private _title: string;
 
-  private _requestBuilder: RequestBuilder;
+  private readonly _requestBuilder: RequestBuilder;
   private _onItemClickFieldBuilder: (value: string | number) => RequestBuilderField;
 
   private _requestResult: Array<DashboardCardItemData>;
