@@ -1,0 +1,45 @@
+<div>
+  <div id="fields">
+    <h4 class="mat-subheading-1">Fields</h4>
+    <mat-list>
+      <mat-list-item *ngFor="let field of fields; let i = index;">
+        <search-mask-field [(data)]="fields[i]"></search-mask-field>
+        <button mat-icon-button (click)="removeField(fields[i])" [disabled]="isOnlyField()">
+          <mat-icon>remove</mat-icon>
+        </button>
+      </mat-list-item>
+      <mat-list-item id="add-button">
+        <button mat-icon-button (click)="addField()" [disabled]="anyFieldsEmpty()">
+          <mat-icon>add</mat-icon>
+        </button>
+      </mat-list-item>
+    </mat-list>
+  </div>
+
+  <div id="datetime">
+    <h4 class="mat-subheading-1">Date and Time</h4>
+    <search-mask-datetime [(datetime)]="startDateTime"
+                          label="Start"></search-mask-datetime>
+    <search-mask-datetime [(datetime)]="endDateTime"
+                          label="End"></search-mask-datetime>
+  </div>
+</div>
+
+<div id="search-button-container">
+  <button mat-button
+          id="refresh-cache-button"
+          (click)="refreshCache()">Refresh Cache
+  </button>
+  <button mat-button
+          id="clear-button"
+          (click)="clearSearchMask()">Clear
+  </button>
+  <button mat-button
+          (click)="search()"
+          id="search-button"
+          [disabled]="anyFieldsEmpty() || showLoadingSpinner">
+    <mat-spinner *ngIf="showLoadingSpinner"
+                 [diameter]="25"></mat-spinner>
+    {{searchButtonLabel}}
+  </button>
+</div>

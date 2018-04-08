@@ -16,10 +16,8 @@ import {
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationComponent } from './navigation/navigation.component';
 import { SearchComponent } from './search/search.component';
-import { SearchFieldComponent } from './search-field/search-field.component';
 import { ApiService } from './api/api-service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SearchDatetimeComponent } from './search-datetime/search-datetime.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { SearchResultDetailsModalComponent } from './search-results/search-result-details-modal/search-result-details-modal.component';
 import { SearchResultAddColumnsModalComponent } from './search-results/search-result-add-columns/search-result-add-columns-modal.component';
@@ -50,6 +48,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { FormatLoglinePipe } from './search-results/search-result-details-modal/format-logline.pipe';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { CachedApiService } from './api/cached-api-service';
+import { SearchMaskModule } from '../search-mask/search-mask.module';
 
 @NgModule({
   declarations: [
@@ -57,8 +56,6 @@ import { CachedApiService } from './api/cached-api-service';
     DashboardComponent,
     NavigationComponent,
     SearchComponent,
-    SearchFieldComponent,
-    SearchDatetimeComponent,
     SearchResultsComponent,
     SearchResultDetailsModalComponent,
     SearchResultAddColumnsModalComponent,
@@ -76,6 +73,8 @@ import { CachedApiService } from './api/cached-api-service';
     NotFoundComponent
   ],
   imports: [
+    SearchMaskModule,
+
     BrowserModule,
     AppRoutingModule,
 

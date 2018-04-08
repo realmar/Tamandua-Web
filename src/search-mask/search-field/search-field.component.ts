@@ -1,15 +1,15 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { Comparator, ComparatorType } from '../api/request/comparator';
-import { ApiService } from '../api/api-service';
 import { SearchFieldData } from './search-field-data';
 import { isNullOrUndefined } from 'util';
-import { FieldChoicesResponse } from '../api/response/field-choices-response';
 import { ToastrService } from 'ngx-toastr';
-import { ToastrUtils } from '../utils/toastr-utils';
 import { Subscription } from 'rxjs/Subscription';
+import { Comparator, ComparatorType } from '../../app/api/request/comparator';
+import { FieldChoicesResponse } from '../../app/api/response/field-choices-response';
+import { ApiService } from '../../app/api/api-service';
+import { ToastrUtils } from '../../app/utils/toastr-utils';
 
 @Component({
-  selector: 'app-search-field',
+  selector: 'search-mask-field',
   templateUrl: './search-field.component.html',
   styleUrls: [ './search-field.component.scss' ]
 })

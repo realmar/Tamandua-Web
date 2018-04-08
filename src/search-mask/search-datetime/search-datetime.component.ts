@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { isNullOrUndefined } from 'util';
 
 @Component({
-  selector: 'app-search-datetime',
+  selector: 'search-mask-datetime',
   templateUrl: './search-datetime.component.html',
   styleUrls: [ './search-datetime.component.scss' ]
 })
