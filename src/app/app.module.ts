@@ -5,13 +5,24 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './routing/app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import {
-  MatAutocompleteModule,
-  MatButtonModule, MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatDatepickerModule, MatDialogModule, MatFormFieldModule,
+  MatButtonModule,
+  MatButtonToggleModule,
+  MatCardModule,
+  MatCheckboxModule,
+  MatDialogModule,
+  MatFormFieldModule,
   MatGridListModule,
   MatIconModule,
-  MatInputModule, MatListModule, MatMenuModule,
-  MatNativeDateModule, MatPaginatorModule, MatProgressBarModule, MatProgressSpinnerModule,
-  MatSelectModule, MatSortModule, MatTableModule, MatTabsModule, MatToolbarModule, MatTooltipModule
+  MatInputModule,
+  MatMenuModule,
+  MatNativeDateModule,
+  MatPaginatorModule,
+  MatProgressBarModule,
+  MatSortModule,
+  MatTableModule,
+  MatTabsModule,
+  MatToolbarModule,
+  MatTooltipModule
 } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationComponent } from './navigation/navigation.component';
@@ -89,9 +100,6 @@ import { SearchMaskModule } from '../search-mask/search-mask.module';
     MatGridListModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
-    MatListModule,
-    MatDatepickerModule,
     MatNativeDateModule,
     MatIconModule,
     MatToolbarModule,
@@ -101,9 +109,7 @@ import { SearchMaskModule } from '../search-mask/search-mask.module';
     MatDialogModule,
     MatCheckboxModule,
     MatButtonToggleModule,
-    MatProgressSpinnerModule,
     MatProgressBarModule,
-    MatAutocompleteModule,
     MatMenuModule,
     MatTabsModule,
     MatTooltipModule,
