@@ -1,7 +1,7 @@
 import { Injectable, Type } from '@angular/core';
 import { SearchSettingsService } from './search-settings.service';
 import { SelectedTags } from '../../search-results/search-result-tags-selection/selected-tags';
-import { PersistentStorageService } from '../../persistence/persistent-storage-service';
+import { PersistentStorageService } from '../../../persistence/persistent-storage-service';
 import { isNullOrUndefined } from 'util';
 import { SettingValidationResult } from '../setting-validation-result';
 

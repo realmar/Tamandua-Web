@@ -5,7 +5,7 @@ import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 
 // import augmentations
-import './app/augmentations/map';
+import './augmentations/map';
 
 if (environment.production) {
   enableProdMode();

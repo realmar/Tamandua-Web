@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { RequestBuilderField } from '../api/request/request-builder-field';
+import { RequestBuilderField } from '../../api/request/request-builder-field';
 
 @Injectable()
 export class SearchStateService {

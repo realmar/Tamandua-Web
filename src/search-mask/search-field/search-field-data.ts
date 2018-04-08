@@ -1,8 +1,8 @@
 import { isNullOrUndefined } from 'util';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import { RequestBuilderField } from '../../app/api/request/request-builder-field';
-import { Comparator, ComparatorType } from '../../app/api/request/comparator';
+import { RequestBuilderField } from '../../api/request/request-builder-field';
+import { Comparator, ComparatorType } from '../../api/request/comparator';
 
 export class SearchFieldData implements RequestBuilderField {
   private _name: string;

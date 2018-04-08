@@ -1,20 +1,20 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
-import { ApiRequestData } from '../../api/request/request';
-import { ApiService } from '../../api/api-service';
-import { Comparator, ComparatorType } from '../../api/request/comparator';
-import { CountResponse } from '../../api/response/count-response';
+import { ApiRequestData } from '../../../api/request/request';
+import { ApiService } from '../../../api/api-service';
+import { Comparator, ComparatorType } from '../../../api/request/comparator';
+import { CountResponse } from '../../../api/response/count-response';
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
-import { CountEndpoint } from '../../api/request/endpoints/count-endpoint';
+import { CountEndpoint } from '../../../api/request/endpoints/count-endpoint';
 import { isNullOrUndefined } from 'util';
 import { Observable } from 'rxjs/Observable';
 import { Scale } from 'chroma-js';
 import * as chroma from 'chroma-js';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorConstants } from '../../utils/error-constants';
+import { ErrorConstants } from '../../../utils/error-constants';
 import { ActiveToast, ToastrService } from 'ngx-toastr';
-import { ToastrUtils } from '../../utils/toastr-utils';
+import { ToastrUtils } from '../../../utils/toastr-utils';
 import * as moment from 'moment';
 
 interface SummaryChild<T> {

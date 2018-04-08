@@ -1,5 +1,5 @@
-import { RequestBuilder } from '../../api/request/request-builder';
-import { RequestBuilderField } from '../../api/request/request-builder-field';
+import { RequestBuilder } from '../../../api/request/request-builder';
+import { RequestBuilderField } from '../../../api/request/request-builder-field';
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
 
 export class DashboardCardData {

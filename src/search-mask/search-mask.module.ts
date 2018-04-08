@@ -11,11 +11,11 @@ import {
   MatListModule, MatProgressSpinnerModule,
   MatSelectModule
 } from '@angular/material';
-import { ApiService } from '../app/api/api-service';
-import { PersistentCachedTamanduaService } from '../app/api/persistent-cached-tamandua.service';
+import { ApiService } from '../api/api-service';
+import { PersistentCachedTamanduaService } from '../api/persistent-cached-tamandua.service';
 import { ToastrService } from 'ngx-toastr';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CachedApiService } from '../app/api/cached-api-service';
+import { CachedApiService } from '../api/cached-api-service';
 
 @NgModule({
   declarations: [

@@ -1,12 +1,12 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
-import { ApiService } from '../../api/api-service';
-import { TagsResponse } from '../../api/response/tags-response';
+import { ApiService } from '../../../api/api-service';
+import { TagsResponse } from '../../../api/response/tags-response';
 import { SelectedTags } from './selected-tags';
 import { MatButtonToggleChange } from '@angular/material/button-toggle/typings/button-toggle';
 import { isNullOrUndefined } from 'util';
 import { SearchSettingsService } from '../../settings/search-settings-service/search-settings.service';
 import { Subscription } from 'rxjs/Subscription';
-import { ToastrUtils } from '../../utils/toastr-utils';
+import { ToastrUtils } from '../../../utils/toastr-utils';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({

@@ -3,10 +3,10 @@ import { SearchFieldData } from './search-field-data';
 import { isNullOrUndefined } from 'util';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs/Subscription';
-import { Comparator, ComparatorType } from '../../app/api/request/comparator';
-import { FieldChoicesResponse } from '../../app/api/response/field-choices-response';
-import { ApiService } from '../../app/api/api-service';
-import { ToastrUtils } from '../../app/utils/toastr-utils';
+import { Comparator, ComparatorType } from '../../api/request/comparator';
+import { FieldChoicesResponse } from '../../api/response/field-choices-response';
+import { ApiService } from '../../api/api-service';
+import { ToastrUtils } from '../../utils/toastr-utils';
 
 @Component({
   selector: 'search-mask-field',

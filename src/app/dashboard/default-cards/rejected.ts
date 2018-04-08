@@ -1,8 +1,8 @@
 import { CardRowBuilder } from '../card-row-builder';
-import { RequestBuilder } from '../../api/request/request-builder';
-import { Comparator, ComparatorType } from '../../api/request/comparator';
+import { RequestBuilder } from '../../../api/request/request-builder';
+import { Comparator, ComparatorType } from '../../../api/request/comparator';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
-import { AdvancedCountEndpoint } from '../../api/request/endpoints/advanced-count-endpoint';
+import { AdvancedCountEndpoint } from '../../../api/request/endpoints/advanced-count-endpoint';
 import { pastDate } from './helpers';
 import { CardRow } from '../card-row';
 

@@ -17,7 +17,7 @@ import { Endpoint } from './request/endpoints/endpoint';
 import { EndpointMethod } from './request/endpoints/endpoint-method.enum';
 import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
 import { SupportedFieldchoicesEndpoint } from './request/endpoints/supported-fieldchoices-endpoint';
-import { environment } from '../../environments/environment';
+import { environment } from '../environments/environment';
 
 @Injectable()
 export class TamanduaService implements ApiService {

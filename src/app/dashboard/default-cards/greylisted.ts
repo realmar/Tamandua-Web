@@ -1,8 +1,8 @@
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
-import { RequestBuilder } from '../../api/request/request-builder';
+import { RequestBuilder } from '../../../api/request/request-builder';
 import { configureGenericCardChildren } from './helpers';
 import { CardRowBuilder } from '../card-row-builder';
-import { Comparator, ComparatorType } from '../../api/request/comparator';
+import { Comparator, ComparatorType } from '../../../api/request/comparator';
 import { CardRow } from '../card-row';
 
 export function buildGreylisted (createRequestBuilder: () => RequestBuilder, dashboardSettings: DashboardSettingsService): CardRow {

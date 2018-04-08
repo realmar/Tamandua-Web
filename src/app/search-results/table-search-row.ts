@@ -1,4 +1,4 @@
-import { SearchRow } from '../api/response/search-reponse';
+import { SearchRow } from '../../api/response/search-reponse';
 import { HighlightedWords } from './search-result-details-modal/highlighted-words';
 
 export interface TableSearchRow {

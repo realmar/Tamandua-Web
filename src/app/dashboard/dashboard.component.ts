@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService } from '../api/api-service';
+import { ApiService } from '../../api/api-service';
 import { DashboardSettingsService } from '../settings/dashboard-settings-service/dashboard-settings.service';
 import { CardRow } from './card-row';
 import { buildRejected } from './default-cards/rejected';

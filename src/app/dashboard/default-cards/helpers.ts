@@ -1,6 +1,6 @@
-import { Comparator, ComparatorType } from '../../api/request/comparator';
-import { RequestBuilder } from '../../api/request/request-builder';
-import { AdvancedCountEndpoint } from '../../api/request/endpoints/advanced-count-endpoint';
+import { Comparator, ComparatorType } from '../../../api/request/comparator';
+import { RequestBuilder } from '../../../api/request/request-builder';
+import { AdvancedCountEndpoint } from '../../../api/request/endpoints/advanced-count-endpoint';
 import { CardRowBuilder } from '../card-row-builder';
 
 /**

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DashboardSettingsService } from './dashboard-settings.service';
-import { PersistentStorageService } from '../../persistence/persistent-storage-service';
+import { PersistentStorageService } from '../../../persistence/persistent-storage-service';
 import { isNullOrUndefined } from 'util';
 import { SettingValidationResult } from '../setting-validation-result';
 

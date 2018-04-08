@@ -1,7 +1,7 @@
-import { Comparator, ComparatorType } from '../../api/request/comparator';
+import { Comparator, ComparatorType } from '../../../api/request/comparator';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
 import { CardRowBuilder } from '../card-row-builder';
-import { RequestBuilder } from '../../api/request/request-builder';
+import { RequestBuilder } from '../../../api/request/request-builder';
 import { configureGenericCardChildren } from './helpers';
 import { CardRow } from '../card-row';
 

@@ -9,7 +9,7 @@ import {
   MatButtonToggleModule,
   MatCardModule,
   MatCheckboxModule,
-  MatDialogModule,
+  MatDialogModule, MatDividerModule,
   MatFormFieldModule,
   MatGridListModule,
   MatIconModule,
@@ -27,7 +27,7 @@ import {
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationComponent } from './navigation/navigation.component';
 import { SearchComponent } from './search/search.component';
-import { ApiService } from './api/api-service';
+import { ApiService } from '../api/api-service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { SearchResultDetailsModalComponent } from './search-results/search-result-details-modal/search-result-details-modal.component';
@@ -43,11 +43,11 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { SaveObjectComponent } from './save-object/save-object.component';
 import { CustomReuseStrategy } from './routing/custom-reuse-strategy';
 import { RouteReuseStrategy } from '@angular/router';
-import { PersistentStorageService } from './persistence/persistent-storage-service';
+import { PersistentStorageService } from '../persistence/persistent-storage-service';
 import { DashboardPersistentSettingsService } from './settings/dashboard-settings-service/dashboard-persistent-settings.service';
 import { SearchPersistentSettingsService } from './settings/search-settings-service/search-persistent-settings.service';
-import { PersistentCachedTamanduaService } from './api/persistent-cached-tamandua.service';
-import { IndexedDbService } from './persistence/indexed-db.service';
+import { PersistentCachedTamanduaService } from '../api/persistent-cached-tamandua.service';
+import { IndexedDbService } from '../persistence/indexed-db.service';
 import { NgxDnDModule } from '@swimlane/ngx-dnd';
 import { SearchStateService } from './search-state-service/search-state.service';
 import { ScrollbarModule } from 'ngx-scrollbar';
@@ -58,7 +58,7 @@ import { FooterComponent } from './footer/footer.component';
 import { ToastrModule } from 'ngx-toastr';
 import { FormatLoglinePipe } from './search-results/search-result-details-modal/format-logline.pipe';
 import { NotFoundComponent } from './not-found/not-found.component';
-import { CachedApiService } from './api/cached-api-service';
+import { CachedApiService } from '../api/cached-api-service';
 import { SearchMaskModule } from '../search-mask/search-mask.module';
 
 @NgModule({
@@ -113,6 +113,7 @@ import { SearchMaskModule } from '../search-mask/search-mask.module';
     MatMenuModule,
     MatTabsModule,
     MatTooltipModule,
+    MatDividerModule,
 
     NgxDnDModule,
     ScrollbarModule,

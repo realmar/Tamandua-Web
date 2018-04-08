@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { SearchRow, SearchRowValue } from '../../api/response/search-reponse';
+import { SearchRow, SearchRowValue } from '../../../api/response/search-reponse';
 import { isNullOrUndefined } from 'util';
 import { SaveObjectData } from '../../save-object/save-object-data';
 import { JsonSaveStrategy } from '../../save-object/strategies/json-save-strategy';
