@@ -1,0 +1,11 @@
+<mat-dialog-content>
+  <h1 class="mat-title">{{title}}</h1>
+  <p class="mat-body-1">{{text}}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button *ngFor="let action of actions"
+          mat-button [mat-dialog-close]="true"
+          (click)="onActionPress(action)">{{action.label}}
+  </button>
+</mat-dialog-actions>

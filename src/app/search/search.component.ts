@@ -1,19 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ApiService } from '../../api/api-service';
-import { SearchEndpoint } from '../../api/request/endpoints/search-endpoint';
 import { Event, NavigationEnd, Router } from '@angular/router';
 import { isNullOrUndefined } from 'util';
 import { SearchSettingsService } from '../settings/search-settings-service/search-settings.service';
 import { SearchResponse } from '../../api/response/search-reponse';
 import { ApiRequestData } from '../../api/request/request';
 import { Subscription } from 'rxjs/Subscription';
-import { Comparator, ComparatorType } from '../../api/request/comparator';
 import { SearchStateService } from '../search-state-service/search-state.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { ToastrUtils } from '../../utils/toastr-utils';
 import { SearchFieldData } from '../../search-mask/search-field/search-field-data';
 import { SearchMaskResult } from '../../search-mask/search-mask-result';
+import { createSearchEndpoint } from '../../api/request/endpoints/search-endpoint';
 
 @Component({
   selector: 'app-search',
@@ -147,7 +146,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     const builder = this._apiService.getRequestBuilder();
 
-    builder.setEndpoint(new SearchEndpoint(0, this._searchSettingsService.getResultCount()));
+    builder.setEndpoint(createSearchEndpoint(0, this._searchSettingsService.getResultCount()));
     builder.setStartDatetime(this._startDateTime);
     builder.setEndDatetime(this._endDateTime);
 

@@ -5,17 +5,16 @@ import { ApiService } from '../../../api/api-service';
 import { Comparator, ComparatorType } from '../../../api/request/comparator';
 import { CountResponse } from '../../../api/response/count-response';
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
-import { CountEndpoint } from '../../../api/request/endpoints/count-endpoint';
 import { isNullOrUndefined } from 'util';
 import { Observable } from 'rxjs/Observable';
 import { Scale } from 'chroma-js';
 import * as chroma from 'chroma-js';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorConstants } from '../../../utils/error-constants';
-import { ActiveToast, ToastrService } from 'ngx-toastr';
+import { ToastrService } from 'ngx-toastr';
 import { ToastrUtils } from '../../../utils/toastr-utils';
 import * as moment from 'moment';
+import { createCountEndpoint } from '../../../api/request/endpoints/count-endpoint';
 
 interface SummaryChild<T> {
   readonly name: string;
@@ -142,7 +141,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
 
     builder.setStartDatetime(startDate);
     builder.setEndDatetime(endDate);
-    builder.setEndpoint(new CountEndpoint());
+    builder.setEndpoint(createCountEndpoint());
 
     this._totalRequest = builder.build();
 
@@ -257,7 +256,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     this._totalResponse = result;
 
     for (let i = 0; i < this._summaryRequests.length; ++i) {
-      const createItemData = (n, d) => new DashboardCardItemData(n, d, this._totalResponse, this._colorRange);
+      const createItemData = (n, d) => new DashboardCardItemData(n, d, this._totalResponse as number, this._colorRange);
 
       const name = this._summaryRequests[ i ].name;
       if (isNullOrUndefined(this._summaryResponses[ i ])) {

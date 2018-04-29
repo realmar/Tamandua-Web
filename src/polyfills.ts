@@ -65,3 +65,4 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
 
 import 'blob';
 import 'reflect-metadata';
+import 'hammerjs/hammer';

@@ -5,6 +5,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Setting } from '../setting';
 import { SettingValidationResult } from '../setting-validation-result';
 import { isNullOrUndefined } from 'util';
+import { CardRow } from '../../dashboard/card-row';
 
 @Injectable()
 export class DashboardSettingsService {
@@ -18,6 +19,8 @@ export class DashboardSettingsService {
 
   private _refreshInterval: Setting<number>;
   private _refreshIntervalSubject: Subject<number>;
+
+  private _cards: Setting<Array<CardRow>>;
 
   protected onFinishInitalizeSubject: Subject<any>;
 
@@ -42,6 +45,8 @@ export class DashboardSettingsService {
 
     this._refreshInterval = new Setting<number>(100000, this.createMinValidator(10000, x => (x / 1000).toString()));
     this._refreshIntervalSubject = new Subject<number>();
+
+    this._cards = new Setting<Array<CardRow>>([], data => new SettingValidationResult(true));
 
     this._timeoutBeforeEmit = 800;
 
@@ -121,6 +126,14 @@ export class DashboardSettingsService {
     }
 
     return result;
+  }
+
+  public getCards (): Array<CardRow> {
+    return this._cards.getData();
+  }
+
+  public setCards (value: Array<CardRow>): SettingValidationResult {
+    return this._cards.setData(value);
   }
 
   private applyDefaultDebounceTime<T> (observable: Observable<T>): Observable<T> {

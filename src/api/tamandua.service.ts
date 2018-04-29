@@ -9,15 +9,18 @@ import { ApiRequestData } from './request/request';
 import { Observable } from 'rxjs/Observable';
 import { ApiResponse } from './response/api-response';
 import { HttpClient } from '@angular/common/http';
-import { ColumnsEndpoint } from './request/endpoints/columns-endpoint';
-import { TagsEndpoint } from './request/endpoints/tags-endpoint';
-import { FieldchoicesEndpoint } from './request/endpoints/fieldchoices-endpoint';
 import { IntermediateExpressionRequestBuilder } from './request/intermediate-expression-request-builder';
 import { Endpoint } from './request/endpoints/endpoint';
 import { EndpointMethod } from './request/endpoints/endpoint-method.enum';
 import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
-import { SupportedFieldchoicesEndpoint } from './request/endpoints/supported-fieldchoices-endpoint';
 import { environment } from '../environments/environment';
+import { Subject } from 'rxjs/Subject';
+import { isNullOrUndefined } from 'util';
+import 'rxjs/add/observable/of';
+import { createColumnsEndpoint } from './request/endpoints/columns-endpoint';
+import { createTagsEndpoint } from './request/endpoints/tags-endpoint';
+import { createFieldchoicesEndpoint } from './request/endpoints/fieldchoices-endpoint';
+import { createSupportedFieldchoicesEndpoint } from './request/endpoints/supported-fieldchoices-endpoint';
 
 @Injectable()
 export class TamanduaService implements ApiService {
@@ -41,19 +44,63 @@ export class TamanduaService implements ApiService {
   }
 
   public getColumns (): Observable<ColumnsResponse> {
-    return this.makeRequest(new ColumnsEndpoint());
+    return this.makeRequest(createColumnsEndpoint());
   }
 
   public getTags (): Observable<TagsResponse> {
-    return this.makeRequest(new TagsEndpoint());
+    return this.makeRequest(createTagsEndpoint());
   }
 
-  public getFieldChoices (field: string, limit: number): Observable<FieldChoicesResponse> {
-    return this.makeRequest(new FieldchoicesEndpoint(field, limit));
+  public getFieldChoices (field: string, limit?: number): Observable<FieldChoicesResponse> {
+    if (isNullOrUndefined(limit)) {
+      limit = ApiService.defaultFieldChoicesLimit;
+    }
+
+    return this.makeRequest(createFieldchoicesEndpoint(field, limit));
   }
 
-  getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse> {
-    return this.makeRequest(new SupportedFieldchoicesEndpoint());
+  public getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse> {
+    return this.makeRequest(createSupportedFieldchoicesEndpoint());
+  }
+
+  public getAllSupportedFieldChoices (limit?: number): Observable<Map<string, FieldChoicesResponse>> {
+    if (isNullOrUndefined(limit)) {
+      limit = ApiService.defaultFieldChoicesLimit;
+    }
+
+    const subject = new Subject<Map<string, FieldChoicesResponse>>();
+    const choicesMap = new Map<string, FieldChoicesResponse>();
+    let hasErrors = false;
+    let errorObj: any;
+    let responsesLength = 0;
+
+    this.getSupportedFieldChoices().subscribe(response => {
+      responsesLength = response.length;
+
+      response.forEach(choice => {
+        this.getFieldChoices(choice, limit).subscribe(
+          result => {
+            choicesMap.set(choice, result);
+            if (!hasErrors && choicesMap.size === response.length) {
+              subject.next(choicesMap);
+            }
+          },
+          error => {
+            errorObj = error;
+            hasErrors = true;
+            subject.thrownError(error);
+          }
+        );
+      });
+    });
+
+    if (!hasErrors && choicesMap.size === responsesLength) {
+      return Observable.of(choicesMap);
+    } else if (hasErrors) {
+      return Observable.throw(errorObj);
+    } else {
+      return subject.asObservable();
+    }
   }
 
   public SubmitRequest<T extends ApiResponse> (request: ApiRequestData): Observable<T> {

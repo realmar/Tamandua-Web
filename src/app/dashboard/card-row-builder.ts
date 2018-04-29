@@ -2,12 +2,11 @@ import { RequestBuilder } from '../../api/request/request-builder';
 import { CardRow } from './card-row';
 import { DashboardCardData } from './dashboard-card/dashboard-card-data';
 import { RequestBuilderField } from '../../api/request/request-builder-field';
-
-type ItemClickFildBuilder = (value: string | number) => RequestBuilderField;
+import { isNullOrUndefined } from 'util';
 
 interface CardChild {
   title: string;
-  itemClickFieldBuilder: ItemClickFildBuilder;
+  baseRequestFields: Array<RequestBuilderField>;
   request: RequestBuilder;
 }
 
@@ -24,10 +23,14 @@ export class CardRowBuilder {
     this._title = value;
   }
 
-  public addChild (title: string, itemClickFieldBuilder: ItemClickFildBuilder, request: RequestBuilder): void {
+  public addChild (title: string, baseRequestFields: Array<RequestBuilderField>, request: RequestBuilder): void {
+    if (isNullOrUndefined(baseRequestFields)) {
+      baseRequestFields = [];
+    }
+
     this._children.push({
       title: title,
-      itemClickFieldBuilder: itemClickFieldBuilder,
+      baseRequestFields: baseRequestFields,
       request: request
     });
   }
@@ -38,7 +41,7 @@ export class CardRowBuilder {
       cardData: this._children.map(x => {
         const data = new DashboardCardData(x.request);
         data.title = x.title;
-        data.onItemClickFieldBuilder = x.itemClickFieldBuilder;
+        data.baseRequestBuilderFields = x.baseRequestFields;
 
         return data;
       })

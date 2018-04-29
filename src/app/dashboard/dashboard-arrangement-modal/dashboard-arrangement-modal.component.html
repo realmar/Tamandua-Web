@@ -1,0 +1,13 @@
+<mat-dialog-content>
+  <div ngxDroppable (drop)="onDropped($event)" [model]="cards">
+    <div *ngFor="let card of cards"
+         ngxDraggable [model]="card">
+      <mat-icon ngxDragHandle>drag_handle</mat-icon>
+      <span class="mat-body-1">{{card.title}}</span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="true">Close</button>
+</mat-dialog-actions>

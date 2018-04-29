@@ -23,6 +23,16 @@ mat-card {
   margin-left: .5rem;
 }
 
+.card-actions {
+  position: absolute;
+  right: 0;
+
+  align-self: center;
+  margin-right: 0.5rem;
+
+  color: #757575;
+}
+
 #flex-container {
   display: flex;
   flex-wrap: wrap;

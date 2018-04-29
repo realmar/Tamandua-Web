@@ -1,0 +1,55 @@
+<h2 mat-dialog-title>Add Card</h2>
+
+<mat-dialog-content>
+  <mat-form-field>
+    <input matInput placeholder="Card Title" [formControl]="cardTitleForm">
+  </mat-form-field>
+
+  <mat-divider></mat-divider>
+
+  <p class="mat-subheading-1">Children</p>
+
+  <mat-list>
+    <mat-list-item *ngFor="let child of children"
+                   class="mat-body-1">
+      {{child.title}}
+      <ng-container *ngIf="child.domainOnly"> | Domain Only</ng-container>
+      <div class="spacer"></div>
+      <button class="remove-child" mat-icon-button (click)="removeChild(child)">
+        <mat-icon>remove</mat-icon>
+      </button>
+    </mat-list-item>
+  </mat-list>
+
+  <button *ngIf="!isAddingChild"
+          (click)="addChild()"
+          mat-button>Add Child
+  </button>
+
+  <div [hidden]="!isAddingChild">
+    <mat-form-field>
+      <input matInput placeholder="Child Title" [formControl]="childTitleForm">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-select [(value)]="childField">
+        <mat-option *ngFor="let field of fields" [value]="field">{{field}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-slide-toggle [(ngModel)]="childIsDomainOnly">Domain Only</mat-slide-toggle>
+    <search-mask [searchButtonLabel]="'Add'"
+                 [showDateTime]="false"
+                 (onSearchClick)="applySearchMaskResult($event)"></search-mask>
+  </div>
+</mat-dialog-content>
+
+<mat-divider></mat-divider>
+
+<mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="false">Cancel</button>
+  <button mat-button
+          [disabled]="!canBeAdded"
+          (click)="applyCard()">Add
+  </button>
+</mat-dialog-actions>

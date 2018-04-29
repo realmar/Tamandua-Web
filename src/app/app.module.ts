@@ -13,11 +13,11 @@ import {
   MatFormFieldModule,
   MatGridListModule,
   MatIconModule,
-  MatInputModule,
+  MatInputModule, MatListModule,
   MatMenuModule,
-  MatNativeDateModule,
+  MatNativeDateModule, MatOptionModule,
   MatPaginatorModule,
-  MatProgressBarModule,
+  MatProgressBarModule, MatSelectModule, MatSlideToggleModule,
   MatSortModule,
   MatTableModule,
   MatTabsModule,
@@ -60,6 +60,9 @@ import { FormatLoglinePipe } from './search-results/search-result-details-modal/
 import { NotFoundComponent } from './not-found/not-found.component';
 import { CachedApiService } from '../api/cached-api-service';
 import { SearchMaskModule } from '../search-mask/search-mask.module';
+import { DashboardAddCardModalComponent } from './dashboard/dashboard-add-card-modal/dashboard-add-card-modal.component';
+import { DashboardArrangementModalComponent } from './dashboard/dashboard-arrangement-modal/dashboard-arrangement-modal.component';
+import { QuestionModalComponent } from './question-modal/question-modal.component';
 
 @NgModule({
   declarations: [
@@ -81,14 +84,16 @@ import { SearchMaskModule } from '../search-mask/search-mask.module';
     AboutComponent,
     FooterComponent,
     FormatLoglinePipe,
-    NotFoundComponent
+    NotFoundComponent,
+    DashboardAddCardModalComponent,
+    DashboardArrangementModalComponent,
+    QuestionModalComponent
   ],
   imports: [
     SearchMaskModule,
 
     BrowserModule,
     AppRoutingModule,
-
     HttpClientModule,
 
     FormsModule,
@@ -114,6 +119,10 @@ import { SearchMaskModule } from '../search-mask/search-mask.module';
     MatTabsModule,
     MatTooltipModule,
     MatDividerModule,
+    MatListModule,
+    MatSlideToggleModule,
+    MatSelectModule,
+    MatOptionModule,
 
     NgxDnDModule,
     ScrollbarModule,
@@ -136,7 +145,10 @@ import { SearchMaskModule } from '../search-mask/search-mask.module';
   bootstrap: [ AppComponent ],
   entryComponents: [
     SearchResultDetailsModalComponent,
-    SearchResultAddColumnsModalComponent
+    SearchResultAddColumnsModalComponent,
+    DashboardAddCardModalComponent,
+    DashboardArrangementModalComponent,
+    QuestionModalComponent
   ]
 })
 export class AppModule {

@@ -9,13 +9,17 @@ import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices
 import { ApiResponse } from './response/api-response';
 
 export abstract class ApiService {
+  public static readonly defaultFieldChoicesLimit = 10;
+
   abstract getColumns (): Observable<ColumnsResponse>;
 
   abstract getTags (): Observable<TagsResponse>;
 
-  abstract getFieldChoices (field: string, limit: number): Observable<FieldChoicesResponse>;
+  abstract getFieldChoices (field: string, limit?: number): Observable<FieldChoicesResponse>;
 
   abstract getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse>;
+
+  abstract getAllSupportedFieldChoices (limit?: number): Observable<Map<string, FieldChoicesResponse>>;
 
   abstract SubmitRequest<T extends ApiResponse> (request: ApiRequestData): Observable<T>;
 

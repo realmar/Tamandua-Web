@@ -11,9 +11,6 @@ import { AdvancedCountResponse } from './response/advanced-count-response';
 import { ColumnsResponse } from './response/columns-response';
 import { TagsResponse } from './response/tags-response';
 import { FieldChoicesResponse } from './response/field-choices-response';
-import { SearchEndpoint } from './request/endpoints/search-endpoint';
-import { AdvancedCountEndpoint } from './request/endpoints/advanced-count-endpoint';
-import { CountEndpoint } from './request/endpoints/count-endpoint';
 import { Observable } from 'rxjs/Observable';
 import { Endpoint } from './request/endpoints/endpoint';
 import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
@@ -74,7 +71,7 @@ export class TamanduaMockService extends ApiService {
       'hold' ]);
   }
 
-  public getFieldChoices (field: string, limit: number): Observable<FieldChoicesResponse> {
+  public getFieldChoices (field: string, limit?: number): Observable<FieldChoicesResponse> {
     return of([ 'a', 'b', 'c' ]);
   }
 
@@ -93,6 +90,10 @@ export class TamanduaMockService extends ApiService {
     ]);
   }
 
+  getAllSupportedFieldChoices (limit?: number): Observable<Map<string, FieldChoicesResponse>> {
+    return of(new Map<string, FieldChoicesResponse>());
+  }
+
   public SubmitRequest<T extends ApiResponse> (request: ApiRequestData): Observable<T> {
     return request.accept(this);
   }
@@ -102,13 +103,17 @@ export class TamanduaMockService extends ApiService {
   }
 
   public visitIE<T extends ApiResponse> (request: IntermediateExpressionRequest): Observable<T> {
-    if (request.endpoint instanceof SearchEndpoint) {
+    // TODO: fix dat if u wanna use dis class
+
+    /*if (request.endpoint instanceof SearchEndpoint) {
       return this.search(request.data, request.endpoint) as any as Observable<T>;
     } else if (request.endpoint instanceof CountEndpoint) {
       return this.count(request.data, request.endpoint)  as any as Observable<T>;
     } else if (request.endpoint instanceof AdvancedCountEndpoint) {
       return this.advancedCount(request.data, request.endpoint) as any as Observable<T>;
-    }
+    }*/
+
+    return of(undefined);
   }
 
   public search (queryData: string, endpoint: Endpoint): Observable<SearchResponse> {

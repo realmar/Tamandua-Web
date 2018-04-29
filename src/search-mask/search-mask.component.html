@@ -16,7 +16,7 @@
     </mat-list>
   </div>
 
-  <div id="datetime">
+  <div id="datetime" *ngIf="showDateTime">
     <h4 class="mat-subheading-1">Date and Time</h4>
     <search-mask-datetime [(datetime)]="startDateTime"
                           label="Start"></search-mask-datetime>

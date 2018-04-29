@@ -137,7 +137,7 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
     return this.getData(CachedKeys.Tags, () => this.tagsCache, super.getTags.bind(this));
   }
 
-  public getFieldChoices (field: string, limit: number): Observable<FieldChoicesResponse> {
+  public getFieldChoices (field: string, limit?: number): Observable<FieldChoicesResponse> {
     const subject = new Subject<FieldChoicesResponse>();
     let resultObservable: Observable<FieldChoicesResponse>;
 

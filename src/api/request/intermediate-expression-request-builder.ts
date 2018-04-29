@@ -7,8 +7,10 @@ import { Endpoint } from './endpoints/endpoint';
 import { EndpointIsUndefinedError } from './endpoint-is-undefined-error';
 import { Converter } from '../../utils/converter';
 import { RequestBuilderField } from './request-builder-field';
+import { Type } from 'class-transformer';
 
 class Field implements RequestBuilderField {
+  @Type(() => Comparator)
   private readonly _comparator: Comparator;
   private readonly _name: string;
   private readonly _value: string | number;
@@ -43,14 +45,17 @@ class Field implements RequestBuilderField {
 }
 
 export class IntermediateExpressionRequestBuilder implements RequestBuilder {
+  @Type(() => Field)
   private _fields: Array<Field>;
   private _startDatetime: Date;
   private _endDatetime: Date;
   private _endpoint: Endpoint;
 
-  constructor () {
+  public constructor () {
     this._fields = [];
   }
+
+  // region Getters/Setters
 
   public addField (name: string, value: string | number, comparator: Comparator): void {
     this._fields.push(new Field(name, value, comparator));
@@ -95,6 +100,8 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
   public getEndpoint (): Endpoint {
     return this._endpoint;
   }
+
+  // endregion
 
   /**
    * Build request.

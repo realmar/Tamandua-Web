@@ -60,6 +60,16 @@ export class SearchMaskComponent implements OnInit {
     return this._showLoadingSpinner;
   }
 
+  private _showDateTime: boolean;
+  public get showDateTime (): boolean {
+    return this._showDateTime;
+  }
+
+  @Input()
+  public set showDateTime (value: boolean) {
+    this._showDateTime = value;
+  }
+
   @Input()
   public set showLoadingSpinner (value: boolean) {
     this._showLoadingSpinner = value;
@@ -74,6 +84,7 @@ export class SearchMaskComponent implements OnInit {
   public constructor (@Optional() private _cachedApiService: CachedApiService) {
     this._searchButtonLabel = 'Search';
     this._onSearchClick = new EventEmitter<SearchMaskResult>();
+    this._showDateTime = true;
     this.resetFields();
   }
 

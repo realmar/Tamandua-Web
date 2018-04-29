@@ -103,7 +103,7 @@ export class CachedTamanduaService extends TamanduaService implements CachedApiS
     return this.cacheGeneric(this._tagsCache, super.getTags.bind(this));
   }
 
-  public getFieldChoices (field: string, limit: number): Observable<FieldChoicesResponse> {
+  public getFieldChoices (field: string, limit?: number): Observable<FieldChoicesResponse> {
     const cache = this.getOrCreateFieldChoiceCache(field);
 
     if (isNullOrUndefined(cache.data) || cache.data.field !== field || cache.data.limit !== limit) {

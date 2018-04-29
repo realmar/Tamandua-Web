@@ -1,7 +1,7 @@
 import { Comparator, ComparatorType } from '../../../api/request/comparator';
 import { RequestBuilder } from '../../../api/request/request-builder';
-import { AdvancedCountEndpoint } from '../../../api/request/endpoints/advanced-count-endpoint';
 import { CardRowBuilder } from '../card-row-builder';
+import { createAdvancedEndpoint } from '../../../api/request/endpoints/advanced-count-endpoint';
 
 /**
  * Returns date {hours} in the past from now. (now - hours)
@@ -15,29 +15,12 @@ export function pastDate (hours: number): Date {
   return date;
 }
 
-export function defaultOnItemClickFieldBuilder (value: string | number) {
-  return {
-    name: 'sender',
-    value: value,
-    comparator: new Comparator(ComparatorType.Equals)
-  };
-}
-
-export function defaultOnItemClickFieldBuilderDomainOnly (value: string | number) {
-  return {
-    name: 'sender',
-    value: value + '$',
-    comparator: new Comparator(ComparatorType.Regex)
-  };
-}
-
 export function configureGenericRequestData (requestBuilder: RequestBuilder,
                                              pastHours: number,
                                              itemCount: number,
                                              separator?: string): void {
   requestBuilder.setStartDatetime(pastDate(pastHours));
-  requestBuilder.setEndpoint(
-    new AdvancedCountEndpoint('sender', itemCount, separator));
+  requestBuilder.setEndpoint(createAdvancedEndpoint('sender', itemCount, separator));
 }
 
 export interface ConfigureGenericCardChildrenArgs {
@@ -56,7 +39,12 @@ export function configureGenericCardChildren (args: ConfigureGenericCardChildren
     configureGenericRequestData(requestBuilder, args.pastHours, args.itemCount);
     args.configureCustomFilter(requestBuilder);
 
-    args.cardBuilder.addChild(args.fullEmailChildTitle, defaultOnItemClickFieldBuilder, requestBuilder);
+    const baseFields = {
+      name: 'sender',
+      value: '{value}',
+      comparator: new Comparator(ComparatorType.Equals)
+    };
+    args.cardBuilder.addChild(args.fullEmailChildTitle, [ baseFields ], requestBuilder);
   }
 
   {
@@ -64,6 +52,11 @@ export function configureGenericCardChildren (args: ConfigureGenericCardChildren
     configureGenericRequestData(requestBuilder, args.pastHours, args.itemCount, '@');
     args.configureCustomFilter(requestBuilder);
 
-    args.cardBuilder.addChild(args.domainChildTitle, defaultOnItemClickFieldBuilderDomainOnly, requestBuilder);
+    const baseFields = {
+      name: 'sender',
+      value: '{value}$',
+      comparator: new Comparator(ComparatorType.Regex)
+    };
+    args.cardBuilder.addChild(args.domainChildTitle, [ baseFields ], requestBuilder);
   }
 }
