@@ -15,7 +15,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { ToastrUtils } from '../../../utils/toastr-utils';
 import * as moment from 'moment';
-import { Endpoint } from '../../../api/request/endpoints/endpoint';
 import { createAdvancedEndpoint } from '../../../api/request/endpoints/advanced-count-endpoint';
 
 @Component({
@@ -30,23 +29,26 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   private _refreshIntervalChangeSubscription: Subscription;
 
   private _isDoingRequest: boolean;
-  get isDoingRequest (): boolean {
+  public get isDoingRequest (): boolean {
     return this._isDoingRequest;
   }
 
-  private _endpoint: Endpoint;
   private _data: DashboardCardData;
-  @Input() set data (value: DashboardCardData) {
+  @Input()
+  public set data (value: DashboardCardData) {
     this._data = value;
+    this.getData();
   }
 
-  get data (): DashboardCardData {
+  public get data (): DashboardCardData {
     return this._data;
   }
 
-  get resultData (): Array<DashboardCardItemData> {
+  public get resultData (): Array<DashboardCardItemData> {
     const length = this._data.requestResult.length;
-    return this._data.requestResult.slice(0, this._endpoint.metadata.length > length ? length : this._endpoint.metadata.length);
+    const endpoint = this._data.requestBuilder.getEndpoint();
+
+    return this._data.requestResult.slice(0, endpoint.metadata.length > length ? length : endpoint.metadata.length);
   }
 
   private _requestSubscription: Subscription;
@@ -73,11 +75,10 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     }
 
     const builder = this._data.requestBuilder;
-    this._endpoint = builder.getEndpoint();
 
     const isReadyCallback = () => {
       builder.setStartDatetime(this.createPastDate(this._dashboardSettingsService.getPastHours()));
-      this._endpoint.metadata.length = this._dashboardSettingsService.getMaxItemCountPerCard();
+      this._data.requestBuilder.getEndpoint().metadata.length = this._dashboardSettingsService.getMaxItemCountPerCard();
 
       this.createRefreshIntervalSubscription();
       this.getData();
@@ -168,15 +169,16 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   }
 
   private onMaxItemCountChange (value: number): void {
-    const oldLength = this._endpoint.metadata.length;
+    const endpoint = this._data.requestBuilder.getEndpoint();
 
-    const field = this._endpoint.metadata.field;
-    const length = this._endpoint.metadata.length;
-    const separator = this._endpoint.metadata.separator;
+    const field = endpoint.metadata.field;
+    const length = value;
+    const separator = endpoint.metadata.separator;
 
-    this._endpoint = createAdvancedEndpoint(field, length, separator);
+    this._data.requestBuilder.setEndpoint(createAdvancedEndpoint(field, length, separator));
 
-    if (value > oldLength) {
+    const oldLength = this._data.requestResult.length;
+    if (length > oldLength) {
       this.cancelRequest();
       this.getData();
     }

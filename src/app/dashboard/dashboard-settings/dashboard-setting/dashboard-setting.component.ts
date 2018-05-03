@@ -93,7 +93,7 @@ export class DashboardSettingComponent implements OnInit {
   ngOnInit () {
   }
 
-  private validator (control: FormControl): { [error: string]: any } {
+  private validator (control: FormControl): { [ error: string ]: any } {
     if (!isNullOrUndefined(this._validationResult) && !this._validationResult.isValid) {
       return { custom: { value: false } };
     } else {

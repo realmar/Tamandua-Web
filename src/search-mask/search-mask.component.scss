@@ -2,6 +2,10 @@ mat-spinner {
   display: inline-block;
 }
 
+#action-buttons {
+  float: right;
+}
+
 #fields, #datetime {
   vertical-align: top;
   display: inline-block;
@@ -19,10 +23,6 @@ mat-spinner {
   width: 100%;
   height: 2rem;
   display: block;
-}
-
-#search-button {
-  float: right;
 }
 
 #clear-button {

@@ -34,12 +34,17 @@
           id="clear-button"
           (click)="clearSearchMask()">Clear
   </button>
-  <button mat-button
-          (click)="search()"
-          id="search-button"
-          [disabled]="anyFieldsEmpty() || showLoadingSpinner">
-    <mat-spinner *ngIf="showLoadingSpinner"
-                 [diameter]="25"></mat-spinner>
-    {{searchButtonLabel}}
-  </button>
+
+  <div id="action-buttons">
+    <button mat-button *ngFor="let button of additionalButtons"
+            (click)="invokeButtonCallback(button)">{{button.label}}
+    </button>
+    <button mat-button
+            (click)="search()"
+            [disabled]="anyFieldsEmpty() || showLoadingSpinner">
+      <mat-spinner *ngIf="showLoadingSpinner"
+                   [diameter]="25"></mat-spinner>
+      {{searchButtonLabel}}
+    </button>
+  </div>
 </div>

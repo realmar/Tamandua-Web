@@ -28,6 +28,10 @@ export class DashboardSettingsComponent implements OnInit {
   }
 
   public set maxItemCountPerCard (value: number) {
+    if (typeof value === 'string' && !String.isEmptyNullOrUndefined(value) && !isNaN(value)) {
+      value = parseInt(value, 10);
+    }
+
     this._maxItemCountValidationSubject.next(this._dashboardSettingsService.setMaxItemCountPerCard(value));
   }
 

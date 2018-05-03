@@ -11,7 +11,7 @@ import { DashboardSettingsService } from '../../settings/dashboard-settings-serv
 })
 export class DashboardArrangementModalComponent implements OnInit {
   public constructor (private _dashboardSettings: DashboardSettingsService,
-                      private _dialogRef: MatDialogRef<DashboardAddCardModalComponent>,
+                      private _dialogRef: MatDialogRef<DashboardArrangementModalComponent>,
                       @Inject(MAT_DIALOG_DATA) public cards: Array<CardRow>) {
   }
 

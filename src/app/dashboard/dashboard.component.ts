@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ApiService } from '../../api/api-service';
 import { DashboardSettingsService } from '../settings/dashboard-settings-service/dashboard-settings.service';
 import { CardRow } from './card-row';
@@ -11,17 +11,23 @@ import { MatDialog } from '@angular/material';
 import { isNullOrUndefined } from 'util';
 import { DashboardArrangementModalComponent } from './dashboard-arrangement-modal/dashboard-arrangement-modal.component';
 import { QuestionModalComponent } from '../question-modal/question-modal.component';
+import { createNoAction, createYesAction } from '../question-modal/question-modal-utils';
+import { Subscription } from 'rxjs/Subscription';
+import { createAdvancedEndpoint } from '../../api/request/endpoints/advanced-count-endpoint';
+import * as shallow_clone from 'shallow-clone';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: [ './dashboard.component.scss' ]
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   private _cards: Array<CardRow>;
   public get cards (): Array<CardRow> {
     return this._cards;
   }
+
+  private _maxItemCountChangeSubscription: Subscription;
 
   public constructor (private _apiService: ApiService,
                       private _dashboardSettingsService: DashboardSettingsService,
@@ -39,6 +45,10 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  public ngOnDestroy (): void {
+    this._maxItemCountChangeSubscription.unsubscribe();
+  }
+
   private onSettingsInitialized (): void {
     const cards = this._dashboardSettingsService.getCards();
     if (!Array.isEmptyNullOrUndefined(cards)) {
@@ -48,6 +58,9 @@ export class DashboardComponent implements OnInit {
         this.buildDefaultCards();
       }
     }
+
+    this._maxItemCountChangeSubscription =
+      this._dashboardSettingsService.maxItemCountObservable.subscribe(this.onMaxItemCountChange.bind(this));
   }
 
   private buildDefaultCards (): void {
@@ -63,8 +76,41 @@ export class DashboardComponent implements OnInit {
     this._dashboardSettingsService.setCards(this._cards);
   }
 
-  public addCard (): void {
-    const dialogRef = this._dialog.open(DashboardAddCardModalComponent);
+  private getIndexOfCard (card: CardRow): number {
+    return this._cards.findIndex(value => value === card);
+  }
+
+  private onMaxItemCountChange (value: number): void {
+    this._cards.forEach(card => {
+      card.cardData.forEach(data => {
+        const endpoint = data.requestBuilder.getEndpoint();
+        // const oldLength = endpoint.metadata.length;
+
+        const field = endpoint.metadata.field;
+        const length = value;
+        const separator = endpoint.metadata.separator;
+
+        data.requestBuilder.setEndpoint(createAdvancedEndpoint(field, length, separator));
+      });
+    });
+
+    // break reference to trigger change propagation
+    // this._cards = shallow_clone(this._cards);
+
+    this.saveCards();
+  }
+
+  public addOrModifyCard (existingCard?: CardRow): void {
+    let data;
+    if (!isNullOrUndefined(existingCard)) {
+      data = { data: existingCard };
+    }
+
+    const dialogRef = this._dialog.open(DashboardAddCardModalComponent, data);
+    if (!isNullOrUndefined(existingCard)) {
+      dialogRef.componentInstance.applyButtonLabel = 'Edit';
+    }
+
     dialogRef
       .afterClosed()
       .subscribe((result: CardRow) => {
@@ -87,7 +133,19 @@ export class DashboardComponent implements OnInit {
           return;
         }
 
-        this._cards.push(result as CardRow);
+        let pushCard = true;
+        if (!isNullOrUndefined(existingCard)) {
+          const index = this.getIndexOfCard(existingCard);
+          if (index >= 0) {
+            pushCard = false;
+            this._cards[ index ] = result;
+          }
+        }
+
+        if (pushCard) {
+          this._cards.push(result as CardRow);
+        }
+
         this.saveCards();
       });
   }
@@ -104,33 +162,37 @@ export class DashboardComponent implements OnInit {
         title: 'Restore?',
         text: 'Do you want to restore the default cards?',
         actions: [
-          {
-            label: 'Yes',
-            callback: () => {
-              this._cards = [];
-              this.buildDefaultCards();
-            }
-          },
-          {
-            label: 'No',
-            callback: () => {
-            }
-          }
+          createYesAction(() => {
+            this._cards = [];
+            this.buildDefaultCards();
+          }),
+          createNoAction()
         ]
       }
     });
   }
 
   public deleteCard (card: CardRow): void {
-    const index = this._cards.findIndex(value => value === card);
-    if (index >= 0) {
-      this._cards.splice(index, 1);
-    }
+    this._dialog.open(QuestionModalComponent, {
+      data: {
+        title: 'Delete?',
+        text: `Do you really want to delete the card: ${card.title}?`,
+        actions: [
+          createYesAction(() => {
+            const index = this.getIndexOfCard(card);
+            if (index >= 0) {
+              this._cards.splice(index, 1);
+            }
 
-    this.saveCards();
+            this.saveCards();
+          }),
+          createNoAction()
+        ]
+      }
+    });
   }
 
   public editCard (card: CardRow): void {
-    console.log('Missing implementation.');
+    this.addOrModifyCard(card);
   }
 }

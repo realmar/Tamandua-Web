@@ -4,6 +4,7 @@ import { Comparator, ComparatorType } from '../api/request/comparator';
 import { isNullOrUndefined } from 'util';
 import { CachedApiService } from '../api/cached-api-service';
 import { SearchMaskResult } from './search-mask-result';
+import { SearchMaskButton } from './search-mask-button';
 
 @Component({
   selector: 'search-mask',
@@ -11,6 +12,20 @@ import { SearchMaskResult } from './search-mask-result';
   styleUrls: [ './search-mask.component.scss' ]
 })
 export class SearchMaskComponent implements OnInit {
+  private _additionalButtons: Array<SearchMaskButton>;
+  public get additionalButtons (): Array<SearchMaskButton> {
+    return this._additionalButtons;
+  }
+
+  @Input()
+  public set additionalButtons (value: Array<SearchMaskButton>) {
+    if (isNullOrUndefined(value)) {
+      return;
+    }
+
+    this._additionalButtons = value;
+  }
+
   private _startDateTime: Date;
   @Input()
   public set startDateTime (value: Date) {
@@ -82,6 +97,7 @@ export class SearchMaskComponent implements OnInit {
   }
 
   public constructor (@Optional() private _cachedApiService: CachedApiService) {
+    this._additionalButtons = [];
     this._searchButtonLabel = 'Search';
     this._onSearchClick = new EventEmitter<SearchMaskResult>();
     this._showDateTime = true;
@@ -93,6 +109,22 @@ export class SearchMaskComponent implements OnInit {
 
   private resetFields (): void {
     this.fields = [ new SearchFieldData(undefined, undefined, new Comparator(ComparatorType.Regex)) ];
+  }
+
+  private assembleResult (): SearchMaskResult {
+    return {
+      startDateTime: this._startDateTime,
+      endDateTime: this._endDateTime,
+      fields: this._fields
+    };
+  }
+
+  public setSearchMask (searchMask: SearchMaskResult) {
+    this.clearSearchMask();
+
+    this.startDateTime = searchMask.startDateTime;
+    this.endDateTime = searchMask.endDateTime;
+    this.fields = searchMask.fields;
   }
 
   public anyFieldsEmpty (): boolean {
@@ -136,10 +168,10 @@ export class SearchMaskComponent implements OnInit {
   }
 
   public search (): void {
-    this._onSearchClick.emit({
-      startDateTime: this._startDateTime,
-      endDateTime: this._endDateTime,
-      fields: this._fields
-    });
+    this._onSearchClick.emit(this.assembleResult());
+  }
+
+  public invokeButtonCallback (button: SearchMaskButton): void {
+    button.callback(this.assembleResult());
   }
 }

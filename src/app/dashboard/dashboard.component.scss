@@ -17,10 +17,8 @@ mat-card {
   $width: 15rem;
   width: $width;
   max-width: $width;
-}
 
-.inline-card:last-child {
-  margin-left: .5rem;
+  margin-top: .5rem !important;
 }
 
 .card-actions {
@@ -44,4 +42,8 @@ mat-card {
 
 #summary-card {
   width: 18rem;
+}
+
+#dashboard-actions {
+  float: right;
 }

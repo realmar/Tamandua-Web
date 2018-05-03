@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { SearchMaskResult } from '../../../search-mask/search-mask-result';
 import { SearchMaskComponent } from '../../../search-mask/search-mask.component';
 import { FormControl } from '@angular/forms';
@@ -11,11 +11,21 @@ import { ColumnsResponse } from '../../../api/response/columns-response';
 import { createAdvancedEndpoint } from '../../../api/request/endpoints/advanced-count-endpoint';
 import { Comparator, ComparatorType } from '../../../api/request/comparator';
 import { RequestBuilderField } from '../../../api/request/request-builder-field';
+import { CardRow } from '../card-row';
+import { isNullOrUndefined } from 'util';
+import { SearchFieldData } from '../../../search-mask/search-field/search-field-data';
+import { SearchMaskButton } from '../../../search-mask/search-mask-button';
+import * as clone from 'clone';
+
+enum ViewState {
+  Adding, Editing, Default
+}
 
 interface CardChild {
-  readonly title: string;
-  readonly domainOnly: boolean;
-  readonly searchMask: SearchMaskResult;
+  title: string;
+  field: string;
+  domainOnly: boolean;
+  searchMask: SearchMaskResult;
 }
 
 @Component({
@@ -26,14 +36,19 @@ interface CardChild {
 export class DashboardAddCardModalComponent implements OnInit {
   @ViewChild(SearchMaskComponent) private _searchMask: SearchMaskComponent;
 
+  private _applyButtonLabel: string;
+  public get applyButtonLabel (): string {
+    return this._applyButtonLabel;
+  }
+
+  @Input()
+  public set applyButtonLabel (value: string) {
+    this._applyButtonLabel = value;
+  }
+
   private readonly _children: Array<CardChild>;
   public get children (): Array<CardChild> {
     return this._children;
-  }
-
-  private _isAddingChild: boolean;
-  public get isAddingChild (): boolean {
-    return this._isAddingChild;
   }
 
   private readonly _cardTitleForm: FormControl;
@@ -76,26 +91,65 @@ export class DashboardAddCardModalComponent implements OnInit {
     return hasTitle && hasChildren;
   }
 
+  private _currentEditingChild: CardChild;
+  private _viewState: ViewState;
+
+  public get isInDefaultView (): boolean {
+    return this._viewState === ViewState.Default;
+  }
+
+  public get additionalSearchMaskButtons (): Array<SearchMaskButton> {
+    return [
+      {
+        label: 'Cancel',
+        callback: result => this.cancelSearchMask()
+      }
+    ];
+  }
+
   public constructor (private _dialogRef: MatDialogRef<DashboardAddCardModalComponent>,
-                      @Inject(MAT_DIALOG_DATA) public _dialogData: any,
+                      @Inject(MAT_DIALOG_DATA) public _dialogData: CardRow,
                       private _apiService: ApiService,
                       private _dashboardSettingsService: DashboardSettingsService) {
+    this._viewState = ViewState.Default;
     this._fields = [ 'loading ...' ];
     this._children = [];
-    this._isAddingChild = false;
+    this._applyButtonLabel = 'Add';
 
     this._cardTitleForm = new FormControl();
     this._childTitleForm = new FormControl();
+
+    if (!isNullOrUndefined(_dialogData)) {
+      this._cardTitleForm.setValue(_dialogData.title);
+
+      this._children = _dialogData.cardData.map(data => {
+        const separator = data.requestBuilder.getEndpoint().metadata.separator;
+
+        return {
+          title: data.title,
+          field: data.requestBuilder.getEndpoint().metadata.field,
+          domainOnly: !isNullOrUndefined(separator),
+          searchMask: {
+            startDateTime: data.requestBuilder.getStartDatetime(),
+            endDateTime: data.requestBuilder.getEndDatetime(),
+            fields: data.requestBuilder
+              .getFields()
+              .map(field => new SearchFieldData(field.name, field.value, field.comparator))
+          }
+        };
+      });
+    }
   }
 
   public ngOnInit () {
     this._apiService
       .getColumns()
       .subscribe(result => {
-        const reassignName = this._fields[ 0 ].startsWith('loading');
+        const fieldsWereNotInitialized = this._fields[ 0 ].startsWith('loading');
+        const hasNameAlready = !String.isEmptyNullOrUndefined(this._childField);
         this._fields = result;
 
-        if (reassignName) {
+        if (fieldsWereNotInitialized && !hasNameAlready) {
           this.childField = this._fields[ 0 ];
         }
       });
@@ -103,15 +157,30 @@ export class DashboardAddCardModalComponent implements OnInit {
 
   public addChild (): void {
     this._searchMask.clearSearchMask();
+    this._searchMask.searchButtonLabel = 'Add';
+
     this._childTitleForm.setValue('');
     this._childField = this._fields[ 0 ];
     this._childIsDomainOnly = false;
 
-    this._isAddingChild = true;
+    this._viewState = ViewState.Adding;
   }
 
   public removeChild (child: CardChild): void {
     this._children.splice(this._children.indexOf(child), 1);
+  }
+
+  public editChild (child: CardChild): void {
+    this._childTitleForm.setValue(child.title);
+    this._childField = child.field;
+    this._childIsDomainOnly = child.domainOnly;
+
+    this._searchMask.setSearchMask(clone(child.searchMask));
+    this._searchMask.searchButtonLabel = 'Edit';
+
+    this._currentEditingChild = child;
+
+    this._viewState = ViewState.Editing;
   }
 
   public applySearchMaskResult (result: SearchMaskResult): void {
@@ -119,13 +188,25 @@ export class DashboardAddCardModalComponent implements OnInit {
       return;
     }
 
-    this._children.push({
-      title: this._childTitleForm.value,
-      domainOnly: this._childIsDomainOnly,
-      searchMask: result
-    });
+    if (this._viewState === ViewState.Editing && !isNullOrUndefined(this._currentEditingChild)) {
+      this._currentEditingChild.title = this._childTitleForm.value;
+      this._currentEditingChild.field = this._childField;
+      this._currentEditingChild.domainOnly = this._childIsDomainOnly;
+      this._currentEditingChild.searchMask = result;
+    } else {
+      this._children.push({
+        title: this._childTitleForm.value,
+        field: this._childField,
+        domainOnly: this._childIsDomainOnly,
+        searchMask: result
+      });
+    }
 
-    this._isAddingChild = false;
+    this._viewState = ViewState.Default;
+  }
+
+  public cancelSearchMask (): void {
+    this._viewState = ViewState.Default;
   }
 
   public applyCard (): void {
@@ -137,7 +218,7 @@ export class DashboardAddCardModalComponent implements OnInit {
       requestBuilder.setStartDatetime(pastDate(this._dashboardSettingsService.getPastHours()));
       requestBuilder.setEndpoint(
         createAdvancedEndpoint(
-          this._childField,
+          child.field,
           this._dashboardSettingsService.getMaxItemCountPerCard(),
           child.domainOnly ? '@' : undefined)
       );
@@ -147,13 +228,13 @@ export class DashboardAddCardModalComponent implements OnInit {
 
       if (child.domainOnly) {
         baseFields = {
-          name: this.childField,
+          name: child.field,
           value: '{value}$',
           comparator: new Comparator(ComparatorType.Regex)
         };
       } else {
         baseFields = {
-          name: this.childField,
+          name: child.field,
           value: '{value}',
           comparator: new Comparator(ComparatorType.Equals)
         };

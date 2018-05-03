@@ -1,16 +1,19 @@
-<app-dashboard-settings></app-dashboard-settings>
-<button mat-icon-button
-        (click)="addCard()">
-  <mat-icon>add</mat-icon>
-</button>
-<button mat-icon-button
-        (click)="rearrangeCards()">
-  <mat-icon>view_quilt</mat-icon>
-</button>
-<button mat-icon-button
-        (click)="restoreDefaultCards()">
-  <mat-icon>replay</mat-icon>
-</button>
+<app-dashboard-settings class="inline"></app-dashboard-settings>
+
+<div id="dashboard-actions">
+  <button mat-icon-button
+          (click)="addOrModifyCard()">
+    <mat-icon>add</mat-icon>
+  </button>
+  <button mat-icon-button
+          (click)="rearrangeCards()">
+    <mat-icon>view_quilt</mat-icon>
+  </button>
+  <button mat-icon-button
+          (click)="restoreDefaultCards()">
+    <mat-icon>replay</mat-icon>
+  </button>
+</div>
 
 <div id="flex-container">
   <mat-card id="summary-card">
