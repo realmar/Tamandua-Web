@@ -8,11 +8,13 @@
           <mat-icon>remove</mat-icon>
         </button>
       </mat-list-item>
-      <mat-list-item id="add-button">
-        <button mat-icon-button (click)="addField()" [disabled]="anyFieldsEmpty()">
-          <mat-icon>add</mat-icon>
-        </button>
-      </mat-list-item>
+      <div id="add-button">
+        <mat-list-item>
+          <button mat-icon-button (click)="addField()" [disabled]="anyFieldsEmpty()">
+            <mat-icon>add</mat-icon>
+          </button>
+        </mat-list-item>
+      </div>
     </mat-list>
   </div>
 

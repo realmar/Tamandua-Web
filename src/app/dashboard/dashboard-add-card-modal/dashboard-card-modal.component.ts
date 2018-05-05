@@ -29,11 +29,11 @@ interface CardChild {
 }
 
 @Component({
-  selector: 'app-dashboard-add-card-modal',
-  templateUrl: './dashboard-add-card-modal.component.html',
-  styleUrls: [ './dashboard-add-card-modal.component.scss' ]
+  selector: 'app-dashboard-card-modal',
+  templateUrl: './dashboard-card-modal.component.html',
+  styleUrls: [ './dashboard-card-modal.component.scss' ]
 })
-export class DashboardAddCardModalComponent implements OnInit {
+export class DashboardCardModalComponent implements OnInit {
   @ViewChild(SearchMaskComponent) private _searchMask: SearchMaskComponent;
 
   private _applyButtonLabel: string;
@@ -84,6 +84,14 @@ export class DashboardAddCardModalComponent implements OnInit {
     return this._fields;
   }
 
+  public get hasTitle (): boolean {
+    return !String.isEmptyNullOrUndefined(this._cardTitleForm.value);
+  }
+
+  public get hasChildren (): boolean {
+    return this._children.length > 0;
+  }
+
   public get canBeAdded (): boolean {
     const hasTitle = !String.isEmptyNullOrUndefined(this._cardTitleForm.value);
     const hasChildren = this._children.length > 0;
@@ -107,7 +115,7 @@ export class DashboardAddCardModalComponent implements OnInit {
     ];
   }
 
-  public constructor (private _dialogRef: MatDialogRef<DashboardAddCardModalComponent>,
+  public constructor (private _dialogRef: MatDialogRef<DashboardCardModalComponent>,
                       @Inject(MAT_DIALOG_DATA) public _dialogData: CardRow,
                       private _apiService: ApiService,
                       private _dashboardSettingsService: DashboardSettingsService) {
@@ -157,7 +165,7 @@ export class DashboardAddCardModalComponent implements OnInit {
 
   public addChild (): void {
     this._searchMask.clearSearchMask();
-    this._searchMask.searchButtonLabel = 'Add';
+    this._searchMask.searchButtonLabel = 'Add Child';
 
     this._childTitleForm.setValue('');
     this._childField = this._fields[ 0 ];
@@ -176,7 +184,7 @@ export class DashboardAddCardModalComponent implements OnInit {
     this._childIsDomainOnly = child.domainOnly;
 
     this._searchMask.setSearchMask(clone(child.searchMask));
-    this._searchMask.searchButtonLabel = 'Edit';
+    this._searchMask.searchButtonLabel = 'Edit Child';
 
     this._currentEditingChild = child;
 

@@ -6,7 +6,7 @@ import { buildRejected } from './default-cards/rejected';
 import { buildGreylisted } from './default-cards/greylisted';
 import { buildSpam } from './default-cards/spam';
 import { buildDelivered } from './default-cards/delivered';
-import { DashboardAddCardModalComponent } from './dashboard-add-card-modal/dashboard-add-card-modal.component';
+import { DashboardCardModalComponent } from './dashboard-add-card-modal/dashboard-card-modal.component';
 import { MatDialog } from '@angular/material';
 import { isNullOrUndefined } from 'util';
 import { DashboardArrangementModalComponent } from './dashboard-arrangement-modal/dashboard-arrangement-modal.component';
@@ -96,12 +96,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   public addOrModifyCard (existingCard?: CardRow): void {
-    let data;
+    const config = {
+      minWidth: '30%',
+      minHeight: '60%',
+    };
+
     if (!isNullOrUndefined(existingCard)) {
-      data = { data: existingCard };
+      config[ 'data' ] = existingCard;
     }
 
-    const dialogRef = this._dialog.open(DashboardAddCardModalComponent, data);
+    const dialogRef = this._dialog.open(DashboardCardModalComponent, config);
     if (!isNullOrUndefined(existingCard)) {
       dialogRef.componentInstance.applyButtonLabel = 'Edit';
     }

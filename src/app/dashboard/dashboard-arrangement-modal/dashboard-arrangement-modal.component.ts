@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
-import { DashboardAddCardModalComponent } from '../dashboard-add-card-modal/dashboard-add-card-modal.component';
+import { DashboardCardModalComponent } from '../dashboard-add-card-modal/dashboard-card-modal.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { CardRow } from '../card-row';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';

@@ -18,11 +18,11 @@ import {
   MatNativeDateModule, MatOptionModule,
   MatPaginatorModule,
   MatProgressBarModule, MatSelectModule, MatSlideToggleModule,
-  MatSortModule,
+  MatSortModule, MatStepperModule,
   MatTableModule,
   MatTabsModule,
   MatToolbarModule,
-  MatTooltipModule
+  MatTooltipModule, MatTreeModule
 } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationComponent } from './navigation/navigation.component';
@@ -59,7 +59,7 @@ import { FormatLoglinePipe } from './search-results/search-result-details-modal/
 import { NotFoundComponent } from './not-found/not-found.component';
 import { CachedApiService } from '../api/cached-api-service';
 import { SearchMaskModule } from '../search-mask/search-mask.module';
-import { DashboardAddCardModalComponent } from './dashboard/dashboard-add-card-modal/dashboard-add-card-modal.component';
+import { DashboardCardModalComponent } from './dashboard/dashboard-add-card-modal/dashboard-card-modal.component';
 import { DashboardArrangementModalComponent } from './dashboard/dashboard-arrangement-modal/dashboard-arrangement-modal.component';
 import { QuestionModalComponent } from './question-modal/question-modal.component';
 
@@ -84,7 +84,7 @@ import { QuestionModalComponent } from './question-modal/question-modal.componen
     FooterComponent,
     FormatLoglinePipe,
     NotFoundComponent,
-    DashboardAddCardModalComponent,
+    DashboardCardModalComponent,
     DashboardArrangementModalComponent,
     QuestionModalComponent
   ],
@@ -144,7 +144,7 @@ import { QuestionModalComponent } from './question-modal/question-modal.componen
   entryComponents: [
     SearchResultDetailsModalComponent,
     SearchResultAddColumnsModalComponent,
-    DashboardAddCardModalComponent,
+    DashboardCardModalComponent,
     DashboardArrangementModalComponent,
     QuestionModalComponent
   ]

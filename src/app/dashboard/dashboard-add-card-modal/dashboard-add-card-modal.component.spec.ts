@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DashboardAddCardModalComponent } from './dashboard-add-card-modal.component';
+import { DashboardCardModalComponent } from './dashboard-card-modal.component';
 
-describe('DashboardAddCardModalComponent', () => {
-  let component: DashboardAddCardModalComponent;
-  let fixture: ComponentFixture<DashboardAddCardModalComponent>;
+describe('DashboardCardModalComponent', () => {
+  let component: DashboardCardModalComponent;
+  let fixture: ComponentFixture<DashboardCardModalComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DashboardAddCardModalComponent ]
+      declarations: [ DashboardCardModalComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DashboardAddCardModalComponent);
+    fixture = TestBed.createComponent(DashboardCardModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
