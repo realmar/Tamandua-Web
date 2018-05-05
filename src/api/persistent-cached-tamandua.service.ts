@@ -2,15 +2,14 @@ import { Injectable, Type } from '@angular/core';
 import { CachedTamanduaService, FieldChoicesCache } from './cached-tamandua.service';
 import { PersistentStorageService } from '../persistence/persistent-storage-service';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Observable, Subject } from 'rxjs';
 import { ColumnsResponse } from './response/columns-response';
 import { TagsResponse } from './response/tags-response';
 import { FieldChoicesResponse } from './response/field-choices-response';
 import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
-import 'rxjs/add/observable/throw';
+
 import { isNullOrUndefined } from 'util';
 import { TimedDataCache } from './cache/timed-data-cache';
-import { Subject } from 'rxjs/Subject';
 import { DataCache } from './cache/data-cache';
 
 interface DataCacheMetaData {

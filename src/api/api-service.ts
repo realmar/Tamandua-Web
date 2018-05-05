@@ -4,7 +4,7 @@ import { IntermediateExpressionRequest } from './request/intermediate-expression
 import { ColumnsResponse } from './response/columns-response';
 import { TagsResponse } from './response/tags-response';
 import { FieldChoicesResponse } from './response/field-choices-response';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
 import { ApiResponse } from './response/api-response';
 

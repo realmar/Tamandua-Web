@@ -5,7 +5,7 @@ import { SelectedTags } from './selected-tags';
 import { MatButtonToggleChange } from '@angular/material/button-toggle/typings/button-toggle';
 import { isNullOrUndefined } from 'util';
 import { SearchSettingsService } from '../../settings/search-settings-service/search-settings.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { ToastrUtils } from '../../../utils/toastr-utils';
 import { ToastrService } from 'ngx-toastr';
 

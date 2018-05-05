@@ -1,3 +1,4 @@
+import { throwError as observableThrowError, Observable, Subject, of } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { ApiService } from './api-service';
 import { ColumnsResponse } from './response/columns-response';
@@ -6,7 +7,6 @@ import { FieldChoicesResponse } from './response/field-choices-response';
 import { RequestBuilder } from './request/request-builder';
 import { IntermediateExpressionRequest } from './request/intermediate-expression-request';
 import { ApiRequestData } from './request/request';
-import { Observable } from 'rxjs/Observable';
 import { ApiResponse } from './response/api-response';
 import { HttpClient } from '@angular/common/http';
 import { IntermediateExpressionRequestBuilder } from './request/intermediate-expression-request-builder';
@@ -14,9 +14,8 @@ import { Endpoint } from './request/endpoints/endpoint';
 import { EndpointMethod } from './request/endpoints/endpoint-method.enum';
 import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
 import { environment } from '../environments/environment';
-import { Subject } from 'rxjs/Subject';
 import { isNullOrUndefined } from 'util';
-import 'rxjs/add/observable/of';
+
 import { createColumnsEndpoint } from './request/endpoints/columns-endpoint';
 import { createTagsEndpoint } from './request/endpoints/tags-endpoint';
 import { createFieldchoicesEndpoint } from './request/endpoints/fieldchoices-endpoint';
@@ -95,9 +94,9 @@ export class TamanduaService implements ApiService {
     });
 
     if (!hasErrors && choicesMap.size === responsesLength) {
-      return Observable.of(choicesMap);
+      return of(choicesMap);
     } else if (hasErrors) {
-      return Observable.throw(errorObj);
+      return observableThrowError(errorObj);
     } else {
       return subject.asObservable();
     }

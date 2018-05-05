@@ -1,12 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription, interval } from 'rxjs';
 import { ApiRequestData } from '../../../api/request/request';
 import { ApiService } from '../../../api/api-service';
 import { Comparator, ComparatorType } from '../../../api/request/comparator';
 import { CountResponse } from '../../../api/response/count-response';
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
 import { isNullOrUndefined } from 'util';
-import { Observable } from 'rxjs/Observable';
 import { Scale } from 'chroma-js';
 import * as chroma from 'chroma-js';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
@@ -112,7 +111,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private createIntervalSubscription (): void {
-    this._intervalSubscription = Observable.interval(this._dashboardState.getRefreshInterval()).subscribe(this.getData.bind(this));
+    this._intervalSubscription = interval(this._dashboardState.getRefreshInterval()).subscribe(this.getData.bind(this));
   }
 
   private onPastHoursChange (value: number) {

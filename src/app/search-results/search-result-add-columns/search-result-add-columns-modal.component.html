@@ -3,31 +3,27 @@
   <mat-tab-group>
 
     <mat-tab label="Edit Visibility">
-      <ng-scrollbar>
-        <div class="tab-content">
-          <div *ngFor="let column of columns">
-            <mat-checkbox [checked]="isDisplayed(column)"
-                          (change)="changeDisplayState($event, column)">{{column}}
-            </mat-checkbox>
-          </div>
+      <div class="tab-content">
+        <div *ngFor="let column of columns">
+          <mat-checkbox [checked]="isDisplayed(column)"
+                        (change)="changeDisplayState($event, column)">{{column}}
+          </mat-checkbox>
         </div>
-      </ng-scrollbar>
+      </div>
     </mat-tab>
 
     <mat-tab label="Edit Order">
-      <ng-scrollbar>
-        <div ngxDroppable
-             [model]="displayedColumns"
-             (drop)="onDropped($event)"
-             class="tab-content">
-          <div ngxDraggable
-               *ngFor="let column of displayedColumns"
-               [model]="column">
-            <mat-icon ngxDragHandle>drag_handle</mat-icon>
-            <span class="mat-checkbox mat-accent">{{column}}</span>
-          </div>
+      <div ngxDroppable
+           [model]="displayedColumns"
+           (drop)="onDropped($event)"
+           class="tab-content">
+        <div ngxDraggable
+             *ngFor="let column of displayedColumns"
+             [model]="column">
+          <mat-icon ngxDragHandle>drag_handle</mat-icon>
+          <span class="mat-checkbox mat-accent">{{column}}</span>
         </div>
-      </ng-scrollbar>
+      </div>
     </mat-tab>
 
   </mat-tab-group>

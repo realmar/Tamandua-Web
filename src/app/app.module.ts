@@ -50,7 +50,6 @@ import { PersistentCachedTamanduaService } from '../api/persistent-cached-tamand
 import { IndexedDbService } from '../persistence/indexed-db.service';
 import { NgxDnDModule } from '@swimlane/ngx-dnd';
 import { SearchStateService } from './search-state-service/search-state.service';
-import { ScrollbarModule } from 'ngx-scrollbar';
 import { DashboardSettingComponent } from './dashboard/dashboard-settings/dashboard-setting/dashboard-setting.component';
 import { DashboardSettingsComponent } from './dashboard/dashboard-settings/dashboard-settings.component';
 import { AboutComponent } from './about/about.component';
@@ -125,7 +124,6 @@ import { QuestionModalComponent } from './question-modal/question-modal.componen
     MatOptionModule,
 
     NgxDnDModule,
-    ScrollbarModule,
     ToastrModule.forRoot({
       timeOut: 5000,
       positionClass: 'toast-bottom-center',

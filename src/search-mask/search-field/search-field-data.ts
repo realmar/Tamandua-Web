@@ -1,6 +1,5 @@
 import { isNullOrUndefined } from 'util';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { Observable, Subject } from 'rxjs';
 import { RequestBuilderField } from '../../api/request/request-builder-field';
 import { Comparator, ComparatorType } from '../../api/request/comparator';
 

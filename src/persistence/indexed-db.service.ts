@@ -1,8 +1,7 @@
 import { Injectable, Type } from '@angular/core';
 import { PersistentStorageService } from './persistent-storage-service';
-import { Observable } from 'rxjs/Observable';
+import { Observable, Subject } from 'rxjs';
 import Dexie from 'dexie';
-import { Subject } from 'rxjs/Subject';
 import { isNullOrUndefined } from 'util';
 import { classToPlain, plainToClass } from 'class-transformer';
 

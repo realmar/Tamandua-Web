@@ -8,6 +8,9 @@
 # dependencies
 /node_modules
 
+# schematics
+*_schematics-*
+
 # IDEs and editors
 /.idea
 .project

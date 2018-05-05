@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { TamanduaService } from './tamandua.service';
-import { Observable } from 'rxjs/Observable';
+import { Observable, of } from 'rxjs';
 import { ColumnsResponse } from './response/columns-response';
 import { TimedDataCache } from './cache/timed-data-cache';
 import { HttpClient } from '@angular/common/http';
 import { isNullOrUndefined } from 'util';
-import { of } from 'rxjs/observable/of';
 import { ApiResponse } from './response/api-response';
 import { TagsResponse } from './response/tags-response';
 import { FieldChoicesResponse } from './response/field-choices-response';

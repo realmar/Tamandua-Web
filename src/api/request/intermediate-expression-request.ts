@@ -1,7 +1,7 @@
 import { ApiRequestData } from './request';
 import { Endpoint } from './endpoints/endpoint';
 import { ApiService } from '../api-service';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { ApiResponse } from '../response/api-response';
 
 export class IntermediateExpressionRequest implements ApiRequestData {

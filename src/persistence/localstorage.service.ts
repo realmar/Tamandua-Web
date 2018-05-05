@@ -1,7 +1,6 @@
 import { Injectable, Type } from '@angular/core';
 import { PersistentStorageService } from './persistent-storage-service';
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
+import { Observable, of } from 'rxjs';
 import { deserialize, serialize } from 'class-transformer';
 
 @Injectable()

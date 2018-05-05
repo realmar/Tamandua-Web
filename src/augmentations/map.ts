@@ -5,9 +5,9 @@ export {};
 
 declare global {
   interface Map<K, V> {
-    toObject(): object;
+    toObject (): object;
 
-    valuesToArray(): Array<V>;
+    valuesToArray (): Array<V>;
   }
 }
 

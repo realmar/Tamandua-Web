@@ -12,9 +12,8 @@ import { isNullOrUndefined } from 'util';
 import { DashboardArrangementModalComponent } from './dashboard-arrangement-modal/dashboard-arrangement-modal.component';
 import { QuestionModalComponent } from '../question-modal/question-modal.component';
 import { createNoAction, createYesAction } from '../question-modal/question-modal-utils';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { createAdvancedEndpoint } from '../../api/request/endpoints/advanced-count-endpoint';
-import * as shallow_clone from 'shallow-clone';
 
 @Component({
   selector: 'app-dashboard',
@@ -84,7 +83,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this._cards.forEach(card => {
       card.cardData.forEach(data => {
         const endpoint = data.requestBuilder.getEndpoint();
-        // const oldLength = endpoint.metadata.length;
 
         const field = endpoint.metadata.field;
         const length = value;
@@ -93,9 +91,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         data.requestBuilder.setEndpoint(createAdvancedEndpoint(field, length, separator));
       });
     });
-
-    // break reference to trigger change propagation
-    // this._cards = shallow_clone(this._cards);
 
     this.saveCards();
   }

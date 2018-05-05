@@ -5,7 +5,7 @@ import { isNullOrUndefined } from 'util';
 import { SearchSettingsService } from '../settings/search-settings-service/search-settings.service';
 import { SearchResponse } from '../../api/response/search-reponse';
 import { ApiRequestData } from '../../api/request/request';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { SearchStateService } from '../search-state-service/search-state.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';

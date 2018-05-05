@@ -19,6 +19,10 @@
 
 .table-cell {
   height: 1rem !important;
+  display: initial;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .add-columns-button {
@@ -31,6 +35,10 @@
   top: 0;
   background: white;
   z-index: 1;
+}
+
+mat-header-cell {
+  display: initial;
 }
 
 mat-row {

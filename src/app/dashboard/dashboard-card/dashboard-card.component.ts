@@ -2,12 +2,10 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { DashboardCardData } from './dashboard-card-data';
 import { ApiService } from '../../../api/api-service';
 import { AdvancedCountResponse } from '../../../api/response/advanced-count-response';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/interval';
+import { Subscription, interval } from 'rxjs';
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
 import { SearchSettingsService } from '../../settings/search-settings-service/search-settings.service';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs/Subscription';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
 import { isNullOrUndefined } from 'util';
 import { SearchStateService } from '../../search-state-service/search-state.service';
@@ -127,7 +125,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
 
   private createRefreshIntervalSubscription () {
     this._refreshIntervalSubscription =
-      Observable.interval(this._dashboardSettingsService.getRefreshInterval()).subscribe(this.getData.bind(this));
+      interval(this._dashboardSettingsService.getRefreshInterval()).subscribe(this.getData.bind(this));
   }
 
   public onItemClick (data: DashboardCardItemData): void {

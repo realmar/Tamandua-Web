@@ -63,6 +63,6 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
  * APPLICATION IMPORTS
  */
 
-import 'blob';
+import 'blob-polyfill';
 import 'reflect-metadata';
 import 'hammerjs/hammer';

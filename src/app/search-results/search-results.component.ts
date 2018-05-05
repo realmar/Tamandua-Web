@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../../api/api-service';
 import { ColumnsResponse } from '../../api/response/columns-response';
-import { SearchResponse, SearchRow } from '../../api/response/search-reponse';
+import { SearchResponse } from '../../api/response/search-reponse';
 import { MatDialog, MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { SearchResultDetailsModalComponent } from './search-result-details-modal/search-result-details-modal.component';
 import { Converter } from '../../utils/converter';
@@ -14,13 +14,12 @@ import { TamanduaTableDataSource } from './tamandua-table-data-source';
 import { SaveObjectData } from '../save-object/save-object-data';
 import { JsonSaveStrategy } from '../save-object/strategies/json-save-strategy';
 import { YamlSaveStrategy } from '../save-object/strategies/yaml-save-strategy';
-import { debounceTime } from 'rxjs/operators';
-import { Subject } from 'rxjs/Subject';
+import { Subject, SubscriptionLike as ISubscription } from 'rxjs';
 import { ToastrUtils } from '../../utils/toastr-utils';
 import { ToastrService } from 'ngx-toastr';
-import { ISubscription } from 'rxjs/Subscription';
 import { HighlightedWords } from './search-result-details-modal/highlighted-words';
 import { TableSearchRow } from './table-search-row';
+import { debounceTime } from 'rxjs/operators';
 
 interface TypeComparatorArguments {
   key: string;
@@ -206,7 +205,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
   public generateSaveDataObject (): SaveObjectData {
     const data = new Map<string, any>();
-    data.set('dataSource', this._dataSource.data);
+    data.set('data', this._dataSource.data.map(x => x.row));
 
     return {
       filename: 'results',

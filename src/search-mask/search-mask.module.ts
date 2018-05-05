@@ -16,14 +16,12 @@ import { PersistentCachedTamanduaService } from '../api/persistent-cached-tamand
 import { ToastrService } from 'ngx-toastr';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CachedApiService } from '../api/cached-api-service';
-import { SearchFieldAutocompleteComponent } from './search-field-autcomplete/search-field-autocomplete.component';
 
 @NgModule({
   declarations: [
     SearchMaskComponent,
     SearchFieldComponent,
-    SearchDatetimeComponent,
-    SearchFieldAutocompleteComponent
+    SearchDatetimeComponent
   ],
   imports: [
     CommonModule,
@@ -41,8 +39,7 @@ import { SearchFieldAutocompleteComponent } from './search-field-autcomplete/sea
     MatProgressSpinnerModule
   ],
   exports: [
-    SearchMaskComponent,
-    SearchFieldAutocompleteComponent
+    SearchMaskComponent
   ],
   providers: [
     { provide: ApiService, useClass: PersistentCachedTamanduaService },

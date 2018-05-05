@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { Type } from '@angular/core';
 
 export abstract class PersistentStorageService {

@@ -1,10 +1,9 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { SearchFieldData } from './search-field-data';
 import { isNullOrUndefined } from 'util';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { Comparator, ComparatorType } from '../../api/request/comparator';
 import { FieldChoicesResponse } from '../../api/response/field-choices-response';
-import { SearchFieldAutocompleteComponent } from '../search-field-autcomplete/search-field-autocomplete.component';
 import { ApiService } from '../../api/api-service';
 import { ColumnsResponse } from '../../api/response/columns-response';
 
@@ -14,12 +13,11 @@ import { ColumnsResponse } from '../../api/response/columns-response';
   styleUrls: [ './search-field.component.scss' ]
 })
 export class SearchFieldComponent implements OnInit, OnDestroy {
-  @ViewChild(SearchFieldAutocompleteComponent) private _autocompleteField: SearchFieldAutocompleteComponent;
-
   private _onFieldsRefreshSubscription: Subscription;
   private _data: SearchFieldData;
 
-  @Input() set data (value: SearchFieldData) {
+  @Input()
+  public set data (value: SearchFieldData) {
     if (!isNullOrUndefined(this._onFieldsRefreshSubscription)) {
       this._onFieldsRefreshSubscription.unsubscribe();
     }
@@ -27,13 +25,16 @@ export class SearchFieldComponent implements OnInit, OnDestroy {
     this._onFieldsRefreshSubscription =
       value
         .onRefreshFields
-        .subscribe(() => this._autocompleteField.getColumns());
+        .subscribe(() => {
+          this.getAllSupportedFieldChoices();
+          this.getColumns();
+        });
 
     this._data = value;
     this.dataChange.emit(this._data);
   }
 
-  @Output() dataChange = new EventEmitter<SearchFieldData>();
+  @Output() public dataChange = new EventEmitter<SearchFieldData>();
 
   private _fields: ColumnsResponse = [ 'loading ...' ];
   public get fields (): ColumnsResponse {
@@ -101,17 +102,13 @@ export class SearchFieldComponent implements OnInit, OnDestroy {
       key => ComparatorType[ key ] as ComparatorType);
   }
 
-  public ngOnInit () {
-    if (isNullOrUndefined(this._data.comparator)) {
-      this._data.comparator = new Comparator(this.comparators[ 0 ]);
-    }
-
-    this.dataChange.emit(this._data);
-
+  private getAllSupportedFieldChoices (): void {
     this._apiService
       .getAllSupportedFieldChoices()
       .subscribe(result => this._fieldChoicesMap = result, error => console.error(error));
+  }
 
+  private getColumns (): void {
     this._apiService
       .getColumns()
       .subscribe(result => {
@@ -126,6 +123,17 @@ export class SearchFieldComponent implements OnInit, OnDestroy {
           this.field = this._fields[ 0 ];
         }
       });
+  }
+
+  public ngOnInit () {
+    if (isNullOrUndefined(this._data.comparator)) {
+      this._data.comparator = new Comparator(this.comparators[ 0 ]);
+    }
+
+    this.dataChange.emit(this._data);
+
+    this.getAllSupportedFieldChoices();
+    this.getColumns();
   }
 
   public ngOnDestroy (): void {
