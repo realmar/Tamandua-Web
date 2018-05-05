@@ -61,8 +61,8 @@ export class ApiErrorHandlerDecoratorService implements CachedApiService {
   }
 
   public invalidateAllCaches (): void {
-    if (this._apiService instanceof CachedApiService) {
-      this._apiService.invalidateAllCaches();
+    if (typeof this._apiService[ 'invalidateAllCaches' ] === 'function') {
+      (this._apiService as CachedApiService).invalidateAllCaches();
     }
   }
 }
