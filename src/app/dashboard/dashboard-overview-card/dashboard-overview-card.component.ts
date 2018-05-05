@@ -10,7 +10,6 @@ import { Scale } from 'chroma-js';
 import * as chroma from 'chroma-js';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ToastrService } from 'ngx-toastr';
 import { ToastrUtils } from '../../../utils/toastr-utils';
 import * as moment from 'moment';
 import { createCountEndpoint } from '../../../api/request/endpoints/count-endpoint';
@@ -76,8 +75,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   private _requestSubscriptions: Array<Subscription>;
 
   constructor (private _dashboardState: DashboardSettingsService,
-               private _apiService: ApiService,
-               private _toastr: ToastrService) {
+               private _apiService: ApiService) {
     this._hasErrors = false;
     this._summaryRequests = [];
     this._summaryResponses = [];
@@ -242,12 +240,10 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   private processApiError (error: HttpErrorResponse): void {
     this._isDoingRequest = false;
     this._hasErrors = true;
-    ToastrUtils.showGenericServerError(this._toastr);
   }
 
   private resetErrorToast (): void {
     this._hasErrors = false;
-    ToastrUtils.removeAllGenericServerErrors(this._toastr);
   }
 
   private processSummaryTotal (result: CountResponse): void {

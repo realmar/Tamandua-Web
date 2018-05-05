@@ -10,8 +10,6 @@ import { DashboardSettingsService } from '../../settings/dashboard-settings-serv
 import { isNullOrUndefined } from 'util';
 import { SearchStateService } from '../../search-state-service/search-state.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ToastrService } from 'ngx-toastr';
-import { ToastrUtils } from '../../../utils/toastr-utils';
 import * as moment from 'moment';
 import { createAdvancedEndpoint } from '../../../api/request/endpoints/advanced-count-endpoint';
 
@@ -55,8 +53,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
                private _dashboardSettingsService: DashboardSettingsService,
                private _searchSettingsService: SearchSettingsService,
                private _searchStateService: SearchStateService,
-               private _router: Router,
-               private _toastr: ToastrService) {
+               private _router: Router) {
     this._isDoingRequest = false;
 
     this._pastHoursChangeSubscription =
@@ -113,14 +110,11 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   private processApiResponse (data: AdvancedCountResponse): void {
     this._isDoingRequest = false;
     this._data.requestResult = data.items.map(item => new DashboardCardItemData(item.key, item.value, data.total));
-
-    ToastrUtils.removeAllGenericServerErrors(this._toastr);
   }
 
   private processApiError (error: HttpErrorResponse): void {
     this._isDoingRequest = false;
     this._data.requestResult = [];
-    ToastrUtils.showGenericServerError(this._toastr);
   }
 
   private createRefreshIntervalSubscription () {

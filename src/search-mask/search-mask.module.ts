@@ -13,7 +13,6 @@ import {
 } from '@angular/material';
 import { ApiService } from '../api/api-service';
 import { PersistentCachedTamanduaService } from '../api/persistent-cached-tamandua.service';
-import { ToastrService } from 'ngx-toastr';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CachedApiService } from '../api/cached-api-service';
 
@@ -43,8 +42,7 @@ import { CachedApiService } from '../api/cached-api-service';
   ],
   providers: [
     { provide: ApiService, useClass: PersistentCachedTamanduaService },
-    { provide: CachedApiService, useExisting: ApiService },
-    ToastrService
+    { provide: CachedApiService, useExisting: ApiService }
   ]
 })
 export class SearchMaskModule {

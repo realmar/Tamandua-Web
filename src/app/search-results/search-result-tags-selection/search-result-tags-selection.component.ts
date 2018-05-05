@@ -7,7 +7,6 @@ import { isNullOrUndefined } from 'util';
 import { SearchSettingsService } from '../../settings/search-settings-service/search-settings.service';
 import { Subscription } from 'rxjs';
 import { ToastrUtils } from '../../../utils/toastr-utils';
-import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-search-result-tags-selection',
@@ -28,8 +27,7 @@ export class SearchResultTagsSelectionComponent implements OnInit, OnDestroy {
   @Output() selectedTagsChange: EventEmitter<SelectedTags>;
 
   constructor (private apiService: ApiService,
-               private searchSettingsService: SearchSettingsService,
-               private _toastr: ToastrService) {
+               private searchSettingsService: SearchSettingsService) {
     this.selectedTagsChange = new EventEmitter<SelectedTags>();
   }
 
@@ -37,10 +35,8 @@ export class SearchResultTagsSelectionComponent implements OnInit, OnDestroy {
     const onReadyCallback = () => {
       this.apiService.getTags().subscribe(
         data => {
-          ToastrUtils.removeAllGenericServerErrors(this._toastr);
           this.mergeSelectedTags(data);
-        },
-        () => ToastrUtils.showGenericServerError(this._toastr)
+        }
       );
       this.selectedTagsChange.emit(this.searchSettingsService.getSelectedTags());
     };

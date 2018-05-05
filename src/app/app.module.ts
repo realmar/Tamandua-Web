@@ -34,7 +34,7 @@ import { SearchResultDetailsModalComponent } from './search-results/search-resul
 import { SearchResultAddColumnsModalComponent } from './search-results/search-result-add-columns/search-result-add-columns-modal.component';
 import { SearchResultTagsSelectionComponent } from './search-results/search-result-tags-selection/search-result-tags-selection.component';
 import { SearchSettingsService } from './settings/search-settings-service/search-settings.service';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { DashboardCardComponent } from './dashboard/dashboard-card/dashboard-card.component';
 import { DashboardCardItemComponent } from './dashboard/dashboard-card-item/dashboard-card-item.component';
 import { DashboardSettingsService } from './settings/dashboard-settings-service/dashboard-settings.service';
@@ -54,7 +54,7 @@ import { DashboardSettingComponent } from './dashboard/dashboard-settings/dashbo
 import { DashboardSettingsComponent } from './dashboard/dashboard-settings/dashboard-settings.component';
 import { AboutComponent } from './about/about.component';
 import { FooterComponent } from './footer/footer.component';
-import { ToastrModule } from 'ngx-toastr';
+import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { FormatLoglinePipe } from './search-results/search-result-details-modal/format-logline.pipe';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { CachedApiService } from '../api/cached-api-service';
@@ -62,6 +62,7 @@ import { SearchMaskModule } from '../search-mask/search-mask.module';
 import { DashboardCardModalComponent } from './dashboard/dashboard-add-card-modal/dashboard-card-modal.component';
 import { DashboardArrangementModalComponent } from './dashboard/dashboard-arrangement-modal/dashboard-arrangement-modal.component';
 import { QuestionModalComponent } from './question-modal/question-modal.component';
+import { apiFactory } from '../api/di-factory';
 
 @NgModule({
   declarations: [
@@ -132,7 +133,7 @@ import { QuestionModalComponent } from './question-modal/question-modal.componen
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
-    { provide: ApiService, useClass: PersistentCachedTamanduaService },
+    { provide: ApiService, useFactory: apiFactory, deps: [ ToastrService, PersistentStorageService, HttpClient ] },
     { provide: CachedApiService, useExisting: ApiService },
     { provide: PersistentStorageService, useClass: IndexedDbService },
     { provide: SearchSettingsService, useClass: SearchPersistentSettingsService },

@@ -16,7 +16,6 @@ import { JsonSaveStrategy } from '../save-object/strategies/json-save-strategy';
 import { YamlSaveStrategy } from '../save-object/strategies/yaml-save-strategy';
 import { Subject, SubscriptionLike as ISubscription } from 'rxjs';
 import { ToastrUtils } from '../../utils/toastr-utils';
-import { ToastrService } from 'ngx-toastr';
 import { HighlightedWords } from './search-result-details-modal/highlighted-words';
 import { TableSearchRow } from './table-search-row';
 import { debounceTime } from 'rxjs/operators';
@@ -115,8 +114,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
 
   constructor (private _apiService: ApiService,
                private _searchSettingsService: SearchSettingsService,
-               private _dialog: MatDialog,
-               private _toastr: ToastrService) {
+               private _dialog: MatDialog) {
     this._onFilterChange = new Subject<any>();
     this._onFilterChange
       .asObservable()
@@ -134,10 +132,8 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   ngOnInit () {
     this._apiService.getColumns().subscribe(
       data => {
-        ToastrUtils.removeAllGenericServerErrors(this._toastr);
         this.processColumns(data);
-      },
-      () => ToastrUtils.showGenericServerError(this._toastr)
+      }
     );
   }
 

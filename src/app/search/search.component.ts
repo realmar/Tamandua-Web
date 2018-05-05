@@ -8,7 +8,6 @@ import { ApiRequestData } from '../../api/request/request';
 import { Subscription } from 'rxjs';
 import { SearchStateService } from '../search-state-service/search-state.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ToastrService } from 'ngx-toastr';
 import { ToastrUtils } from '../../utils/toastr-utils';
 import { SearchFieldData } from '../../search-mask/search-field/search-field-data';
 import { SearchMaskResult } from '../../search-mask/search-mask-result';
@@ -58,8 +57,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   constructor (private _apiService: ApiService,
                private _searchSettingsService: SearchSettingsService,
                private _searchStateService: SearchStateService,
-               private _router: Router,
-               private _toastr: ToastrService) {
+               private _router: Router) {
     this.restoreState();
   }
 
@@ -125,12 +123,10 @@ export class SearchComponent implements OnInit, OnDestroy {
   private processSearchResult (result: SearchResponse): void {
     this._isLoading = false;
     this._searchResult = result;
-    ToastrUtils.removeAllGenericServerErrors(this._toastr);
   }
 
   private processApiError (error: HttpErrorResponse): void {
     this._isLoading = false;
-    ToastrUtils.showGenericServerError(this._toastr);
   }
 
   public applySearchMaskResult (data: SearchMaskResult): void {
