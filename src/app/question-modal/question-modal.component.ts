@@ -1,7 +1,7 @@
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { QuestionModalAction } from './question-modal-action';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../utils/misc';
 import { QuestionModalData } from './question-modal-data';
 
 @Component({

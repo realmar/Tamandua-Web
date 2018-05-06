@@ -1,7 +1,7 @@
 import { DataCache } from './data-cache';
-import { isNullOrUndefined } from 'util';
 import * as moment from 'moment';
 import { Transform, Type } from 'class-transformer';
+import { isNullOrUndefined } from '../../utils/misc';
 
 // AOT compilation has problems with arrow functions in decorators.
 // This here is a workaround.

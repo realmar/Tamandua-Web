@@ -8,7 +8,7 @@ import { buildSpam } from './default-cards/spam';
 import { buildDelivered } from './default-cards/delivered';
 import { DashboardCardModalComponent } from './dashboard-add-card-modal/dashboard-card-modal.component';
 import { MatDialog } from '@angular/material';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../utils/misc';
 import { DashboardArrangementModalComponent } from './dashboard-arrangement-modal/dashboard-arrangement-modal.component';
 import { QuestionModalComponent } from '../question-modal/question-modal.component';
 import { createNoAction, createYesAction } from '../question-modal/question-modal-utils';

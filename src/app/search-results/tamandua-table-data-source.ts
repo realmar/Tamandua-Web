@@ -1,6 +1,6 @@
 import { MatSort, MatTableDataSource } from '@angular/material';
 import { Converter } from '../../utils/converter';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../utils/misc';
 import { _isNumberValue } from '@angular/cdk/coercion';
 import { TableSearchRow } from './table-search-row';
 import { SearchRow } from '../../api/response/search-reponse';

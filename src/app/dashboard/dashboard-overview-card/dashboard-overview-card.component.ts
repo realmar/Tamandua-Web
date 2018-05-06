@@ -5,12 +5,11 @@ import { ApiService } from '../../../api/api-service';
 import { Comparator, ComparatorType } from '../../../api/request/comparator';
 import { CountResponse } from '../../../api/response/count-response';
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../../utils/misc';
 import { Scale } from 'chroma-js';
 import * as chroma from 'chroma-js';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ToastrUtils } from '../../../utils/toastr-utils';
 import * as moment from 'moment';
 import { createCountEndpoint } from '../../../api/request/endpoints/count-endpoint';
 

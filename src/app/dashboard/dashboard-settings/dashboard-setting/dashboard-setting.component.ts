@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { SettingValidationResult } from '../../../settings/setting-validation-result';
 import { FormControl } from '@angular/forms';
-import { isNullOrUndefined } from 'util';
 import { Observable } from 'rxjs';
+import { isNullOrUndefined } from '../../../../utils/misc';
 
 @Component({
   selector: 'app-dashboard-setting',

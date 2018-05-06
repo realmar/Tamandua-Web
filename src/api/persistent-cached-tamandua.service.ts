@@ -7,8 +7,7 @@ import { ColumnsResponse } from './response/columns-response';
 import { TagsResponse } from './response/tags-response';
 import { FieldChoicesResponse } from './response/field-choices-response';
 import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
-
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../utils/misc';
 import { TimedDataCache } from './cache/timed-data-cache';
 import { DataCache } from './cache/data-cache';
 

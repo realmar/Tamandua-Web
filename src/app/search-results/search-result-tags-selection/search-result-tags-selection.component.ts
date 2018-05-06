@@ -3,10 +3,9 @@ import { ApiService } from '../../../api/api-service';
 import { TagsResponse } from '../../../api/response/tags-response';
 import { SelectedTags } from './selected-tags';
 import { MatButtonToggleChange } from '@angular/material/button-toggle/typings/button-toggle';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../../utils/misc';
 import { SearchSettingsService } from '../../settings/search-settings-service/search-settings.service';
 import { Subscription } from 'rxjs';
-import { ToastrUtils } from '../../../utils/toastr-utils';
 
 @Component({
   selector: 'app-search-result-tags-selection',

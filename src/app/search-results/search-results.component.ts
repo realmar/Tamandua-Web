@@ -7,7 +7,7 @@ import { SearchResultDetailsModalComponent } from './search-result-details-modal
 import { Converter } from '../../utils/converter';
 import { SearchResultAddColumnsModalComponent } from './search-result-add-columns/search-result-add-columns-modal.component';
 import { AddColumnsModalData } from './search-result-add-columns/add-columns-modal-data';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../utils/misc';
 import { SelectedTags } from './search-result-tags-selection/selected-tags';
 import { SearchSettingsService } from '../settings/search-settings-service/search-settings.service';
 import { TamanduaTableDataSource } from './tamandua-table-data-source';
@@ -15,7 +15,6 @@ import { SaveObjectData } from '../save-object/save-object-data';
 import { JsonSaveStrategy } from '../save-object/strategies/json-save-strategy';
 import { YamlSaveStrategy } from '../save-object/strategies/yaml-save-strategy';
 import { Subject, SubscriptionLike as ISubscription } from 'rxjs';
-import { ToastrUtils } from '../../utils/toastr-utils';
 import { HighlightedWords } from './search-result-details-modal/highlighted-words';
 import { TableSearchRow } from './table-search-row';
 import { debounceTime } from 'rxjs/operators';

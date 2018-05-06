@@ -1,7 +1,7 @@
 import { Injectable, Type } from '@angular/core';
 import { DashboardSettingsService } from './dashboard-settings.service';
 import { PersistentStorageService } from '../../../persistence/persistent-storage-service';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../../utils/misc';
 import { SettingValidationResult } from '../setting-validation-result';
 import { CardRow } from '../../dashboard/card-row';
 import { plainToClass } from 'class-transformer';

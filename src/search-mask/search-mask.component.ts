@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Optional, Output } from '@angular/core';
 import { SearchFieldData } from './search-field/search-field-data';
 import { Comparator, ComparatorType } from '../api/request/comparator';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../utils/misc';
 import { CachedApiService } from '../api/cached-api-service';
 import { SearchMaskResult } from './search-mask-result';
 import { SearchMaskButton } from './search-mask-button';

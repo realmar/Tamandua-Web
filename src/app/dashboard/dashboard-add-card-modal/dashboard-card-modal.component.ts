@@ -12,7 +12,7 @@ import { createAdvancedEndpoint } from '../../../api/request/endpoints/advanced-
 import { Comparator, ComparatorType } from '../../../api/request/comparator';
 import { RequestBuilderField } from '../../../api/request/request-builder-field';
 import { CardRow } from '../card-row';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../../utils/misc';
 import { SearchFieldData } from '../../../search-mask/search-field/search-field-data';
 import { SearchMaskButton } from '../../../search-mask/search-mask-button';
 import * as clone from 'clone';

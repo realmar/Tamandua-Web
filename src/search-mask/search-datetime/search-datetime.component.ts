@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../utils/misc';
 
 @Component({
   selector: 'search-mask-datetime',

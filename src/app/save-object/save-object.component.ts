@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { SaveObjectData } from './save-object-data';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../utils/misc';
 
 @Component({
   selector: 'app-save-object',

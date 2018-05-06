@@ -2,7 +2,7 @@ import { RequestBuilder } from '../../api/request/request-builder';
 import { CardRow } from './card-row';
 import { DashboardCardData } from './dashboard-card/dashboard-card-data';
 import { RequestBuilderField } from '../../api/request/request-builder-field';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../utils/misc';
 
 interface CardChild {
   title: string;

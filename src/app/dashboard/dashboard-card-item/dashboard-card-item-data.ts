@@ -1,6 +1,6 @@
 import { Scale } from 'chroma-js';
 import * as chroma from 'chroma-js';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../../utils/misc';
 import { Transform } from 'class-transformer';
 
 function colorScaleToClass (value: Array<string>): Scale {

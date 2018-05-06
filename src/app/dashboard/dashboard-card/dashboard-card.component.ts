@@ -7,7 +7,7 @@ import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-ite
 import { SearchSettingsService } from '../../settings/search-settings-service/search-settings.service';
 import { Router } from '@angular/router';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../../utils/misc';
 import { SearchStateService } from '../../search-state-service/search-state.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import * as moment from 'moment';

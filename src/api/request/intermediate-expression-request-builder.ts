@@ -2,7 +2,7 @@ import { RequestBuilder } from './request-builder';
 import { Comparator } from './comparator';
 import { IntermediateExpressionRequest } from './intermediate-expression-request';
 import { ApiRequestData } from './request';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../utils/misc';
 import { Endpoint } from './endpoints/endpoint';
 import { EndpointIsUndefinedError } from './endpoint-is-undefined-error';
 import { Converter } from '../../utils/converter';

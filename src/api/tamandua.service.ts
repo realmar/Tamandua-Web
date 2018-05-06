@@ -14,7 +14,7 @@ import { Endpoint } from './request/endpoints/endpoint';
 import { EndpointMethod } from './request/endpoints/endpoint-method.enum';
 import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
 import { environment } from '../environments/environment';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../utils/misc';
 
 import { createColumnsEndpoint } from './request/endpoints/columns-endpoint';
 import { createTagsEndpoint } from './request/endpoints/tags-endpoint';

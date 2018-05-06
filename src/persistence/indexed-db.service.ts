@@ -2,7 +2,7 @@ import { Injectable, Type } from '@angular/core';
 import { PersistentStorageService } from './persistent-storage-service';
 import { Observable, Subject } from 'rxjs';
 import Dexie from 'dexie';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../utils/misc';
 import { classToPlain, plainToClass } from 'class-transformer';
 
 interface TamanduaStore {

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { SearchFieldData } from './search-field-data';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../utils/misc';
 import { Subscription } from 'rxjs';
 import { Comparator, ComparatorType } from '../../api/request/comparator';
 import { FieldChoicesResponse } from '../../api/response/field-choices-response';

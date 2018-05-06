@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { SelectedTags } from '../../search-results/search-result-tags-selection/selected-tags';
 import { Subject, Observable } from 'rxjs';
 import { Setting } from '../setting';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../../utils/misc';
 import { SettingValidationResult } from '../setting-validation-result';
 
 @Injectable()

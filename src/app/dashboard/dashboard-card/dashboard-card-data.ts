@@ -3,7 +3,7 @@ import { RequestBuilderField } from '../../../api/request/request-builder-field'
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
 import { IntermediateExpressionRequestBuilder } from '../../../api/request/intermediate-expression-request-builder';
 import { Exclude, plainToClass, Transform, Type } from 'class-transformer';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from '../../../utils/misc';
 import { Comparator } from '../../../api/request/comparator';
 
 function baseRequestBuilderFieldsToClass (value: Array<RequestBuilderField>): Array<RequestBuilderField> {
