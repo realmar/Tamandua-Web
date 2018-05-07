@@ -17,10 +17,30 @@
 
 <div id="flex-container">
   <mat-card id="summary-card">
-    <mat-card-header><p class="mat-title">Summary</p></mat-card-header>
+    <mat-card-header>
+      <p class="mat-title">Summary</p>
+      <div class="card-actions">
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item
+                  (click)="resetSummaryCard()">
+            <mat-icon>replay</mat-icon>
+            <span>Reset</span>
+          </button>
+          <button mat-menu-item
+                  (click)="editSummaryCard()">
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
+          </button>
+        </mat-menu>
+      </div>
+    </mat-card-header>
     <mat-card-content>
-      <app-dashboard-overview-card
-        #overview_card></app-dashboard-overview-card>
+      <app-dashboard-overview-card #overview_card
+                                   [onReset]="resetOverviewCardObservable"
+                                   [onEdit]="editOverciewCardObservable"></app-dashboard-overview-card>
     </mat-card-content>
   </mat-card>
 

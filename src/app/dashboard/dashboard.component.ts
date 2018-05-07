@@ -12,8 +12,9 @@ import { isNullOrUndefined } from '../../utils/misc';
 import { DashboardArrangementModalComponent } from './dashboard-arrangement-modal/dashboard-arrangement-modal.component';
 import { QuestionModalComponent } from '../question-modal/question-modal.component';
 import { createNoAction, createYesAction } from '../question-modal/question-modal-utils';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject, Observable } from 'rxjs';
 import { createAdvancedEndpoint } from '../../api/request/endpoints/advanced-count-endpoint';
+import { unsubscribeIfDefined } from '../../utils/rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,12 +27,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return this._cards;
   }
 
+  private _resetOverviewCardSubject: Subject<any>;
+  private _editOverciewCardSubject: Subject<any>;
+
   private _maxItemCountChangeSubscription: Subscription;
+
+  public get resetOverviewCardObservable (): Observable<any> {
+    return this._resetOverviewCardSubject.asObservable();
+  }
+
+  public get editOverciewCardObservable (): Observable<any> {
+    return this._editOverciewCardSubject.asObservable();
+  }
 
   public constructor (private _apiService: ApiService,
                       private _dashboardSettingsService: DashboardSettingsService,
                       private _dialog: MatDialog) {
     this._cards = [];
+    this._resetOverviewCardSubject = new Subject<any>();
+    this._editOverciewCardSubject = new Subject<any>();
   }
 
   public ngOnInit () {
@@ -45,7 +59,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy (): void {
-    this._maxItemCountChangeSubscription.unsubscribe();
+    unsubscribeIfDefined(this._maxItemCountChangeSubscription);
   }
 
   private onSettingsInitialized (): void {
@@ -193,5 +207,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public editCard (card: CardRow): void {
     this.addOrModifyCard(card);
+  }
+
+  public resetSummaryCard (): void {
+    this._dialog.open(QuestionModalComponent, {
+      data: {
+        title: 'Reset?',
+        text: 'Do you really want to reset the summary card to the default values?',
+        actions: [
+          createYesAction(() => this._resetOverviewCardSubject.next()),
+          createNoAction()
+        ]
+      }
+    });
+  }
+
+  public editSummaryCard (): void {
+    this._editOverciewCardSubject.next();
   }
 }

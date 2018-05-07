@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
 import { ApiRequestData } from '../../../api/request/request';
 import { ApiService } from '../../../api/api-service';
@@ -6,25 +6,51 @@ import { Comparator, ComparatorType } from '../../../api/request/comparator';
 import { CountResponse } from '../../../api/response/count-response';
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
 import { isNullOrUndefined } from '../../../utils/misc';
-import { Scale } from 'chroma-js';
-import * as chroma from 'chroma-js';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import * as moment from 'moment';
 import { createCountEndpoint } from '../../../api/request/endpoints/count-endpoint';
+import { Observable } from 'rxjs/internal/Observable';
+import { unsubscribeIfDefined } from '../../../utils/rxjs';
+import { RequestBuilder } from '../../../api/request/request-builder';
+import { Type } from 'class-transformer';
+import { IntermediateExpressionRequestBuilder } from '../../../api/request/intermediate-expression-request-builder';
 
-interface SummaryChild<T> {
-  readonly name: string;
-  data: T;
+import { Scale } from 'chroma-js';
+import * as chroma from 'chroma-js';
+import * as moment from 'moment';
+import * as clone from 'clone';
+
+class Item {
+  public readonly name: string;
+  @Type(() => IntermediateExpressionRequestBuilder)
+  public readonly builder: RequestBuilder;
+
+  public constructor (name: string, builder: RequestBuilder) {
+    this.name = name;
+    this.builder = builder;
+  }
 }
 
-interface SummaryGroup<T> {
-  readonly name: string;
-  data: T;
-  readonly children: Array<SummaryChild<T>>;
+class Composite {
+  @Type(() => Item)
+  public readonly item: Item;
+  @Type(() => Composite)
+  public readonly composites: Array<Composite>;
+
+  public constructor (item: Item, composites?: Array<Composite>) {
+    this.item = item;
+    this.composites = isNullOrUndefined(composites) ? [] : composites;
+  }
+
+  public addComposite (composite: Composite): void {
+    this.composites.push(composite);
+  }
 }
 
-type SummaryCollection<T> = Array<SummaryGroup<T>>;
+interface SummaryItem {
+  readonly indentLevel: number;
+  readonly data: DashboardCardItemData;
+}
 
 @Component({
   selector: 'app-dashboard-overview-card',
@@ -35,6 +61,8 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   private _onPastHoursChangeSubscription: Subscription;
   private _intervalSubscription: Subscription;
   private _onIntervalChangeSubscription: Subscription;
+  private _onResetSubscription: Subscription;
+  private _onEditSubscription: Subscription;
 
   private _isDoingRequest: boolean;
   public get isDoingRequest (): boolean {
@@ -42,14 +70,32 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private _totalRequest: ApiRequestData;
-  private readonly _summaryRequests: SummaryCollection<ApiRequestData>;
-
   private _totalResponse: CountResponse;
-  private readonly _summaryResponses: SummaryCollection<DashboardCardItemData>;
 
+  private readonly _data: Array<Array<SummaryItem> | SummaryItem>;
+  private readonly _composites: Array<Composite>;
+  private readonly _requestSubscriptions: Array<Subscription>;
+
+  public get data (): Array<Array<SummaryItem> | SummaryItem> {
+    return this._data;
+  }
 
   public get totalResponse (): CountResponse {
     return this._totalResponse;
+  }
+
+  @Input()
+  public set onReset (observable: Observable<any>) {
+    unsubscribeIfDefined(this._onResetSubscription);
+    this._onResetSubscription = observable.subscribe(() => this.buildDefaultRequests());
+  }
+
+  @Input()
+  public set onEdit (observable: Observable<any>) {
+    unsubscribeIfDefined(this._onEditSubscription);
+    this._onEditSubscription = observable.subscribe(() => {
+      console.log('on edit: not implemented');
+    });
   }
 
   public get formattedTotalResponse (): string {
@@ -60,10 +106,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     return this.totalResponse === 0 ? 'No data found.' : this.totalResponse.toString();
   }
 
-  public get summaryResponses (): SummaryCollection<DashboardCardItemData> {
-    return this._summaryResponses;
-  }
-
   private readonly _colorRange: Scale;
 
   private _hasErrors: boolean;
@@ -71,18 +113,17 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     return this._hasErrors;
   }
 
-  private _requestSubscriptions: Array<Subscription>;
-
-  constructor (private _dashboardState: DashboardSettingsService,
-               private _apiService: ApiService) {
+  public constructor (private _dashboardState: DashboardSettingsService,
+                      private _apiService: ApiService) {
     this._hasErrors = false;
-    this._summaryRequests = [];
-    this._summaryResponses = [];
     this._colorRange = chroma.scale([ '#E1F5FE', '#03A9F4' ]);
+
+    this._data = [];
+    this._composites = [];
     this._requestSubscriptions = [];
   }
 
-  ngOnInit () {
+  public ngOnInit () {
     this._onIntervalChangeSubscription =
       this._dashboardState.refreshIntervalObservable.subscribe(this.onRefreshIntervalChange.bind(this));
 
@@ -101,10 +142,14 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy (): void {
-    this._intervalSubscription.unsubscribe();
-    this._onIntervalChangeSubscription.unsubscribe();
-    this._onPastHoursChangeSubscription.unsubscribe();
+  public ngOnDestroy (): void {
+    unsubscribeIfDefined(
+      this._intervalSubscription,
+      this._onIntervalChangeSubscription,
+      this._onPastHoursChangeSubscription,
+      this._onResetSubscription,
+      this._onEditSubscription,
+      ...this._requestSubscriptions);
   }
 
   private createIntervalSubscription (): void {
@@ -112,7 +157,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private onPastHoursChange (value: number) {
-    this._requestSubscriptions.forEach(subscription => subscription.unsubscribe());
     this._isDoingRequest = false;
     this.getData();
   }
@@ -125,11 +169,12 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     this.createIntervalSubscription();
   }
 
-  private buildRequests (): void {
+  private buildDefaultRequests (): void {
     if (!this._dashboardState.isInitialized) {
       return;
     }
 
+    this._composites.clear();
     const builder = this._apiService.getRequestBuilder();
 
     const startDate = moment().subtract(this._dashboardState.getPastHours(), 'hours').toDate();
@@ -146,19 +191,15 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
      */
 
     builder.addField('action', 'reject', new Comparator(ComparatorType.Equals));
-    this._summaryRequests[ 0 ] = {
-      name: 'Rejected',
-      data: builder.build(),
-      children: []
-    };
+
+    const rejectComposite = new Composite(new Item('Rejected', clone(builder)));
 
     builder.removeAllFields();
-
     builder.addField('rejectreason', '^Recipient address rejected: Greylisted', new Comparator(ComparatorType.Regex));
-    this._summaryRequests[ 0 ].children.push({
-      name: 'Greylisted',
-      data: builder.build()
-    });
+
+    const rejectChild = new Composite(new Item('Greylisted', clone(builder)));
+    rejectComposite.addComposite(rejectChild);
+    this._composites.push(rejectComposite);
 
     builder.removeAllFields();
 
@@ -167,19 +208,15 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
      */
 
     builder.addField('deliverystatus', 'sent', new Comparator(ComparatorType.Equals));
-    this._summaryRequests[ 1 ] = {
-      name: 'Delivered',
-      data: builder.build(),
-      children: []
-    };
+
+    const deliveredComposite = new Composite(new Item('Delivered', clone(builder)));
 
     builder.removeAllFields();
-
     builder.addField('spamscore', 5, new Comparator(ComparatorType.GreaterOrEqual));
-    this._summaryRequests[ 1 ].children.push({
-      name: 'Spam',
-      data: builder.build()
-    });
+
+    const deliveredChild = new Composite(new Item('Spam', clone(builder)));
+    deliveredComposite.addComposite(deliveredChild);
+    this._composites.push(deliveredComposite);
 
     builder.removeAllFields();
 
@@ -188,11 +225,9 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
      */
 
     builder.addField('deliverystatus', 'deferred', new Comparator(ComparatorType.Equals));
-    this._summaryRequests[ 2 ] = {
-      name: 'Deferred',
-      data: builder.build(),
-      children: []
-    };
+
+    const deferredComposite = new Composite(new Item('Deferred', clone(builder)));
+    this._composites.push(deferredComposite);
 
     builder.removeAllFields();
 
@@ -201,11 +236,9 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
      */
 
     builder.addField('deliverystatus', 'bounced', new Comparator(ComparatorType.Equals));
-    this._summaryRequests[ 3 ] = {
-      name: 'Bounced',
-      data: builder.build(),
-      children: []
-    };
+
+    const bouncedComposite = new Composite(new Item('Bounced', clone(builder)));
+    this._composites.push(bouncedComposite);
 
     builder.removeAllFields();
 
@@ -214,11 +247,9 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
      */
 
     builder.addField('virusresult', '^Blocked INFECTED', new Comparator(ComparatorType.Regex));
-    this._summaryRequests[ 4 ] = {
-      name: 'Virus',
-      data: builder.build(),
-      children: []
-    };
+
+    const virusComposite = new Composite(new Item('Virus', clone(builder)));
+    this._composites.push(virusComposite);
   }
 
   private getData (): void {
@@ -226,14 +257,12 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this._requestSubscriptions = [];
-    this.buildRequests();
-
+    this.buildDefaultRequests();
     this._isDoingRequest = true;
-    this._requestSubscriptions.push(this._apiService.SubmitRequest(this._totalRequest)
+    this._apiService.SubmitRequest(this._totalRequest)
       .subscribe(
         this.processSummaryTotal.bind(this),
-        this.processApiError.bind(this)));
+        this.processApiError.bind(this));
   }
 
   private processApiError (error: HttpErrorResponse): void {
@@ -241,78 +270,45 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     this._hasErrors = true;
   }
 
-  private resetErrorToast (): void {
+  private resetError (): void {
     this._hasErrors = false;
   }
 
   private processSummaryTotal (result: CountResponse): void {
-    this.resetErrorToast();
+    this.resetError();
+
+    unsubscribeIfDefined(...this._requestSubscriptions);
+    this._requestSubscriptions.clear();
+    this._data.clear();
+
     this._totalResponse = result;
 
-    for (let i = 0; i < this._summaryRequests.length; ++i) {
-      const createItemData = (n, d) => new DashboardCardItemData(n, d, this._totalResponse as number, this._colorRange);
+    const processComposite = (composite: Composite,
+                              totalResponses: number,
+                              dataTarget: Array<SummaryItem | Array<SummaryItem>>,
+                              indentLevel: number = 0) => {
 
-      const name = this._summaryRequests[ i ].name;
-      if (isNullOrUndefined(this._summaryResponses[ i ])) {
-        this._summaryResponses[ i ] = {
-          name: name,
-          data: createItemData(name, 0),
-          children: []
-        };
-      }
+      const localIndent = indentLevel;
+      const item = composite.item;
 
-      const summaryData = this._summaryResponses[ i ];
-      const requestChildren = this._summaryRequests[ i ].children;
-      this._requestSubscriptions.push(this._apiService.SubmitRequest<CountResponse>(this._summaryRequests[ i ].data)
-        .subscribe(
-          response => this.processSummaryGroup(
-            response,
-            summaryData,
-            requestChildren,
-            createItemData),
-          this.processApiError.bind(this)));
-    }
-  }
+      this._requestSubscriptions.push(
+        this._apiService
+          .SubmitRequest<CountResponse>(item.builder.build())
+          .subscribe(response => {
+            dataTarget.push({
+              indentLevel: localIndent,
+              data: new DashboardCardItemData(item.name, response as number, totalResponses, this._colorRange)
+            });
 
-  private processSummaryGroup (
-    result: CountResponse,
-    summaryData: SummaryGroup<DashboardCardItemData>,
-    children: Array<SummaryChild<ApiRequestData>>,
-    createDataItem: (string, number) => DashboardCardItemData): void {
+            const newTarget = [];
+            dataTarget.push(newTarget);
 
-    this.resetErrorToast();
-    summaryData.data = createDataItem(summaryData.name, result);
+            composite.composites.forEach(
+              c => processComposite(c, response as number, newTarget, indentLevel + 1));
+          })
+      );
+    };
 
-    for (let i = 0; i < children.length; ++i) {
-      const name = children[ i ].name;
-      if (isNullOrUndefined(summaryData.children[ i ])) {
-        summaryData.children[ i ] = {
-          name: name,
-          data: createDataItem(name, 0)
-        };
-      }
-
-      const summaryChildData = summaryData.children[ i ];
-      const iLocal = i;
-      this._requestSubscriptions.push(this._apiService.SubmitRequest<CountResponse>(children[ i ].data)
-        .subscribe(
-          response => {
-            this.processSummaryChild(response, summaryChildData, createDataItem);
-
-            if (iLocal === children.length - 1) {
-              this._isDoingRequest = false;
-            }
-          },
-          this.processApiError.bind(this)
-        ));
-    }
-  }
-
-  private processSummaryChild (
-    result: CountResponse,
-    data: SummaryChild<DashboardCardItemData>,
-    createDataItem: (string, number) => DashboardCardItemData): void {
-    this.resetErrorToast();
-    data.data = createDataItem(data.name, result);
+    this._composites.forEach(composite => processComposite(composite, this._totalResponse as number, this._data));
   }
 }

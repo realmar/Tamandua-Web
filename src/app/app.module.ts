@@ -9,20 +9,25 @@ import {
   MatButtonToggleModule,
   MatCardModule,
   MatCheckboxModule,
-  MatDialogModule, MatDividerModule,
+  MatDialogModule,
+  MatDividerModule,
   MatFormFieldModule,
   MatGridListModule,
   MatIconModule,
-  MatInputModule, MatListModule,
+  MatInputModule,
+  MatListModule,
   MatMenuModule,
-  MatNativeDateModule, MatOptionModule,
+  MatNativeDateModule,
+  MatOptionModule,
   MatPaginatorModule,
-  MatProgressBarModule, MatSelectModule, MatSlideToggleModule,
-  MatSortModule, MatStepperModule,
+  MatProgressBarModule,
+  MatSelectModule,
+  MatSlideToggleModule,
+  MatSortModule,
   MatTableModule,
   MatTabsModule,
   MatToolbarModule,
-  MatTooltipModule, MatTreeModule
+  MatTooltipModule
 } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationComponent } from './navigation/navigation.component';
@@ -39,14 +44,13 @@ import { DashboardCardComponent } from './dashboard/dashboard-card/dashboard-car
 import { DashboardCardItemComponent } from './dashboard/dashboard-card-item/dashboard-card-item.component';
 import { DashboardSettingsService } from './settings/dashboard-settings-service/dashboard-settings.service';
 import { DashboardOverviewCardComponent } from './dashboard/dashboard-overview-card/dashboard-overview-card.component';
-import { SafeHtmlPipe } from './pipes/safe-html.pipe';
+import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 import { SaveObjectComponent } from './save-object/save-object.component';
 import { CustomReuseStrategy } from './routing/custom-reuse-strategy';
 import { RouteReuseStrategy } from '@angular/router';
 import { PersistentStorageService } from '../persistence/persistent-storage-service';
 import { DashboardPersistentSettingsService } from './settings/dashboard-settings-service/dashboard-persistent-settings.service';
 import { SearchPersistentSettingsService } from './settings/search-settings-service/search-persistent-settings.service';
-import { PersistentCachedTamanduaService } from '../api/persistent-cached-tamandua.service';
 import { IndexedDbService } from '../persistence/indexed-db.service';
 import { NgxDnDModule } from '@swimlane/ngx-dnd';
 import { SearchStateService } from './search-state-service/search-state.service';
@@ -63,6 +67,7 @@ import { DashboardCardModalComponent } from './dashboard/dashboard-add-card-moda
 import { DashboardArrangementModalComponent } from './dashboard/dashboard-arrangement-modal/dashboard-arrangement-modal.component';
 import { QuestionModalComponent } from './question-modal/question-modal.component';
 import { apiFactory } from '../api/di-factory';
+import { FlattenPipe } from '../pipes/flatten.pipe';
 
 @NgModule({
   declarations: [
@@ -87,7 +92,9 @@ import { apiFactory } from '../api/di-factory';
     NotFoundComponent,
     DashboardCardModalComponent,
     DashboardArrangementModalComponent,
-    QuestionModalComponent
+    QuestionModalComponent,
+
+    FlattenPipe
   ],
   imports: [
     SearchMaskModule,

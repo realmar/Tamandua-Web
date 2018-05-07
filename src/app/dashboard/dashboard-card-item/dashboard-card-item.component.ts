@@ -8,52 +8,63 @@ import * as chroma from 'chroma-js';
   styleUrls: [ './dashboard-card-item.component.scss' ]
 })
 export class DashboardCardItemComponent implements OnInit {
-
   private _data: DashboardCardItemData;
-  @Input() set data (value: DashboardCardItemData) {
+  @Input()
+  public set data (value: DashboardCardItemData) {
     this._data = value;
   }
 
+  private _indentLevel: number;
+  public get indentLevel (): number {
+    return this._indentLevel * 2;
+  }
+
+  @Input()
+  public set indentLevel (value: number) {
+    this._indentLevel = value;
+  }
+
   private _clickable: boolean;
-  @Input() set clickable (value: boolean) {
+  @Input()
+  public set clickable (value: boolean) {
     this._clickable = value;
   }
 
-  get clickable (): boolean {
+  public get clickable (): boolean {
     return this._clickable;
   }
 
   @Output() itemClick: EventEmitter<DashboardCardItemData>;
 
-  get label (): string {
+  public get label (): string {
     return this._data.key;
   }
 
-  get amount (): number {
+  public get amount (): number {
     return this._data.amount;
   }
 
-  get totalAmount (): number {
+  public get totalAmount (): number {
     return this._data.totalAmount;
   }
 
-  get percentage (): number {
+  public get percentage (): number {
     return (this.amount / this.totalAmount) * 100;
   }
 
   private _colors: Array<string>;
 
-  get color (): string {
+  public get color (): string {
     return this._colors[ Math.floor(this.percentage) ];
   }
 
-  constructor () {
+  public constructor () {
     this.itemClick = new EventEmitter<DashboardCardItemData>();
     this._colors = [];
+    this._indentLevel = 0;
   }
 
-
-  ngOnInit () {
+  public ngOnInit () {
     const colorRange = this._data.colorRange.mode('lab').colors(100);
     for (const color of colorRange) {
       this._colors.push(chroma(color).luminance(0.4).hex());
