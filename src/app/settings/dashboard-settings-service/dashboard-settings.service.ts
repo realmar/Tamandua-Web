@@ -5,6 +5,7 @@ import { Setting } from '../setting';
 import { SettingValidationResult } from '../setting-validation-result';
 import { isNullOrUndefined } from '../../../utils/misc';
 import { CardRow } from '../../dashboard/card-row';
+import { Composite } from '../../dashboard/dashboard-overview-card/composite';
 
 @Injectable()
 export class DashboardSettingsService {
@@ -20,6 +21,7 @@ export class DashboardSettingsService {
   private _refreshIntervalSubject: Subject<number>;
 
   private _cards: Setting<Array<CardRow>>;
+  private _overviewCard: Setting<Array<Composite>>;
 
   protected onFinishInitalizeSubject: Subject<any>;
 
@@ -46,6 +48,7 @@ export class DashboardSettingsService {
     this._refreshIntervalSubject = new Subject<number>();
 
     this._cards = new Setting<Array<CardRow>>([], data => new SettingValidationResult(true));
+    this._overviewCard = new Setting<Array<Composite>>(undefined, data => new SettingValidationResult(true));
 
     this._timeoutBeforeEmit = 800;
 
@@ -133,6 +136,14 @@ export class DashboardSettingsService {
 
   public setCards (value: Array<CardRow>): SettingValidationResult {
     return this._cards.setData(value);
+  }
+
+  public getOverviewCard (): Array<Composite> {
+    return this._overviewCard.getData();
+  }
+
+  public setOverviewCard (value: Array<Composite>): SettingValidationResult {
+    return this._overviewCard.setData(value);
   }
 
   private applyDefaultDebounceTime<T> (observable: Observable<T>): Observable<T> {

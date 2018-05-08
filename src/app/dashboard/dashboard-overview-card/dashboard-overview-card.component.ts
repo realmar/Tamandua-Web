@@ -1,6 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
-import { ApiRequestData } from '../../../api/request/request';
 import { ApiService } from '../../../api/api-service';
 import { Comparator, ComparatorType } from '../../../api/request/comparator';
 import { CountResponse } from '../../../api/response/count-response';
@@ -12,66 +11,12 @@ import { createCountEndpoint } from '../../../api/request/endpoints/count-endpoi
 import { Observable } from 'rxjs/internal/Observable';
 import { unsubscribeIfDefined } from '../../../utils/rxjs';
 import { RequestBuilder } from '../../../api/request/request-builder';
-import { Exclude, Type } from 'class-transformer';
-import { IntermediateExpressionRequestBuilder } from '../../../api/request/intermediate-expression-request-builder';
 import { FlattenPipe } from '../../../pipes/flatten.pipe';
 import { Scale } from 'chroma-js';
 import * as chroma from 'chroma-js';
 import * as moment from 'moment';
 import * as clone from 'clone';
-
-class Item {
-  public readonly name: string;
-  @Type(() => IntermediateExpressionRequestBuilder)
-  public readonly builder: RequestBuilder;
-
-  @Exclude()
-  private _response: SummaryItem;
-  public get response (): SummaryItem {
-    return this._response;
-  }
-
-  public set response (value: SummaryItem) {
-    this._response = value;
-  }
-
-  public constructor (name: string, builder: RequestBuilder) {
-    this.name = name;
-    this.builder = builder;
-  }
-}
-
-class Composite {
-  @Type(() => Item)
-  public readonly item: Item;
-  @Type(() => Composite)
-  public readonly composites: Array<Composite>;
-
-  public constructor (item: Item, composites?: Array<Composite>) {
-    this.item = item;
-    this.composites = isNullOrUndefined(composites) ? [] : composites;
-  }
-
-  public addComposite (composite: Composite): void {
-    this.composites.push(composite);
-  }
-
-  public countItemsInHierarchy (composite?: Composite): number {
-    let composites = this.composites;
-    if (!isNullOrUndefined(composite)) {
-      composites = composite.composites;
-    }
-
-    return composites
-      .map(x => this.countItemsInHierarchy(x))
-      .reduce((x, y) => x + y, 1);
-  }
-}
-
-interface SummaryItem {
-  readonly indentLevel: number;
-  readonly data: DashboardCardItemData;
-}
+import { Composite, Item, SummaryItem } from './composite';
 
 @Component({
   selector: 'app-dashboard-overview-card',
@@ -90,10 +35,9 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     return this._isDoingRequest;
   }
 
-  private _totalRequest: ApiRequestData;
   private _totalResponse: CountResponse;
 
-  private readonly _composites: Array<Composite>;
+  private _composites: Array<Composite>;
   private readonly _requestSubscriptions: Array<Subscription>;
 
   public get data (): Array<SummaryItem> {
@@ -121,7 +65,10 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   @Input()
   public set onReset (observable: Observable<any>) {
     unsubscribeIfDefined(this._onResetSubscription);
-    this._onResetSubscription = observable.subscribe(() => this.buildDefaultRequests());
+    this._onResetSubscription = observable.subscribe(() => {
+      this.buildDefaultRequests();
+      this.getData();
+    });
   }
 
   @Input()
@@ -165,7 +112,14 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
 
     const isReadyCallback = () => {
       this.createIntervalSubscription();
-      this.buildDefaultRequests();
+
+      const composites = this._dashboardState.getOverviewCard();
+      if (Array.isEmptyNullOrUndefined(composites)) {
+        this.buildDefaultRequests();
+      } else {
+        this._composites = composites;
+      }
+
       this.getData();
     };
 
@@ -209,7 +163,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
       }
     });
 
-    this._totalRequest = this.createTotalCountBuilder().build();
     this.getData();
   }
 
@@ -237,8 +190,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
 
     this._composites.clear();
     const builder = this.createTotalCountBuilder();
-
-    this._totalRequest = builder.build();
 
     /*
      * Rejected
@@ -304,6 +255,8 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
 
     const virusComposite = new Composite(new Item('Virus', clone(builder)));
     this._composites.push(virusComposite);
+
+    this._dashboardState.setOverviewCard(this._composites);
   }
 
   private getData (): void {
@@ -312,7 +265,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     }
 
     this._isDoingRequest = true;
-    this._apiService.SubmitRequest(this._totalRequest)
+    this._apiService.SubmitRequest(this.createTotalCountBuilder().build())
       .subscribe(
         this.processSummaryTotal.bind(this),
         this.processApiError.bind(this));
@@ -336,9 +289,17 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     this._totalResponse = result;
     let receivedDataCount = 0;
 
-    const dataCount = this._composites
-      .map(x => x.countItemsInHierarchy())
-      .reduce((previousValue: number, currentValue) => previousValue + currentValue);
+    let dataCount = 0;
+    if (!Array.isEmptyNullOrUndefined(this._composites)) {
+      dataCount = this._composites
+        .map(x => x.countItemsInHierarchy())
+        .reduce((previousValue: number, currentValue) => previousValue + currentValue, 0);
+    }
+
+    if (dataCount === 0) {
+      this._isDoingRequest = false;
+      return;
+    }
 
     const processDataCount = () => {
       receivedDataCount++;

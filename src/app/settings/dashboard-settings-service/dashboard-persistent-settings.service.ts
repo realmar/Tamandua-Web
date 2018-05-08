@@ -6,6 +6,7 @@ import { SettingValidationResult } from '../setting-validation-result';
 import { CardRow } from '../../dashboard/card-row';
 import { plainToClass } from 'class-transformer';
 import { DashboardCardData } from '../../dashboard/dashboard-card/dashboard-card-data';
+import { Composite } from '../../dashboard/dashboard-overview-card/composite';
 
 @Injectable()
 export class DashboardPersistentSettingsService extends DashboardSettingsService {
@@ -16,6 +17,8 @@ export class DashboardPersistentSettingsService extends DashboardSettingsService
 
     this._retrievedDataCount = 0;
     this.getData('dashboard_Cards', Object, result => this.deserializeCards(result), () => {
+    });
+    this.getData('dashboard_OverviewCards', Composite, result => this.setOverviewCard(result), () => {
     });
     this.getData('dashboard_pastHours', Number, result => this.setPastHours(result), () => this.emitPastHours());
     this.getData('dashboard_MaxItemCountPerCard', Number, result => this.setMaxItemCountPerCard(result), () => this.emitMaxItemsCount());
@@ -84,6 +87,15 @@ export class DashboardPersistentSettingsService extends DashboardSettingsService
     const result = super.setCards(value);
     if (result.isValid) {
       this._storage.save('dashboard_Cards', value);
+    }
+
+    return result;
+  }
+
+  public setOverviewCard (value: Array<Composite>): SettingValidationResult {
+    const result = super.setOverviewCard(value);
+    if (result.isValid) {
+      this._storage.save('dashboard_OverviewCards', value);
     }
 
     return result;
