@@ -5,17 +5,21 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'flatten'
 })
 export class FlattenPipe implements PipeTransform {
-  public transform<T> (arr: Array<T>, args?: any): Array<any> {
+  public static flatten<T> (arr: Array<T>): Array<any> {
     const flattened = [];
 
     arr.forEach(value => {
       if (value instanceof Array) {
-        this.transform(value).forEach(v => flattened.push(v));
+        FlattenPipe.flatten(value).forEach(v => flattened.push(v));
       } else {
         flattened.push(value);
       }
     });
 
     return flattened;
+  }
+
+  public transform<T> (arr: Array<T>, args?: any): Array<any> {
+    return FlattenPipe.flatten(arr);
   }
 }

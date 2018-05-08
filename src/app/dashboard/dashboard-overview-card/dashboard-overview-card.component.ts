@@ -12,9 +12,9 @@ import { createCountEndpoint } from '../../../api/request/endpoints/count-endpoi
 import { Observable } from 'rxjs/internal/Observable';
 import { unsubscribeIfDefined } from '../../../utils/rxjs';
 import { RequestBuilder } from '../../../api/request/request-builder';
-import { Type } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 import { IntermediateExpressionRequestBuilder } from '../../../api/request/intermediate-expression-request-builder';
-
+import { FlattenPipe } from '../../../pipes/flatten.pipe';
 import { Scale } from 'chroma-js';
 import * as chroma from 'chroma-js';
 import * as moment from 'moment';
@@ -24,6 +24,16 @@ class Item {
   public readonly name: string;
   @Type(() => IntermediateExpressionRequestBuilder)
   public readonly builder: RequestBuilder;
+
+  @Exclude()
+  private _response: SummaryItem;
+  public get response (): SummaryItem {
+    return this._response;
+  }
+
+  public set response (value: SummaryItem) {
+    this._response = value;
+  }
 
   public constructor (name: string, builder: RequestBuilder) {
     this.name = name;
@@ -44,6 +54,17 @@ class Composite {
 
   public addComposite (composite: Composite): void {
     this.composites.push(composite);
+  }
+
+  public countItemsInHierarchy (composite?: Composite): number {
+    let composites = this.composites;
+    if (!isNullOrUndefined(composite)) {
+      composites = composite.composites;
+    }
+
+    return composites
+      .map(x => this.countItemsInHierarchy(x))
+      .reduce((x, y) => x + y, 1);
   }
 }
 
@@ -72,12 +93,25 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   private _totalRequest: ApiRequestData;
   private _totalResponse: CountResponse;
 
-  private readonly _data: Array<Array<SummaryItem> | SummaryItem>;
   private readonly _composites: Array<Composite>;
   private readonly _requestSubscriptions: Array<Subscription>;
 
-  public get data (): Array<Array<SummaryItem> | SummaryItem> {
-    return this._data;
+  public get data (): Array<SummaryItem> {
+    const data = [];
+
+    const processComposites = (composites: Array<Composite>) => {
+      composites.forEach(composite => {
+        const response = composite.item.response;
+        if (!isNullOrUndefined(response)) {
+          data.push(response);
+        }
+
+        processComposites(composite.composites);
+      });
+    };
+    processComposites(this._composites);
+
+    return data;
   }
 
   public get totalResponse (): CountResponse {
@@ -118,20 +152,20 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     this._hasErrors = false;
     this._colorRange = chroma.scale([ '#E1F5FE', '#03A9F4' ]);
 
-    this._data = [];
     this._composites = [];
     this._requestSubscriptions = [];
   }
 
   public ngOnInit () {
     this._onIntervalChangeSubscription =
-      this._dashboardState.refreshIntervalObservable.subscribe(this.onRefreshIntervalChange.bind(this));
+      this._dashboardState.refreshIntervalObservable.subscribe(() => this.createIntervalSubscription());
 
     this._onPastHoursChangeSubscription =
-      this._dashboardState.pastHoursObservable.subscribe(this.onPastHoursChange.bind(this));
+      this._dashboardState.pastHoursObservable.subscribe(() => this.onPastHoursChange());
 
     const isReadyCallback = () => {
       this.createIntervalSubscription();
+      this.buildDefaultRequests();
       this.getData();
     };
 
@@ -152,21 +186,48 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
       ...this._requestSubscriptions);
   }
 
-  private createIntervalSubscription (): void {
-    this._intervalSubscription = interval(this._dashboardState.getRefreshInterval()).subscribe(this.getData.bind(this));
+  private flattenComposite (composite: Composite): Array<Composite> {
+    const composites = [ composite ];
+
+    const children = FlattenPipe.flatten(composite.composites.map(c => this.flattenComposite(c)));
+    composites.push(...children);
+
+    return composites;
   }
 
-  private onPastHoursChange (value: number) {
+  private createIntervalSubscription (): void {
+    unsubscribeIfDefined(this._intervalSubscription);
+    this._intervalSubscription = interval(this._dashboardState.getRefreshInterval()).subscribe(() => this.getData());
+  }
+
+  private onPastHoursChange () {
     this._isDoingRequest = false;
+
+    this._composites.forEach(composite => {
+      for (const c of this.flattenComposite(composite)) {
+        this.applyLastHoursToBuilder(c.item.builder);
+      }
+    });
+
+    this._totalRequest = this.createTotalCountBuilder().build();
     this.getData();
   }
 
-  private onRefreshIntervalChange (value: number): void {
-    if (!isNullOrUndefined(this._intervalSubscription)) {
-      this._intervalSubscription.unsubscribe();
-    }
+  private applyLastHoursToBuilder (builder: RequestBuilder): void {
+    const startDate = moment().subtract(this._dashboardState.getPastHours(), 'hours').toDate();
+    const endDate = moment().add(1, 'hours').toDate();
 
-    this.createIntervalSubscription();
+    builder.setStartDatetime(startDate);
+    builder.setEndDatetime(endDate);
+  }
+
+  private createTotalCountBuilder (): RequestBuilder {
+    const builder = this._apiService.getRequestBuilder();
+
+    this.applyLastHoursToBuilder(builder);
+    builder.setEndpoint(createCountEndpoint());
+
+    return builder;
   }
 
   private buildDefaultRequests (): void {
@@ -175,14 +236,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     }
 
     this._composites.clear();
-    const builder = this._apiService.getRequestBuilder();
-
-    const startDate = moment().subtract(this._dashboardState.getPastHours(), 'hours').toDate();
-    const endDate = moment().add(1, 'hours').toDate();
-
-    builder.setStartDatetime(startDate);
-    builder.setEndDatetime(endDate);
-    builder.setEndpoint(createCountEndpoint());
+    const builder = this.createTotalCountBuilder();
 
     this._totalRequest = builder.build();
 
@@ -257,7 +311,6 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.buildDefaultRequests();
     this._isDoingRequest = true;
     this._apiService.SubmitRequest(this._totalRequest)
       .subscribe(
@@ -279,13 +332,23 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
 
     unsubscribeIfDefined(...this._requestSubscriptions);
     this._requestSubscriptions.clear();
-    this._data.clear();
 
     this._totalResponse = result;
+    let receivedDataCount = 0;
+
+    const dataCount = this._composites
+      .map(x => x.countItemsInHierarchy())
+      .reduce((previousValue: number, currentValue) => previousValue + currentValue);
+
+    const processDataCount = () => {
+      receivedDataCount++;
+      if (receivedDataCount >= dataCount) {
+        this._isDoingRequest = false;
+      }
+    };
 
     const processComposite = (composite: Composite,
                               totalResponses: number,
-                              dataTarget: Array<SummaryItem | Array<SummaryItem>>,
                               indentLevel: number = 0) => {
 
       const localIndent = indentLevel;
@@ -295,20 +358,19 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
         this._apiService
           .SubmitRequest<CountResponse>(item.builder.build())
           .subscribe(response => {
-            dataTarget.push({
-              indentLevel: localIndent,
-              data: new DashboardCardItemData(item.name, response as number, totalResponses, this._colorRange)
-            });
+              item.response = {
+                indentLevel: localIndent,
+                data: new DashboardCardItemData(item.name, response as number, totalResponses, this._colorRange)
+              };
 
-            const newTarget = [];
-            dataTarget.push(newTarget);
+              composite.composites.forEach(
+                c => processComposite(c, response as number, indentLevel + 1));
 
-            composite.composites.forEach(
-              c => processComposite(c, response as number, newTarget, indentLevel + 1));
-          })
-      );
+              processDataCount();
+            },
+            () => processDataCount()));
     };
 
-    this._composites.forEach(composite => processComposite(composite, this._totalResponse as number, this._data));
+    this._composites.forEach(composite => processComposite(composite, this._totalResponse as number));
   }
 }
