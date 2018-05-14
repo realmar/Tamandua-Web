@@ -1,0 +1,13 @@
+<mat-dialog-content>
+  <mat-form-field>
+    <input matInput placeholder="Label" [(ngModel)]="name">
+  </mat-form-field>
+  <search-mask [fields]="searchMaskFields"
+               [showDateTime]="false"
+               [additionalButtons]="buttons"
+               (onSearchClick)="applySearchMask($event)"
+               searchButtonLabel="Apply"></search-mask>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+</mat-dialog-actions>

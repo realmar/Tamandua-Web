@@ -4,6 +4,6 @@
   <div id="color-bar"
        [style.background-color]="color"
        [style.width]="percentage + '%'"></div>
-  <p [class]="clickable ? 'pointer' : ''" (click)="onItemClick()">{{amount}} ({{percentage.toPrecision(2)}}%)
+  <p [class]="clickable ? 'pointer' : ''" (click)="onItemClick()">{{amount}} ({{percentageFormatted}})
     {{label}}</p>
 </div>

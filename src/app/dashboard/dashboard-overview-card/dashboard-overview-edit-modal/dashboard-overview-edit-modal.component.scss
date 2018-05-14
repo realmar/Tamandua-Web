@@ -1,0 +1,24 @@
+@import '~angular-tree-component/dist/angular-tree-component.css';
+
+tree-root {
+  width: 100%;
+  height: 100%;
+}
+
+tree-node-content {
+  width: 100%;
+}
+
+.action-buttons {
+  float: right;
+  margin-left: 2rem;
+}
+
+.node-expander-disabled {
+  cursor: default;
+}
+
+.node-content-wrapper {
+  display: flex;
+  width: 100%;
+}

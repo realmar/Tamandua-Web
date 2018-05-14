@@ -1,0 +1,75 @@
+<mat-dialog-content>
+  <tree-root [nodes]="nodes"
+             [options]="options"
+             (moveNode)="onMoveNode($event)">-
+    <ng-template #treeNodeTemplate let-node let-composite="node.data.composite">
+      <span class="mat-body-1">{{ composite.item.name }}</span>
+      <div class="action-buttons inline">
+        <button mat-icon-button
+                (click)="editComposite(composite)"
+                matTooltip="Edit Search Mask">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button
+                (click)="deleteComposite(composite)"
+                matTooltip="Delete">
+          <mat-icon>delete</mat-icon>
+        </button>
+        <button mat-icon-button
+                (click)="addComposite(composite)"
+                matTooltip="Add Child">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+    </ng-template>
+
+    <ng-template #nodeExpander let-node="node">
+      <button mat-icon-button
+              *ngIf="node.hasChildren;else noChildrenTemplate"
+              (click)="node.isExpanded ? node.collapse() : node.expand()">
+        <mat-icon>
+          {{node.isExpanded ? 'expand_more' : 'chevron_right'}}
+        </mat-icon>
+      </button>
+
+      <ng-template #noChildrenTemplate>
+        <button mat-icon-button disabled class="node-expander-disabled"></button>
+      </ng-template>
+    </ng-template>
+
+    <ng-template #treeNodeWrapperTemplate let-node let-composite="node.data.composite" let-index="index">
+      <div class="node-wrapper" [style.padding-left]="node.getNodePadding()">
+        <tree-node-expander [node]="node" *ngTemplateOutlet="nodeExpander; context: {node: node}"></tree-node-expander>
+        <div class="node-content-wrapper"
+             [class.node-content-wrapper-active]="node.isActive"
+             [class.node-content-wrapper-focused]="node.isFocused"
+             (click)="node.mouseAction('click', $event)"
+             (dblclick)="node.mouseAction('dblClick', $event)"
+             (contextmenu)="node.mouseAction('contextMenu', $event)"
+             (treeDrop)="node.onDrop($event)"
+             [treeAllowDrop]="node.allowDrop"
+             [treeDrag]="node"
+             [treeDragEnabled]="node.allowDrag()">
+
+          <tree-node-content [node]="node" [index]="index" [template]="treeNodeTemplate"></tree-node-content>
+        </div>
+      </div>
+    </ng-template>
+  </tree-root>
+
+  <button mat-icon-button
+          (click)="addComposite(null)"
+          matTooltip="Add Root">
+    <mat-icon>add</mat-icon>
+  </button>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="null">Don't Save</button>
+  <button mat-button (click)="saveAndClose()">Save</button>
+</mat-dialog-actions>
+
+
+
+

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DashboardCardItemData } from './dashboard-card-item-data';
+import * as numeral from 'numeral';
 import * as chroma from 'chroma-js';
 
 @Component({
@@ -48,8 +49,16 @@ export class DashboardCardItemComponent implements OnInit {
     return this._data.totalAmount;
   }
 
+  public get percentage01 (): number {
+    return this.amount / this.totalAmount;
+  }
+
   public get percentage (): number {
-    return (this.amount / this.totalAmount) * 100;
+    return this.percentage01 * 100;
+  }
+
+  public get percentageFormatted (): string {
+    return numeral(this.percentage01).format('0.00%');
   }
 
   private _colors: Array<string>;
@@ -65,7 +74,7 @@ export class DashboardCardItemComponent implements OnInit {
   }
 
   public ngOnInit () {
-    const colorRange = this._data.colorRange.mode('lab').colors(100);
+    const colorRange = this._data.colorRange.mode('lab').colors(101);
     for (const color of colorRange) {
       this._colors.push(chroma(color).luminance(0.4).hex());
     }

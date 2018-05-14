@@ -27,7 +27,7 @@ import {
   MatTableModule,
   MatTabsModule,
   MatToolbarModule,
-  MatTooltipModule
+  MatTooltipModule,
 } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavigationComponent } from './navigation/navigation.component';
@@ -68,6 +68,9 @@ import { DashboardArrangementModalComponent } from './dashboard/dashboard-arrang
 import { QuestionModalComponent } from './question-modal/question-modal.component';
 import { apiFactory } from '../api/di-factory';
 import { FlattenPipe } from '../pipes/flatten.pipe';
+import { DashboardOverviewEditModalComponent } from './dashboard/dashboard-overview-card/dashboard-overview-edit-modal/dashboard-overview-edit-modal.component';
+import { DashboardOverviewEditSearchmaskComponent } from './dashboard/dashboard-overview-card/dashboard-overview-edit-modal/dashboard-overview-edit-searchmask/dashboard-overview-edit-searchmask.component';
+import { TreeModule } from 'angular-tree-component';
 
 @NgModule({
   declarations: [
@@ -93,8 +96,9 @@ import { FlattenPipe } from '../pipes/flatten.pipe';
     DashboardCardModalComponent,
     DashboardArrangementModalComponent,
     QuestionModalComponent,
-
-    FlattenPipe
+    FlattenPipe,
+    DashboardOverviewEditModalComponent,
+    DashboardOverviewEditSearchmaskComponent
   ],
   imports: [
     SearchMaskModule,
@@ -131,12 +135,13 @@ import { FlattenPipe } from '../pipes/flatten.pipe';
     MatSelectModule,
     MatOptionModule,
 
+    TreeModule,
     NgxDnDModule,
     ToastrModule.forRoot({
       timeOut: 5000,
       positionClass: 'toast-bottom-center',
       preventDuplicates: true,
-    }),
+    })
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
@@ -154,6 +159,8 @@ import { FlattenPipe } from '../pipes/flatten.pipe';
     SearchResultAddColumnsModalComponent,
     DashboardCardModalComponent,
     DashboardArrangementModalComponent,
+    DashboardOverviewEditModalComponent,
+    DashboardOverviewEditSearchmaskComponent,
     QuestionModalComponent
   ]
 })

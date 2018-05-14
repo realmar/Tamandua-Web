@@ -17,6 +17,8 @@ import * as chroma from 'chroma-js';
 import * as moment from 'moment';
 import * as clone from 'clone';
 import { Composite, Item, SummaryItem } from './composite';
+import { MatDialog } from '@angular/material';
+import { DashboardOverviewEditModalComponent } from './dashboard-overview-edit-modal/dashboard-overview-edit-modal.component';
 
 @Component({
   selector: 'app-dashboard-overview-card',
@@ -75,7 +77,30 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   public set onEdit (observable: Observable<any>) {
     unsubscribeIfDefined(this._onEditSubscription);
     this._onEditSubscription = observable.subscribe(() => {
-      console.log('on edit: not implemented');
+      const dialogRef = this._dialog.open(DashboardOverviewEditModalComponent, {
+        /*minWidth: '50%',
+        minHeight: '50%',*/
+        data: this._composites
+      });
+
+      dialogRef
+        .afterClosed()
+        .subscribe(value => {
+          if (isNullOrUndefined(value)) {
+            return;
+          }
+
+          this._composites = value;
+          this._composites.forEach(
+            x =>
+              this.flattenComposite(x)
+                .forEach(y => {
+                  this.applyLastHoursToBuilder(y.item.builder);
+                  y.item.response = undefined;
+                }));
+          this.saveComposites();
+          this.getData();
+        });
     });
   }
 
@@ -94,7 +119,8 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     return this._hasErrors;
   }
 
-  public constructor (private _dashboardState: DashboardSettingsService,
+  public constructor (private _dialog: MatDialog,
+                      private _dashboardState: DashboardSettingsService,
                       private _apiService: ApiService) {
     this._hasErrors = false;
     this._colorRange = chroma.scale([ '#E1F5FE', '#03A9F4' ]);
@@ -164,6 +190,10 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     });
 
     this.getData();
+  }
+
+  private saveComposites (): void {
+    this._dashboardState.setOverviewCard(this._composites);
   }
 
   private applyLastHoursToBuilder (builder: RequestBuilder): void {
@@ -256,7 +286,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     const virusComposite = new Composite(new Item('Virus', clone(builder)));
     this._composites.push(virusComposite);
 
-    this._dashboardState.setOverviewCard(this._composites);
+    this.saveComposites();
   }
 
   private getData (): void {

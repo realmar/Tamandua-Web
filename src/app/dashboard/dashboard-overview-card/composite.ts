@@ -32,9 +32,9 @@ export class Item {
 
 export class Composite {
   @Type(() => Item)
-  public readonly item: Item;
+  public item: Item;
   @Type(() => Composite)
-  public readonly composites: Array<Composite>;
+  public composites: Array<Composite>;
 
   public constructor (item: Item, composites?: Array<Composite>) {
     this.item = item;
