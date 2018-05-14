@@ -14,9 +14,8 @@ import { QuestionModalComponent } from '../../../../question-modal/question-moda
 import { createNoAction, createYesAction } from '../../../../question-modal/question-modal-utils';
 
 interface Node {
-  readonly id?: number;
-  readonly name: string;
-  readonly composite: Composite;
+  id?: number;
+  composite: Composite;
   children?: Array<Node>;
 }
 
@@ -61,7 +60,6 @@ export class DashboardOverviewEditModalComponent implements OnInit {
     return composites.map(composite => {
       const hasChildren = !Array.isEmptyNullOrUndefined(composite.composites);
       return {
-        name: composite.item.name,
         composite: composite,
         children: hasChildren ? this.transformComposites(composite.composites) : undefined
       };
@@ -122,6 +120,13 @@ export class DashboardOverviewEditModalComponent implements OnInit {
     }
   }
 
+  private removeAllIdsRecursively (node: Node): void {
+    delete node.id;
+    if (!Array.isEmptyNullOrUndefined(node.children)) {
+      node.children.forEach(x => this.removeAllIdsRecursively(x));
+    }
+  }
+
   public hasChildren (composite: Composite): boolean {
     return !Array.isEmptyNullOrUndefined(composite.composites);
   }
@@ -157,7 +162,6 @@ export class DashboardOverviewEditModalComponent implements OnInit {
         }
 
         targetArray.push({
-          name: value.item.name,
           composite: value
         });
         targetCompositeArray.push(value);
@@ -210,6 +214,28 @@ export class DashboardOverviewEditModalComponent implements OnInit {
         text: `Do you really want to delete ${composite.item.name}?`
       }
     });
+  }
+
+  public duplicateComposite (node: Node): void {
+    const nodeClone = clone(node);
+    this.removeAllIdsRecursively(nodeClone);
+
+    const insertFn = (nodes: Array<Node>, composites: Array<Composite>) => {
+      if (isNullOrUndefined(nodes) || isNullOrUndefined(composites)) {
+        return;
+      }
+
+      const index = nodes.findIndex(value => value.composite === node.composite);
+      if (index >= 0) {
+        nodes.insert(index + 1, nodeClone);
+        composites.insert(index + 1, nodeClone.composite);
+      } else {
+        nodes.forEach(n => insertFn(n.children, n.composite.composites));
+      }
+    };
+
+    insertFn(this._nodes, this._composites);
+    this._tree.treeModel.update();
   }
 
   public onMoveNode (event: any): void {

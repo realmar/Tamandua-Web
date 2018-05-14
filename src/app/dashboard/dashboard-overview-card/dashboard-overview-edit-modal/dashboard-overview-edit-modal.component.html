@@ -7,21 +7,31 @@
         <span class="mat-body-1">{{ composite.item.name }}</span>
       </div>
       <div class="action-buttons inline">
-        <button mat-icon-button
-                (click)="editComposite(composite)"
-                matTooltip="Edit Search Mask">
-          <mat-icon>edit</mat-icon>
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
         </button>
-        <button mat-icon-button
-                (click)="deleteComposite(composite)"
-                matTooltip="Delete">
-          <mat-icon>delete</mat-icon>
-        </button>
-        <button mat-icon-button
-                (click)="addComposite(composite)"
-                matTooltip="Add Child">
-          <mat-icon>add</mat-icon>
-        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item
+                  (click)="editComposite(composite)">
+            <mat-icon>edit</mat-icon>
+            <span>Edit Search Mask</span>
+          </button>
+          <button mat-menu-item
+                  (click)="deleteComposite(composite)">
+            <mat-icon>delete</mat-icon>
+            <span>Delete</span>
+          </button>
+          <button mat-menu-item
+                  (click)="addComposite(composite)">
+            <mat-icon>add</mat-icon>
+            <span>Add Child</span>
+          </button>
+          <button mat-menu-item
+                  (click)="duplicateComposite(node.data)">
+            <mat-icon>add_to_photos</mat-icon>
+            <span>Duplicate</span>
+          </button>
+        </mat-menu>
       </div>
     </ng-template>
 
