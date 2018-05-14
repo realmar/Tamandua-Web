@@ -1,5 +1,5 @@
 import { QuestionModalAction } from './question-modal-action';
-import { isNullOrUndefined } from '../../utils/misc';
+import { isNullOrUndefined } from '../utils/misc';
 
 function undefinedCallbackToEmpty (callback: () => void): () => void {
   if (isNullOrUndefined(callback)) {

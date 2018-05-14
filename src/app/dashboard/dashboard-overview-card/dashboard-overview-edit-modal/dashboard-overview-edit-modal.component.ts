@@ -8,10 +8,10 @@ import { Composite } from '../composite';
 import { ITreeOptions, TreeComponent } from 'angular-tree-component';
 import { DashboardOverviewEditSearchmaskComponent } from './dashboard-overview-edit-searchmask/dashboard-overview-edit-searchmask.component';
 import { isNullOrUndefined } from '../../../../utils/misc';
-import { QuestionModalComponent } from '../../../question-modal/question-modal.component';
-import { createNoAction, createYesAction } from '../../../question-modal/question-modal-utils';
 import * as clone from 'clone';
 import { ITreeNode } from 'angular-tree-component/dist/defs/api';
+import { QuestionModalComponent } from '../../../../question-modal/question-modal.component';
+import { createNoAction, createYesAction } from '../../../../question-modal/question-modal-utils';
 
 interface Node {
   readonly id?: number;

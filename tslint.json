@@ -128,7 +128,8 @@
       "element",
       [
         "app",
-        "search-mask"
+        "search-mask",
+        "question-modal"
       ],
       "kebab-case"
     ],

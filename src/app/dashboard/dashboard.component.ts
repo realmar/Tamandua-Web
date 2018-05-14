@@ -10,11 +10,11 @@ import { DashboardCardModalComponent } from './dashboard-add-card-modal/dashboar
 import { MatDialog } from '@angular/material';
 import { isNullOrUndefined } from '../../utils/misc';
 import { DashboardArrangementModalComponent } from './dashboard-arrangement-modal/dashboard-arrangement-modal.component';
-import { QuestionModalComponent } from '../question-modal/question-modal.component';
-import { createNoAction, createYesAction } from '../question-modal/question-modal-utils';
 import { Subscription, Subject, Observable } from 'rxjs';
 import { createAdvancedEndpoint } from '../../api/request/endpoints/advanced-count-endpoint';
 import { unsubscribeIfDefined } from '../../utils/rxjs';
+import { createNoAction, createYesAction } from '../../question-modal/question-modal-utils';
+import { QuestionModalComponent } from '../../question-modal/question-modal.component';
 
 @Component({
   selector: 'app-dashboard',
