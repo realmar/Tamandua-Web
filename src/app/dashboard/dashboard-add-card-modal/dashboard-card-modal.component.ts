@@ -106,13 +106,14 @@ export class DashboardCardModalComponent implements OnInit {
     return this._viewState === ViewState.Default;
   }
 
+  private readonly _additionalSearchMaskButtons: Array<SearchMaskButton> = [
+    {
+      label: 'Cancel',
+      callback: result => this.cancelSearchMask()
+    }
+  ];
   public get additionalSearchMaskButtons (): Array<SearchMaskButton> {
-    return [
-      {
-        label: 'Cancel',
-        callback: result => this.cancelSearchMask()
-      }
-    ];
+    return this._additionalSearchMaskButtons;
   }
 
   public constructor (private _dialogRef: MatDialogRef<DashboardCardModalComponent>,

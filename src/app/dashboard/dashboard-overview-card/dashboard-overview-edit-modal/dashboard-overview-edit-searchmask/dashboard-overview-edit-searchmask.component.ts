@@ -36,13 +36,14 @@ export class DashboardOverviewEditSearchmaskComponent implements OnInit {
     return this._searchMaskFields;
   }
 
+  private _buttons: Array<SearchMaskButton> = [
+    {
+      callback: () => this._dialogRef.close(null),
+      label: 'Cancel'
+    }
+  ];
   public get buttons (): Array<SearchMaskButton> {
-    return [
-      {
-        callback: () => this._dialogRef.close(null),
-        label: 'Cancel'
-      }
-    ];
+    return this._buttons;
   }
 
   public constructor (private _dialogRef: MatDialogRef<DashboardOverviewEditSearchmaskComponent>,
