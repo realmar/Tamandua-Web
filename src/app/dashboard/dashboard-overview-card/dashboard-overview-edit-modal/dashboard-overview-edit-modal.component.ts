@@ -11,6 +11,7 @@ import { isNullOrUndefined } from '../../../../utils/misc';
 import { QuestionModalComponent } from '../../../question-modal/question-modal.component';
 import { createNoAction, createYesAction } from '../../../question-modal/question-modal-utils';
 import * as clone from 'clone';
+import { ITreeNode } from 'angular-tree-component/dist/defs/api';
 
 interface Node {
   readonly id?: number;
@@ -39,7 +40,7 @@ export class DashboardOverviewEditModalComponent implements OnInit {
   public get options (): ITreeOptions {
     return {
       allowDrag: true,
-      allowDrop: true,
+      allowDrop: (element, to) => isNullOrUndefined(this.getParentWithComposite(element.data.composite, to.parent)),
       animateExpand: true,
       animateSpeed: 10,
       animateAcceleration: 1.2
@@ -109,6 +110,16 @@ export class DashboardOverviewEditModalComponent implements OnInit {
     }
 
     return undefined;
+  }
+
+  private getParentWithComposite (composite: Composite, node: ITreeNode): Node {
+    if (node.data.composite === composite) {
+      return node.data;
+    } else if (isNullOrUndefined(node.parent)) {
+      return undefined;
+    } else {
+      return this.getParentWithComposite(composite, node.parent);
+    }
   }
 
   public hasChildren (composite: Composite): boolean {

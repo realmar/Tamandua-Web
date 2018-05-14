@@ -23,6 +23,12 @@ tree-node-content {
   width: 100%;
 }
 
+.label-wrapper {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+}
+
 #root-add-composite-button {
   float: right;
   margin: 2px 5px;

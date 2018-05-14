@@ -3,7 +3,9 @@
              [options]="options"
              (moveNode)="onMoveNode($event)">-
     <ng-template #treeNodeTemplate let-node let-composite="node.data.composite">
-      <span class="mat-body-1">{{ composite.item.name }}</span>
+      <div class="inline label-wrapper">
+        <span class="mat-body-1">{{ composite.item.name }}</span>
+      </div>
       <div class="action-buttons inline">
         <button mat-icon-button
                 (click)="editComposite(composite)"
