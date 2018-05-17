@@ -54,7 +54,6 @@ import { SearchPersistentSettingsService } from './settings/search-settings-serv
 import { IndexedDbService } from '../persistence/indexed-db.service';
 import { NgxDnDModule } from '@swimlane/ngx-dnd';
 import { SearchStateService } from './search-state-service/search-state.service';
-import { DashboardSettingComponent } from './dashboard/dashboard-settings/dashboard-setting/dashboard-setting.component';
 import { DashboardSettingsComponent } from './dashboard/dashboard-settings/dashboard-settings.component';
 import { AboutComponent } from './about/about.component';
 import { FooterComponent } from './footer/footer.component';
@@ -70,6 +69,7 @@ import { FlattenPipe } from '../pipes/flatten.pipe';
 import { DashboardOverviewEditModalComponent } from './dashboard/dashboard-overview-card/dashboard-overview-edit-modal/dashboard-overview-edit-modal.component';
 import { DashboardOverviewEditSearchmaskComponent } from './dashboard/dashboard-overview-card/dashboard-overview-edit-modal/dashboard-overview-edit-searchmask/dashboard-overview-edit-searchmask.component';
 import { TreeModule } from 'angular-tree-component';
+import { SettingComponent } from './settings/setting-component/setting.component';
 import { QuestionModalModule } from '../question-modal/question-modal.module';
 import { QuestionModalComponent } from '../question-modal/question-modal.component';
 
@@ -88,7 +88,7 @@ import { QuestionModalComponent } from '../question-modal/question-modal.compone
     DashboardOverviewCardComponent,
     SafeHtmlPipe,
     SaveObjectComponent,
-    DashboardSettingComponent,
+    SettingComponent,
     DashboardSettingsComponent,
     AboutComponent,
     FooterComponent,

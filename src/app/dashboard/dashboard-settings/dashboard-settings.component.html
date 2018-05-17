@@ -1,16 +1,16 @@
 <div id="settings">
-  <app-dashboard-setting placeholder="Past Hours"
-                         type="number"
-                         [validationResultObservable]="pastHoursValidationObservable"
-                         [(data)]="pastHoursCount"></app-dashboard-setting>
+  <app-setting placeholder="Past Hours"
+               type="number"
+               [validationResultObservable]="pastHoursValidationObservable"
+               [(data)]="pastHoursCount"></app-setting>
 
-  <app-dashboard-setting placeholder="Field Count"
-                         type="number"
-                         [validationResultObservable]="maxItemCountValidationObservable"
-                         [(data)]="maxItemCountPerCard"></app-dashboard-setting>
+  <app-setting placeholder="Field Count"
+               type="number"
+               [validationResultObservable]="maxItemCountValidationObservable"
+               [(data)]="maxItemCountPerCard"></app-setting>
 
-  <app-dashboard-setting placeholder="Interval [s]"
-                         type="number"
-                         [validationResultObservable]="intervalValidationObservable"
-                         [(data)]="refreshInterval"></app-dashboard-setting>
+  <app-setting placeholder="Interval [s]"
+               type="number"
+               [validationResultObservable]="intervalValidationObservable"
+               [(data)]="refreshInterval"></app-setting>
 </div>

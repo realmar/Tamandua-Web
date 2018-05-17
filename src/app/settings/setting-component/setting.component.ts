@@ -1,15 +1,15 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { SettingValidationResult } from '../../../settings/setting-validation-result';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { isNullOrUndefined } from '../../../../utils/misc';
+import { isNullOrUndefined } from '../../../utils/misc';
+import { SettingValidationResult } from '../setting-validation-result';
 
 @Component({
-  selector: 'app-dashboard-setting',
-  templateUrl: './dashboard-setting.component.html',
-  styleUrls: [ './dashboard-setting.component.scss' ]
+  selector: 'app-setting',
+  templateUrl: './setting.component.html',
+  styleUrls: [ './setting.component.scss' ]
 })
-export class DashboardSettingComponent implements OnInit {
+export class SettingComponent implements OnInit {
   private _placeholder: string;
   private _type: string;
   private _lastEmittedData: string | number;
