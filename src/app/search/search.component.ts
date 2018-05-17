@@ -1,23 +1,23 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ApiService } from '../../api/api-service';
-import { Event, NavigationEnd, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { isNullOrUndefined } from '../../utils/misc';
 import { SearchSettingsService } from '../settings/search-settings-service/search-settings.service';
 import { SearchResponse } from '../../api/response/search-reponse';
 import { ApiRequestData } from '../../api/request/request';
-import { Subscription } from 'rxjs';
 import { SearchStateService } from '../search-state-service/search-state.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SearchFieldData } from '../../search-mask/search-field/search-field-data';
 import { SearchMaskResult } from '../../search-mask/search-mask-result';
 import { createSearchEndpoint } from '../../api/request/endpoints/search-endpoint';
+import { RouteReenterListener } from '../../base-classes/route-reenter-listener';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: [ './search.component.scss' ]
 })
-export class SearchComponent implements OnInit, OnDestroy {
+export class SearchComponent extends RouteReenterListener {
   private _startDateTime: Date;
   public set startDateTime (value: Date) {
     this._startDateTime = value;
@@ -51,24 +51,25 @@ export class SearchComponent implements OnInit, OnDestroy {
     return this._isLoading;
   }
 
-  private _routerEventSubscription: Subscription;
-
   constructor (private _apiService: ApiService,
                private _searchSettingsService: SearchSettingsService,
                private _searchStateService: SearchStateService,
-               private _router: Router) {
+               router: Router) {
+    super(router);
     this.restoreState();
   }
 
-  ngOnInit () {
-    this._routerEventSubscription = this._router.events.subscribe(this.onRouterEvents.bind(this));
+  public ngOnDestroy (): void {
+    super.ngOnDestroy();
     this.checkSearchState();
   }
 
-  ngOnDestroy (): void {
-    if (!isNullOrUndefined(this._routerEventSubscription)) {
-      this._routerEventSubscription.unsubscribe();
-    }
+  protected getRouteMatcher (): RegExp {
+    return new RegExp('^\/search', 'i');
+  }
+
+  protected onRouteReenter (): void {
+    this.checkSearchState();
   }
 
   private restoreState (): void {
@@ -99,16 +100,6 @@ export class SearchComponent implements OnInit, OnDestroy {
       this._searchStateService.doSearch = false;
       this.restoreState();
       this.search();
-    }
-  }
-
-  private onRouterEvents (event: Event): void {
-    if (!(event instanceof NavigationEnd)) {
-      return;
-    }
-
-    if (this._router.url === '/search') {
-      this.checkSearchState();
     }
   }
 
