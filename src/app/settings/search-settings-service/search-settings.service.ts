@@ -4,6 +4,8 @@ import { Subject, Observable } from 'rxjs';
 import { Setting } from '../setting';
 import { isNullOrUndefined } from '../../../utils/misc';
 import { SettingValidationResult } from '../setting-validation-result';
+import { greaterThanZero, isNotNull } from '../validators';
+import { mustBePositiveFormatter } from '../formatters';
 
 @Injectable()
 export class SearchSettingsService {
@@ -26,25 +28,21 @@ export class SearchSettingsService {
 
   constructor () {
     // default values
-    this._paginatorPageSize = new Setting<number>(this._pageSizeOptions[ 0 ], this.pageSizeValidator.bind(this));
+    this._paginatorPageSize = new Setting<number>(this._pageSizeOptions[ 0 ], greaterThanZero(mustBePositiveFormatter));
     this._selectedTags = new Setting<SelectedTags>([], this.selectedTagsvalidator.bind(this));
     this._visibleColumns = new Setting<Array<string>>([
       'phdmxin_time',
       'sender',
       'recipient',
       'tags'
-    ], this.visibleColumnsValidator.bind(this));
-    this._resultCount = new Setting<number>(200, this.resultCountValidator.bind(this));
+    ], isNotNull());
+    this._resultCount = new Setting<number>(200, greaterThanZero(mustBePositiveFormatter));
 
     this.onReadySubject = new Subject<any>();
     this.onReadyCallback();
   }
 
   // region Validators
-
-  private visibleColumnsValidator (data: Array<string>): SettingValidationResult {
-    return new SettingValidationResult(!isNullOrUndefined(data));
-  }
 
   private selectedTagsvalidator (data: SelectedTags): SettingValidationResult {
     if (isNullOrUndefined(data)) {
@@ -58,14 +56,6 @@ export class SearchSettingsService {
     }
 
     return new SettingValidationResult(true);
-  }
-
-  private pageSizeValidator (data: number): SettingValidationResult {
-    return new SettingValidationResult(!isNullOrUndefined(data) && data > 0);
-  }
-
-  private resultCountValidator (data: number): SettingValidationResult {
-    return new SettingValidationResult(!isNullOrUndefined(data) && data > 0);
   }
 
   // endregions

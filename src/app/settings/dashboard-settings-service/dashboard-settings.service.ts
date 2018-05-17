@@ -3,9 +3,10 @@ import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Setting } from '../setting';
 import { SettingValidationResult } from '../setting-validation-result';
-import { isNullOrUndefined } from '../../../utils/misc';
 import { CardRow } from '../../dashboard/card-row';
 import { Composite } from '../../dashboard/dashboard-overview-card/composite';
+import { isMinAndNotNull } from '../validators';
+import { valueCannotBeNullFormatter, valueMustBeBiggerThanFormatter } from '../formatters';
 
 @Injectable()
 export class DashboardSettingsService {
@@ -38,13 +39,31 @@ export class DashboardSettingsService {
     this.onFinishInitalizeSubject = new Subject<any>();
     this._isInitialized = false;
 
-    this._pastHours = new Setting<number>(24, this.createMinValidator(1, x => x.toString()));
+    this._pastHours = new Setting<number>(
+      24,
+      isMinAndNotNull(
+        1,
+        valueCannotBeNullFormatter,
+        valueMustBeBiggerThanFormatter)
+    );
     this._pastHoursSubject = new Subject<number>();
 
-    this._maxItemCountPerCard = new Setting<number>(4, this.createMinValidator(1, x => x.toString()));
+    this._maxItemCountPerCard = new Setting<number>(
+      4,
+      isMinAndNotNull(
+        1,
+        valueCannotBeNullFormatter,
+        valueMustBeBiggerThanFormatter)
+    );
     this._maxItemsCountSubject = new Subject<number>();
 
-    this._refreshInterval = new Setting<number>(100000, this.createMinValidator(10000, x => (x / 1000).toString()));
+    this._refreshInterval = new Setting<number>(
+      100000,
+      isMinAndNotNull(
+        10000,
+        valueCannotBeNullFormatter,
+        (value, num) => valueMustBeBiggerThanFormatter(value, num / 1000))
+    );
     this._refreshIntervalSubject = new Subject<number>();
 
     this._cards = new Setting<Array<CardRow>>([], data => new SettingValidationResult(true));
@@ -53,22 +72,6 @@ export class DashboardSettingsService {
     this._timeoutBeforeEmit = 800;
 
     this.emitFinishInitialize();
-  }
-
-  private createMinValidator (min: number, formatter: (value: number) => string): (data: number) => SettingValidationResult {
-    const validator = (data: number): SettingValidationResult => {
-      if (isNullOrUndefined(data)) {
-        return new SettingValidationResult(false, 'Value is required');
-      }
-
-      if (data < min) {
-        return new SettingValidationResult(false, `Min value is ${formatter(min)}`);
-      }
-
-      return new SettingValidationResult(true);
-    };
-
-    return validator;
   }
 
   protected emitFinishInitialize (): void {

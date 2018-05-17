@@ -1,12 +1,12 @@
 import { isNullOrUndefined } from '../../utils/misc';
 
 export class SettingValidationResult {
-  private _isValid: boolean;
+  private readonly _isValid: boolean;
   public get isValid (): boolean {
     return this._isValid;
   }
 
-  private _messages: Array<string>;
+  private readonly _messages: Array<string>;
   public get messages (): Array<string> {
     return this._messages;
   }

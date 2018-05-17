@@ -8,6 +8,8 @@ declare global {
     toObject (): object;
 
     valuesToArray (): Array<V>;
+
+    keysToArray (): Array<K>;
   }
 }
 
@@ -20,5 +22,11 @@ Map.prototype.toObject = function () {
 Map.prototype.valuesToArray = function () {
   const array = [];
   this.forEach(value => array.push(value));
+  return array;
+};
+
+Map.prototype.keysToArray = function () {
+  const array = [];
+  this.forEach((value, key) => array.push(key));
   return array;
 };
