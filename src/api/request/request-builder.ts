@@ -3,6 +3,10 @@ import { ApiRequestData } from './request';
 import { Endpoint } from './endpoints/endpoint';
 import { RequestBuilderField } from './request-builder-field';
 
+export interface RequestBuilderConstructor {
+  new (): RequestBuilder;
+}
+
 export interface RequestBuilder {
   addField (name: string, value: string | number, comparator: Comparator): void;
 

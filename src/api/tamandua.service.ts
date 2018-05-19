@@ -107,7 +107,7 @@ export class TamanduaService implements ApiService {
   }
 
   public getRequestBuilder (): RequestBuilder {
-    return new IntermediateExpressionRequestBuilder();
+    return new ApiService.RequestBuilderClass();
   }
 
   public visitIE<T extends ApiResponse> (request: IntermediateExpressionRequest): Observable<T> {

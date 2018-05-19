@@ -1,8 +1,8 @@
 import { RequestBuilder } from '../../../api/request/request-builder';
 import { Exclude, Type } from 'class-transformer';
 import { isNullOrUndefined } from '../../../utils/misc';
-import { IntermediateExpressionRequestBuilder } from '../../../api/request/intermediate-expression-request-builder';
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
+import { ApiService } from '../../../api/api-service';
 
 export interface SummaryItem {
   readonly indentLevel: number;
@@ -11,7 +11,7 @@ export interface SummaryItem {
 
 export class Item {
   public readonly name: string;
-  @Type(() => IntermediateExpressionRequestBuilder)
+  @Type(() => ApiService.RequestBuilderClass)
   public readonly builder: RequestBuilder;
 
   @Exclude()

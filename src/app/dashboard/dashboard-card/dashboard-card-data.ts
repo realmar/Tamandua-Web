@@ -1,10 +1,10 @@
 import { RequestBuilder } from '../../../api/request/request-builder';
 import { RequestBuilderField } from '../../../api/request/request-builder-field';
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
-import { IntermediateExpressionRequestBuilder } from '../../../api/request/intermediate-expression-request-builder';
 import { Exclude, plainToClass, Transform, Type } from 'class-transformer';
 import { isNullOrUndefined } from '../../../utils/misc';
 import { Comparator } from '../../../api/request/comparator';
+import { ApiService } from '../../../api/api-service';
 
 function baseRequestBuilderFieldsToClass (value: Array<RequestBuilderField>): Array<RequestBuilderField> {
   if (isNullOrUndefined(value)) {
@@ -23,7 +23,7 @@ function baseRequestBuilderFieldsToClass (value: Array<RequestBuilderField>): Ar
 export class DashboardCardData {
   private _title: string;
 
-  @Type(() => IntermediateExpressionRequestBuilder)
+  @Type(() => ApiService.RequestBuilderClass)
   private readonly _requestBuilder: RequestBuilder;
   @Transform(baseRequestBuilderFieldsToClass, { toClassOnly: true })
   private _baseRequestBuilderFields: Array<RequestBuilderField>;

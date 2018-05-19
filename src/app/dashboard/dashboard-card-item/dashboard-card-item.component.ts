@@ -74,10 +74,7 @@ export class DashboardCardItemComponent implements OnInit {
   }
 
   public ngOnInit () {
-    const colorRange = this._data.colorRange.mode('lab').colors(101);
-    for (const color of colorRange) {
-      this._colors.push(chroma(color).luminance(0.4).hex());
-    }
+    this._colors = this._data.colorRange.mode('lab').colors(101);
   }
 
   public onItemClick (): void {

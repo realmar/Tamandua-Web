@@ -42,22 +42,9 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   private _composites: Array<Composite>;
   private readonly _requestSubscriptions: Array<Subscription>;
 
+  private _data: Array<SummaryItem> = [];
   public get data (): Array<SummaryItem> {
-    const data = [];
-
-    const processComposites = (composites: Array<Composite>) => {
-      composites.forEach(composite => {
-        const response = composite.item.response;
-        if (!isNullOrUndefined(response)) {
-          data.push(response);
-        }
-
-        processComposites(composite.composites);
-      });
-    };
-    processComposites(this._composites);
-
-    return data;
+    return this._data;
   }
 
   public get totalResponse (): CountResponse {
@@ -99,6 +86,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
                   y.item.response = undefined;
                 }));
           this.saveComposites();
+          this._data.clear();
           this.getData();
         });
     });
@@ -113,6 +101,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private readonly _colorRange: Scale;
+  private readonly _restColorRange: Scale;
 
   private _hasErrors: boolean;
   public get hasErrors (): boolean {
@@ -123,7 +112,8 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
                       private _dashboardState: DashboardSettingsService,
                       private _apiService: ApiService) {
     this._hasErrors = false;
-    this._colorRange = chroma.scale([ '#E1F5FE', '#03A9F4' ]);
+    this._colorRange = chroma.scale([ '#81D4FA', '#03A9F4' ]);
+    this._restColorRange = chroma.scale([ '#E1F5FE', '#B3E5FC' ]);
 
     this._composites = [];
     this._requestSubscriptions = [];
@@ -334,6 +324,28 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     const processDataCount = () => {
       receivedDataCount++;
       if (receivedDataCount >= dataCount) {
+        this._data.clear();
+        const processComposites = (indentLevel: number, total: number, composites: Array<Composite>) => {
+          let sum = 0;
+          composites.forEach(composite => {
+            const response = composite.item.response;
+            if (!isNullOrUndefined(response)) {
+              sum += response.data.amount;
+              this._data.push(response);
+            }
+            processComposites(indentLevel + 1, response.data.amount, composite.composites);
+          });
+
+          if (indentLevel > 0 && sum > 0) {
+            const rest: SummaryItem = {
+              data: new DashboardCardItemData('Rest', total - sum, total, this._restColorRange),
+              indentLevel: indentLevel
+            };
+            this._data.push(rest);
+          }
+        };
+        processComposites(0, 0, this._composites);
+
         this._isDoingRequest = false;
       }
     };

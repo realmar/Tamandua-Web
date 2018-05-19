@@ -43,7 +43,7 @@ export class DashboardCardItemData {
     this._colorRange = colorRange;
 
     if (isNullOrUndefined(this._colorRange)) {
-      this._colorRange = chroma.scale([ 'green', 'red' ]);
+      this._colorRange = chroma.scale([ '#66BB6A', '#FF5722' ]);
     }
   }
 }
