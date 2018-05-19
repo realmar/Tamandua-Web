@@ -56,6 +56,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
     unsubscribeIfDefined(this._onResetSubscription);
     this._onResetSubscription = observable.subscribe(() => {
       this.buildDefaultRequests();
+      this._data.clear();
       this.getData();
     });
   }
