@@ -16,9 +16,10 @@
                type="number"
                [validationResultObservable]="totalDurationValidationObservable"
                [(data)]="totalDuration"></app-setting>
-  <span>[s]</span>
+  <span>[h]</span>
 
   <button mat-button
+          *ngIf="canSearch"
           [disabled]="isDoingRequest"
           (click)="collectData()">
     <mat-icon>refresh</mat-icon>
@@ -52,7 +53,27 @@
                          yAxisLabel="Mail Count"
                          [xAxisTicks]="xAxisTicks"
                          [xAxisTickFormatting]="xAxisTickFormatting"
-                         [yAxisTickFormatting]="yAxisTickFormatting"></ngx-charts-line-chart>
+                         [yAxisTickFormatting]="yAxisTickFormatting">
+    <ng-template #seriesTooltipTemplate let-model="model">
+      <div class="table series-tooltip">
+        <div class="table-body">
+          <ng-container *ngFor="let item of model | sort: modelSorter">
+            <div class="table-row">
+              <div class="table-cell">
+                <div [style.background-color]="item.color" class="color-box"></div>
+              </div>
+              <div class="table-cell">
+                {{item.series}}:
+              </div>
+              <div class="table-cell">
+                <span class="value">{{item.value}}</span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </ng-template>
+  </ngx-charts-line-chart>
 </div>
 
 <p *ngIf="!hasData && !isDoingRequest">No data found.</p>

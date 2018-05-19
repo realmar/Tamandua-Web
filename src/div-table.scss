@@ -1,0 +1,28 @@
+.table {
+  display: table;
+  width: 100%;
+}
+
+.table-row {
+  display: table-row;
+}
+
+.table-heading {
+  display: table-header-group;
+}
+
+.table-cell, .table-head {
+  display: table-cell;
+}
+
+.table-heading {
+  display: table-header-group;
+}
+
+.table-foot {
+  display: table-footer-group;
+}
+
+.table-body {
+  display: table-row-group;
+}

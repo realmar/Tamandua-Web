@@ -110,6 +110,10 @@ export class DiagramComponent extends RouteReenterListener {
     return this._chartData.length > 0;
   }
 
+  public get canSearch (): boolean {
+    return !isNullOrUndefined(this._inputData);
+  }
+
   private _isDoingRequest: boolean;
   public get isDoingRequest (): boolean {
     return isNullOrUndefined(this._isDoingRequest) ? false : this._isDoingRequest;
@@ -123,7 +127,7 @@ export class DiagramComponent extends RouteReenterListener {
                       private _diagramSettingsService: DiagramSettingsService,
                       router: Router) {
     super(router);
-    this._requestSubscriptions = new Array<Subscription>();
+    this._requestSubscriptions = [];
     this._chartData = [];
   }
 
@@ -237,5 +241,9 @@ export class DiagramComponent extends RouteReenterListener {
     this._isDoingRequest = false;
     this._requestSubscriptions.forEach(sub => sub.unsubscribe());
     this._requestSubscriptions.clear();
+  }
+
+  public modelSorter (a: any, b: any): number {
+    return b.value - a.value;
   }
 }

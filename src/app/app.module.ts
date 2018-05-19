@@ -76,6 +76,7 @@ import { SearchResultTagsSelectionComponent } from './search/search-results/sear
 import { SearchResultDetailsModalComponent } from './search/search-results/search-result-details-modal/search-result-details-modal.component';
 import { FormatLoglinePipe } from './search/search-results/search-result-details-modal/format-logline.pipe';
 import { SearchStateService } from './search/search-state-service/search-state.service';
+import { SortPipe } from '../pipes/sort.pipe';
 
 @NgModule({
   declarations: [
@@ -103,7 +104,8 @@ import { SearchStateService } from './search/search-state-service/search-state.s
     FlattenPipe,
     DashboardOverviewEditModalComponent,
     DashboardOverviewEditSearchmaskComponent,
-    DiagramComponent
+    DiagramComponent,
+    SortPipe
   ],
   imports: [
     SearchMaskModule,
