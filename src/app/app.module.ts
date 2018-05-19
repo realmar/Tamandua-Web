@@ -72,6 +72,10 @@ import { TreeModule } from 'angular-tree-component';
 import { SettingComponent } from './settings/setting-component/setting.component';
 import { QuestionModalModule } from '../question-modal/question-modal.module';
 import { QuestionModalComponent } from '../question-modal/question-modal.component';
+import { DiagramComponent } from './diagram/diagram.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { DiagramStateService } from './diagram/diagram-state-service/diagram-state.service';
+import { DiagramSettingsService } from './settings/diagram-settings-service/diagram-settings.service';
 
 @NgModule({
   declarations: [
@@ -98,7 +102,8 @@ import { QuestionModalComponent } from '../question-modal/question-modal.compone
     DashboardArrangementModalComponent,
     FlattenPipe,
     DashboardOverviewEditModalComponent,
-    DashboardOverviewEditSearchmaskComponent
+    DashboardOverviewEditSearchmaskComponent,
+    DiagramComponent
   ],
   imports: [
     SearchMaskModule,
@@ -138,6 +143,7 @@ import { QuestionModalComponent } from '../question-modal/question-modal.compone
 
     TreeModule,
     NgxDnDModule,
+    NgxChartsModule,
     ToastrModule.forRoot({
       timeOut: 5000,
       positionClass: 'toast-bottom-center',
@@ -152,6 +158,8 @@ import { QuestionModalComponent } from '../question-modal/question-modal.compone
     { provide: SearchSettingsService, useClass: SearchPersistentSettingsService },
     { provide: DashboardSettingsService, useClass: DashboardPersistentSettingsService },
     SearchStateService,
+    DiagramStateService,
+    DiagramSettingsService,
     HttpClientModule
   ],
   bootstrap: [ AppComponent ],

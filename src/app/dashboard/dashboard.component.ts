@@ -15,6 +15,8 @@ import { createAdvancedEndpoint } from '../../api/request/endpoints/advanced-cou
 import { unsubscribeIfDefined } from '../../utils/rxjs';
 import { createNoAction, createYesAction } from '../../question-modal/question-modal-utils';
 import { QuestionModalComponent } from '../../question-modal/question-modal.component';
+import { DiagramStateService } from '../diagram/diagram-state-service/diagram-state.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',

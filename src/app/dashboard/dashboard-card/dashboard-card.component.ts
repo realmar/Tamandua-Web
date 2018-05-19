@@ -12,6 +12,8 @@ import { SearchStateService } from '../../search-state-service/search-state.serv
 import { HttpErrorResponse } from '@angular/common/http';
 import * as moment from 'moment';
 import { createAdvancedEndpoint } from '../../../api/request/endpoints/advanced-count-endpoint';
+import { CardRow } from '../card-row';
+import { DiagramStateService } from '../../diagram/diagram-state-service/diagram-state.service';
 
 @Component({
   selector: 'app-dashboard-card',
@@ -49,11 +51,12 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
 
   private _requestSubscription: Subscription;
 
-  constructor (private _apiService: ApiService,
-               private _dashboardSettingsService: DashboardSettingsService,
-               private _searchSettingsService: SearchSettingsService,
-               private _searchStateService: SearchStateService,
-               private _router: Router) {
+  public constructor (private _apiService: ApiService,
+                      private _dashboardSettingsService: DashboardSettingsService,
+                      private _searchSettingsService: SearchSettingsService,
+                      private _searchStateService: SearchStateService,
+                      private _diagramStateService: DiagramStateService,
+                      private _router: Router) {
     this._isDoingRequest = false;
 
     this._pastHoursChangeSubscription =
@@ -64,7 +67,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
       this._dashboardSettingsService.refreshIntervalObservable.subscribe(this.onRefreshIntervalChange.bind(this));
   }
 
-  ngOnInit () {
+  public ngOnInit () {
     if (isNullOrUndefined(this._data.requestResult)) {
       this._data.requestResult = [];
     }
@@ -86,7 +89,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy (): void {
+  public ngOnDestroy (): void {
     this._pastHoursChangeSubscription.unsubscribe();
     this._maxItemCountChangeSubscription.unsubscribe();
     this._refreshIntervalSubscription.unsubscribe();
@@ -182,5 +185,15 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
     }
 
     this.createRefreshIntervalSubscription();
+  }
+
+  public goToDiagramPage (): void {
+    this._diagramStateService.data = {
+      title: this._data.title,
+      requestBuilder: this._data.requestBuilder
+    };
+
+    this._router.navigate([ 'diagram' ])
+      .then(result => result ? '' : console.log('Failed to navigate'));
   }
 }

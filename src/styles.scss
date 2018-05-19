@@ -8,7 +8,7 @@
 
 $config: mat-typography-config();
 
-.toast-container {
+.toast-container, text, p, span {
   @include mat-typography-level-to-styles($config, body-1);
 }
 

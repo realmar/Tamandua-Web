@@ -1,0 +1,55 @@
+<p>Note: I'm currently prototyping this page!</p>
+
+<div>
+  <app-setting placeholder="Sample Count"
+               type="number"
+               [validationResultObservable]="sampleCountValidationObservable"
+               [(data)]="sampleCount"></app-setting>
+
+  <app-setting placeholder="Sample Duration [m]"
+               type="number"
+               [validationResultObservable]="sampleDurationValidationObservable"
+               [(data)]="sampleDuration"></app-setting>
+
+  <app-setting placeholder="Total Timespan [h]"
+               type="number"
+               [validationResultObservable]="totalDurationValidationObservable"
+               [(data)]="totalDuration"></app-setting>
+  <button mat-button
+          [disabled]="isDoingRequest"
+          (click)="collectData()">
+    <mat-icon>refresh</mat-icon>
+    <span>Refresh</span>
+  </button>
+  <button mat-button
+          *ngIf="isDoingRequest"
+          (click)="cancelRequests()">
+    <mat-icon>cancel</mat-icon>
+    <span>Cancel Request</span>
+  </button>
+</div>
+
+<div *ngIf="isDoingRequest">
+  <p class="mat-body-1">Collecting data from server. Please wait, this can take a long time.</p>
+  <br>
+  <mat-progress-bar mode="buffer"></mat-progress-bar>
+</div>
+
+<div *ngIf="hasData">
+  <h1 class="mat-title">{{title}}</h1>
+  <ngx-charts-line-chart [results]="chartData"
+                         [view]="[1000, 600]"
+                         [autoScale]="true"
+                         [curve]="curve"
+                         [gradient]="true"
+                         [legend]="true"
+                         [xAxis]="true"
+                         [yAxis]="true"
+                         xAxisLabel="Datetime"
+                         yAxisLabel="Mail Count"
+                         [xAxisTicks]="xAxisTicks"
+                         [xAxisTickFormatting]="xAxisTickFormatting"
+                         [yAxisTickFormatting]="yAxisTickFormatting"></ngx-charts-line-chart>
+</div>
+
+<p *ngIf="!hasData && !isDoingRequest">No data found.</p>

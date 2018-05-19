@@ -1,6 +1,7 @@
 import { SettingValidationResult } from './setting-validation-result';
 import { isNullOrUndefined } from '../../utils/misc';
 import { Formatter } from './formatters';
+import { Duration } from 'moment';
 
 export type Validator<T> = (data: T) => SettingValidationResult;
 
@@ -41,6 +42,14 @@ export function isMinAndNotNull (min: number,
                                  notNullFormatter?: Formatter<number, number>,
                                  minFormatter?: Formatter<number, number>): Validator<number> {
   return chain(allReducer(), isNotNull(notNullFormatter), isMin(min, minFormatter));
+}
+
+export function durationMin (min: Duration, formatter?: Formatter<Duration, Duration>): Validator<Duration> {
+  const minSeconds = min.asSeconds();
+  return (data: Duration) => {
+    const s = data.asSeconds();
+    return createResultUsingFormatter(data, s >= minSeconds, d => formatter(d, min));
+  };
 }
 
 export function chain<T> (reducer: Reducer, ...validators: Array<Validator<T>>): Validator<T> {

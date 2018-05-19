@@ -1,4 +1,9 @@
-<h2 class="mat-subheading-2">{{data.title}}</h2>
+<div id="heading">
+  <h2 class="mat-subheading-2 inline">{{data.title}}</h2>
+  <button mat-icon-button (click)="goToDiagramPage()">
+    <mat-icon>show_chart</mat-icon>
+  </button>
+</div>
 
 <ng-container *ngIf="isDoingRequest && resultData.length === 0;else data_container">
   <mat-progress-bar mode="buffer"></mat-progress-bar>
