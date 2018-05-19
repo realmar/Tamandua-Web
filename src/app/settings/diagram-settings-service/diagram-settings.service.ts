@@ -5,12 +5,24 @@ import { Duration } from 'moment';
 import { durationMin, isMinAndDefined } from '../validators';
 import { durationMinFormatter, isDefinedFormatter, isMinFormatter } from '../formatters';
 import { SettingValidationResult } from '../setting-validation-result';
+import { Observable, Subject } from 'rxjs/index';
 
 @Injectable()
 export class DiagramSettingsService {
   private _sampleCount: Setting<number>;
   private _sampleDuration: Setting<Duration>;
   private _totalDuration: Setting<Duration>;
+
+  protected onFinishInitalizeSubject = new Subject<number>();
+
+  public get onFinishInitialize (): Observable<any> {
+    return this.onFinishInitalizeSubject.asObservable();
+  }
+
+  protected _isInitialized: boolean;
+  public get isInitialized (): boolean {
+    return this._isInitialized;
+  }
 
   public constructor () {
     this._sampleCount = new Setting<number>(10, isMinAndDefined(4, isDefinedFormatter, isMinFormatter));
@@ -25,6 +37,13 @@ export class DiagramSettingsService {
       durationMin(
         moment.duration(1, 'hours'),
         (value, min) => durationMinFormatter(value, min, d => d.asHours())));
+
+    this.emitFinishInitialize();
+  }
+
+  protected emitFinishInitialize (): void {
+    this._isInitialized = true;
+    this.onFinishInitalizeSubject.next();
   }
 
   public getSampleCount (): number {

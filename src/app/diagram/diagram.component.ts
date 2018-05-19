@@ -133,7 +133,11 @@ export class DiagramComponent extends RouteReenterListener {
 
   public ngOnInit (): void {
     super.ngOnInit();
-    this.syncState();
+    if (this._diagramSettingsService.isInitialized) {
+      this.syncState();
+    } else {
+      this._diagramSettingsService.onFinishInitialize.subscribe(() => this.syncState());
+    }
   }
 
   public xAxisTickFormatting (label: Moment): string {

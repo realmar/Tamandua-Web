@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './routing/app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -77,6 +76,7 @@ import { SearchResultDetailsModalComponent } from './search/search-results/searc
 import { FormatLoglinePipe } from './search/search-results/search-result-details-modal/format-logline.pipe';
 import { SearchStateService } from './search/search-state-service/search-state.service';
 import { SortPipe } from '../pipes/sort.pipe';
+import { DiagramPersistentSettingsService } from './settings/diagram-settings-service/diagram-persistent-settings.service';
 
 @NgModule({
   declarations: [
@@ -159,9 +159,9 @@ import { SortPipe } from '../pipes/sort.pipe';
     { provide: PersistentStorageService, useClass: IndexedDbService },
     { provide: SearchSettingsService, useClass: SearchPersistentSettingsService },
     { provide: DashboardSettingsService, useClass: DashboardPersistentSettingsService },
-    SearchStateService,
+    { provide: DiagramSettingsService, useClass: DiagramPersistentSettingsService },
     DiagramStateService,
-    DiagramSettingsService,
+    SearchStateService,
     HttpClientModule
   ],
   bootstrap: [ AppComponent ],
