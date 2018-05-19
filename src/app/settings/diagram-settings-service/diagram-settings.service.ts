@@ -25,7 +25,7 @@ export class DiagramSettingsService {
   }
 
   public constructor () {
-    this._sampleCount = new Setting<number>(10, isMinAndDefined(4, isDefinedFormatter, isMinFormatter));
+    this._sampleCount = new Setting<number>(40, isMinAndDefined(4, isDefinedFormatter, isMinFormatter));
     this._sampleDuration = new Setting<Duration>(
       moment.duration(60, 'minutes'),
       durationMin(

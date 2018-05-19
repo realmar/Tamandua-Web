@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../api/api-service';
 import { Router } from '@angular/router';
 import { isNullOrUndefined } from '../../utils/misc';
@@ -17,7 +17,7 @@ import { SearchStateService } from './search-state-service/search-state.service'
   templateUrl: './search.component.html',
   styleUrls: [ './search.component.scss' ]
 })
-export class SearchComponent extends RouteReenterListener {
+export class SearchComponent extends RouteReenterListener implements OnInit {
   private _startDateTime: Date;
   public set startDateTime (value: Date) {
     this._startDateTime = value;
@@ -57,6 +57,10 @@ export class SearchComponent extends RouteReenterListener {
                router: Router) {
     super(router);
     this.restoreState();
+  }
+
+  public ngOnInit (): void {
+    this.checkSearchState();
   }
 
   public ngOnDestroy (): void {
