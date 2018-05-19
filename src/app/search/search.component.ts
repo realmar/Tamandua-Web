@@ -5,12 +5,12 @@ import { isNullOrUndefined } from '../../utils/misc';
 import { SearchSettingsService } from '../settings/search-settings-service/search-settings.service';
 import { SearchResponse } from '../../api/response/search-reponse';
 import { ApiRequestData } from '../../api/request/request';
-import { SearchStateService } from '../search-state-service/search-state.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SearchFieldData } from '../../search-mask/search-field/search-field-data';
 import { SearchMaskResult } from '../../search-mask/search-mask-result';
 import { createSearchEndpoint } from '../../api/request/endpoints/search-endpoint';
 import { RouteReenterListener } from '../../base-classes/route-reenter-listener';
+import { SearchStateService } from './search-state-service/search-state.service';
 
 @Component({
   selector: 'app-search',

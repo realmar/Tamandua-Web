@@ -34,10 +34,6 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { SearchComponent } from './search/search.component';
 import { ApiService } from '../api/api-service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SearchResultsComponent } from './search-results/search-results.component';
-import { SearchResultDetailsModalComponent } from './search-results/search-result-details-modal/search-result-details-modal.component';
-import { SearchResultAddColumnsModalComponent } from './search-results/search-result-add-columns/search-result-add-columns-modal.component';
-import { SearchResultTagsSelectionComponent } from './search-results/search-result-tags-selection/search-result-tags-selection.component';
 import { SearchSettingsService } from './settings/search-settings-service/search-settings.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { DashboardCardComponent } from './dashboard/dashboard-card/dashboard-card.component';
@@ -53,12 +49,10 @@ import { DashboardPersistentSettingsService } from './settings/dashboard-setting
 import { SearchPersistentSettingsService } from './settings/search-settings-service/search-persistent-settings.service';
 import { IndexedDbService } from '../persistence/indexed-db.service';
 import { NgxDnDModule } from '@swimlane/ngx-dnd';
-import { SearchStateService } from './search-state-service/search-state.service';
 import { DashboardSettingsComponent } from './dashboard/dashboard-settings/dashboard-settings.component';
 import { AboutComponent } from './about/about.component';
 import { FooterComponent } from './footer/footer.component';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
-import { FormatLoglinePipe } from './search-results/search-result-details-modal/format-logline.pipe';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { CachedApiService } from '../api/cached-api-service';
 import { SearchMaskModule } from '../search-mask/search-mask.module';
@@ -76,6 +70,12 @@ import { DiagramComponent } from './diagram/diagram.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { DiagramStateService } from './diagram/diagram-state-service/diagram-state.service';
 import { DiagramSettingsService } from './settings/diagram-settings-service/diagram-settings.service';
+import { SearchResultsComponent } from './search/search-results/search-results.component';
+import { SearchResultAddColumnsModalComponent } from './search/search-results/search-result-add-columns/search-result-add-columns-modal.component';
+import { SearchResultTagsSelectionComponent } from './search/search-results/search-result-tags-selection/search-result-tags-selection.component';
+import { SearchResultDetailsModalComponent } from './search/search-results/search-result-details-modal/search-result-details-modal.component';
+import { FormatLoglinePipe } from './search/search-results/search-result-details-modal/format-logline.pipe';
+import { SearchStateService } from './search/search-state-service/search-state.service';
 
 @NgModule({
   declarations: [

@@ -1,6 +1,6 @@
 import * as chroma from 'chroma-js';
 import { Color } from 'chroma-js';
-import { isNullOrUndefined } from '../../../utils/misc';
+import { isNullOrUndefined } from '../../../../utils/misc';
 
 export class HighlightedWords {
   private readonly _words: Map<string, Color>;

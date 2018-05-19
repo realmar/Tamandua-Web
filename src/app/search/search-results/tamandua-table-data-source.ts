@@ -1,9 +1,9 @@
 import { MatSort, MatTableDataSource } from '@angular/material';
-import { Converter } from '../../utils/converter';
-import { isNullOrUndefined } from '../../utils/misc';
 import { _isNumberValue } from '@angular/cdk/coercion';
 import { TableSearchRow } from './table-search-row';
-import { SearchRow } from '../../api/response/search-reponse';
+import { isNullOrUndefined } from '../../../utils/misc';
+import { Converter } from '../../../utils/converter';
+import { SearchRow } from '../../../api/response/search-reponse';
 
 // copy pasta from https://github.com/angular/material2/blob/master/src/lib/table/table-data-source.ts
 // with added support for tamandua specific data (arrays, datetime as strings, undefined, null)

@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatCheckboxChange, MatDialogRef } from '@angular/material';
 import { SearchResultDetailsModalComponent } from '../search-result-details-modal/search-result-details-modal.component';
 import { AddColumnsModalData } from './add-columns-modal-data';
-import { SearchSettingsService } from '../../settings/search-settings-service/search-settings.service';
+import { SearchSettingsService } from '../../../settings/search-settings-service/search-settings.service';
 
 @Component({
   selector: 'app-search-add-columns',

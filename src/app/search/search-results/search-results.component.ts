@@ -1,23 +1,23 @@
 import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
-import { ApiService } from '../../api/api-service';
-import { ColumnsResponse } from '../../api/response/columns-response';
-import { SearchResponse } from '../../api/response/search-reponse';
 import { MatDialog, MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { SearchResultDetailsModalComponent } from './search-result-details-modal/search-result-details-modal.component';
-import { Converter } from '../../utils/converter';
 import { SearchResultAddColumnsModalComponent } from './search-result-add-columns/search-result-add-columns-modal.component';
 import { AddColumnsModalData } from './search-result-add-columns/add-columns-modal-data';
-import { isNullOrUndefined } from '../../utils/misc';
 import { SelectedTags } from './search-result-tags-selection/selected-tags';
-import { SearchSettingsService } from '../settings/search-settings-service/search-settings.service';
 import { TamanduaTableDataSource } from './tamandua-table-data-source';
-import { SaveObjectData } from '../save-object/save-object-data';
-import { JsonSaveStrategy } from '../save-object/strategies/json-save-strategy';
-import { YamlSaveStrategy } from '../save-object/strategies/yaml-save-strategy';
 import { Subject, SubscriptionLike as ISubscription } from 'rxjs';
 import { HighlightedWords } from './search-result-details-modal/highlighted-words';
 import { TableSearchRow } from './table-search-row';
 import { debounceTime } from 'rxjs/operators';
+import { SearchResponse } from '../../../api/response/search-reponse';
+import { ApiService } from '../../../api/api-service';
+import { SearchSettingsService } from '../../settings/search-settings-service/search-settings.service';
+import { SaveObjectData } from '../../save-object/save-object-data';
+import { JsonSaveStrategy } from '../../save-object/strategies/json-save-strategy';
+import { YamlSaveStrategy } from '../../save-object/strategies/yaml-save-strategy';
+import { isNullOrUndefined } from '../../../utils/misc';
+import { Converter } from '../../../utils/converter';
+import { ColumnsResponse } from '../../../api/response/columns-response';
 
 interface TypeComparatorArguments {
   key: string;

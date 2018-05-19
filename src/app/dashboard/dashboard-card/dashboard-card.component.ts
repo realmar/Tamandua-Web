@@ -8,12 +8,11 @@ import { SearchSettingsService } from '../../settings/search-settings-service/se
 import { Router } from '@angular/router';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
 import { isNullOrUndefined } from '../../../utils/misc';
-import { SearchStateService } from '../../search-state-service/search-state.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import * as moment from 'moment';
 import { createAdvancedEndpoint } from '../../../api/request/endpoints/advanced-count-endpoint';
-import { CardRow } from '../card-row';
 import { DiagramStateService } from '../../diagram/diagram-state-service/diagram-state.service';
+import { SearchStateService } from '../../search/search-state-service/search-state.service';
 
 @Component({
   selector: 'app-dashboard-card',

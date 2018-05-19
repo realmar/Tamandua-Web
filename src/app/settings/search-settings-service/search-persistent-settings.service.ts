@@ -1,9 +1,9 @@
 import { Injectable, Type } from '@angular/core';
 import { SearchSettingsService } from './search-settings.service';
-import { SelectedTags } from '../../search-results/search-result-tags-selection/selected-tags';
 import { PersistentStorageService } from '../../../persistence/persistent-storage-service';
 import { isNullOrUndefined } from '../../../utils/misc';
 import { SettingValidationResult } from '../setting-validation-result';
+import { SelectedTags } from '../../search/search-results/search-result-tags-selection/selected-tags';
 
 @Injectable()
 export class SearchPersistentSettingsService extends SearchSettingsService {
