@@ -3,8 +3,8 @@ import { Subject, Observable } from 'rxjs';
 import { Setting } from '../setting';
 import { isNullOrUndefined } from '../../../utils/misc';
 import { SettingValidationResult } from '../setting-validation-result';
-import { greaterThanZero, isNotNull } from '../validators';
-import { mustBePositiveFormatter } from '../formatters';
+import { greaterThanZero, isDefined } from '../validators';
+import { greaterThanZeroFormatter } from '../formatters';
 import { SelectedTags } from '../../search/search-results/search-result-tags-selection/selected-tags';
 
 @Injectable()
@@ -28,15 +28,15 @@ export class SearchSettingsService {
 
   constructor () {
     // default values
-    this._paginatorPageSize = new Setting<number>(this._pageSizeOptions[ 0 ], greaterThanZero(mustBePositiveFormatter));
+    this._paginatorPageSize = new Setting<number>(this._pageSizeOptions[ 0 ], greaterThanZero(greaterThanZeroFormatter));
     this._selectedTags = new Setting<SelectedTags>([], this.selectedTagsvalidator.bind(this));
     this._visibleColumns = new Setting<Array<string>>([
       'phdmxin_time',
       'sender',
       'recipient',
       'tags'
-    ], isNotNull());
-    this._resultCount = new Setting<number>(200, greaterThanZero(mustBePositiveFormatter));
+    ], isDefined());
+    this._resultCount = new Setting<number>(200, greaterThanZero(greaterThanZeroFormatter));
 
     this.onReadySubject = new Subject<any>();
     this.onReadyCallback();

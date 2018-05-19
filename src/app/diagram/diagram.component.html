@@ -6,15 +6,18 @@
                [validationResultObservable]="sampleCountValidationObservable"
                [(data)]="sampleCount"></app-setting>
 
-  <app-setting placeholder="Sample Duration [m]"
+  <app-setting placeholder="Sample Duration [min]"
                type="number"
                [validationResultObservable]="sampleDurationValidationObservable"
                [(data)]="sampleDuration"></app-setting>
+  <span>[min]</span>
 
   <app-setting placeholder="Total Timespan [h]"
                type="number"
                [validationResultObservable]="totalDurationValidationObservable"
                [(data)]="totalDuration"></app-setting>
+  <span>[s]</span>
+
   <button mat-button
           [disabled]="isDoingRequest"
           (click)="collectData()">

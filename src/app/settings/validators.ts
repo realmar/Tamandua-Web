@@ -24,7 +24,7 @@ export function greaterThanZero (formatter?: Formatter<number, number>): Validat
   return greaterThan(0, formatter);
 }
 
-export function isNotNull<T> (formatter?: Formatter<T, T>): Validator<T> {
+export function isDefined<T> (formatter?: Formatter<T, T>): Validator<T> {
   return data => createResultUsingFormatter(data, !isNullOrUndefined(data), formatter);
 }
 
@@ -38,10 +38,10 @@ export function isMin (min: number, formatter?: Formatter<number, number>): Vali
   };
 }
 
-export function isMinAndNotNull (min: number,
+export function isMinAndDefined (min: number,
                                  notNullFormatter?: Formatter<number, number>,
                                  minFormatter?: Formatter<number, number>): Validator<number> {
-  return chain(allReducer(), isNotNull(notNullFormatter), isMin(min, minFormatter));
+  return chain(allReducer(), isDefined(notNullFormatter), isMin(min, minFormatter));
 }
 
 export function durationMin (min: Duration, formatter?: Formatter<Duration, Duration>): Validator<Duration> {

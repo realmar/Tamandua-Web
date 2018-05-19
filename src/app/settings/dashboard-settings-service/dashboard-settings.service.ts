@@ -5,8 +5,8 @@ import { Setting } from '../setting';
 import { SettingValidationResult } from '../setting-validation-result';
 import { CardRow } from '../../dashboard/card-row';
 import { Composite } from '../../dashboard/dashboard-overview-card/composite';
-import { isMinAndNotNull } from '../validators';
-import { valueCannotBeNullFormatter, valueMustBeBiggerThanFormatter } from '../formatters';
+import { isMinAndDefined } from '../validators';
+import { isDefinedFormatter, isMinFormatter } from '../formatters';
 
 @Injectable()
 export class DashboardSettingsService {
@@ -41,28 +41,28 @@ export class DashboardSettingsService {
 
     this._pastHours = new Setting<number>(
       24,
-      isMinAndNotNull(
+      isMinAndDefined(
         1,
-        valueCannotBeNullFormatter,
-        valueMustBeBiggerThanFormatter)
+        isDefinedFormatter,
+        isMinFormatter)
     );
     this._pastHoursSubject = new Subject<number>();
 
     this._maxItemCountPerCard = new Setting<number>(
       4,
-      isMinAndNotNull(
+      isMinAndDefined(
         1,
-        valueCannotBeNullFormatter,
-        valueMustBeBiggerThanFormatter)
+        isDefinedFormatter,
+        isMinFormatter)
     );
     this._maxItemsCountSubject = new Subject<number>();
 
     this._refreshInterval = new Setting<number>(
       100000,
-      isMinAndNotNull(
+      isMinAndDefined(
         10000,
-        valueCannotBeNullFormatter,
-        (value, num) => valueMustBeBiggerThanFormatter(value, num / 1000))
+        isDefinedFormatter,
+        (value, num) => isMinFormatter(value, num / 1000))
     );
     this._refreshIntervalSubject = new Subject<number>();
 

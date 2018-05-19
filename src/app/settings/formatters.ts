@@ -2,15 +2,15 @@ import { Duration } from 'moment';
 
 export type Formatter<T, Args> = (value: T, ...args: Array<Args>) => string;
 
-export function valueCannotBeNullFormatter<T> (value: T): string {
+export function isDefinedFormatter<T> (value: T): string {
   return 'Value cannot be empty.';
 }
 
-export function valueMustBeBiggerThanFormatter (value: number, num: number): string {
+export function isMinFormatter (value: number, num: number): string {
   return `Min is ${num}`;
 }
 
-export function mustBePositiveFormatter (value: number) {
+export function greaterThanZeroFormatter (value: number) {
   return 'Value must be positive';
 }
 

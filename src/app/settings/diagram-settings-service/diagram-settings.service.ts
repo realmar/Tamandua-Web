@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Setting } from '../setting';
 import * as moment from 'moment';
 import { Duration } from 'moment';
-import { allReducer, chain, durationMin, greaterThanZero, isMin, isMinAndNotNull } from '../validators';
-import { durationMinFormatter, mustBePositiveFormatter, valueCannotBeNullFormatter, valueMustBeBiggerThanFormatter } from '../formatters';
+import { allReducer, chain, durationMin, greaterThanZero, isMin, isMinAndDefined } from '../validators';
+import { durationMinFormatter, greaterThanZeroFormatter, isDefinedFormatter, isMinFormatter } from '../formatters';
 import { SettingValidationResult } from '../setting-validation-result';
 import { allResolved } from 'q';
 
@@ -14,7 +14,7 @@ export class DiagramSettingsService {
   private _totalDuration: Setting<Duration>;
 
   public constructor () {
-    this._sampleCount = new Setting<number>(40, isMinAndNotNull(40, valueCannotBeNullFormatter, valueMustBeBiggerThanFormatter));
+    this._sampleCount = new Setting<number>(40, isMinAndDefined(40, isDefinedFormatter, isMinFormatter));
     this._sampleDuration = new Setting<Duration>(
       moment.duration(60, 'minutes'),
       durationMin(
