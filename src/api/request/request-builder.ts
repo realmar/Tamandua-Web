@@ -8,25 +8,25 @@ export interface RequestBuilderConstructor {
 }
 
 export interface RequestBuilder {
-  addField (name: string, value: string | number, comparator: Comparator): void;
+  addField (name: string, value: string | number, comparator: Comparator): RequestBuilder;
 
   getFields (): Array<RequestBuilderField>;
 
-  removeAllFields (): void;
+  removeAllFields (): RequestBuilder;
 
-  setStartDatetime (datetime: Date): void;
+  setStartDatetime (datetime: Date): RequestBuilder;
 
   getStartDatetime (): Date;
 
-  setEndDatetime (datetime: Date): void;
+  setEndDatetime (datetime: Date): RequestBuilder;
 
   getEndDatetime (): Date;
 
-  removeStartDatetime (): void;
+  removeStartDatetime (): RequestBuilder;
 
-  removeEndDatetime (): void;
+  removeEndDatetime (): RequestBuilder;
 
-  setEndpoint (endpoint: Endpoint): void;
+  setEndpoint (endpoint: Endpoint): RequestBuilder;
 
   getEndpoint (): Endpoint;
 

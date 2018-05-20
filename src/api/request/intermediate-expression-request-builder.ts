@@ -57,44 +57,51 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
 
   // region Getters/Setters
 
-  public addField (name: string, value: string | number, comparator: Comparator): void {
+  public addField (name: string, value: string | number, comparator: Comparator): RequestBuilder {
     this._fields.push(new Field(name, value, comparator));
+    return this;
   }
 
   public getFields (): Array<RequestBuilderField> {
     return this._fields;
   }
 
-  public removeAllFields (): void {
+  public removeAllFields (): RequestBuilder {
     this._fields = [];
+    return this;
   }
 
-  public setStartDatetime (datetime: Date): void {
+  public setStartDatetime (datetime: Date): RequestBuilder {
     this._startDatetime = datetime;
+    return this;
   }
 
   public getStartDatetime (): Date {
     return this._startDatetime;
   }
 
-  public setEndDatetime (datetime: Date): void {
+  public setEndDatetime (datetime: Date): RequestBuilder {
     this._endDatetime = datetime;
+    return this;
   }
 
   public getEndDatetime (): Date {
     return this._endDatetime;
   }
 
-  public removeStartDatetime (): void {
+  public removeStartDatetime (): RequestBuilder {
     this._startDatetime = undefined;
+    return this;
   }
 
-  public removeEndDatetime (): void {
+  public removeEndDatetime (): RequestBuilder {
     this._endDatetime = undefined;
+    return this;
   }
 
-  public setEndpoint (endpoint: Endpoint): void {
+  public setEndpoint (endpoint: Endpoint): RequestBuilder {
     this._endpoint = endpoint;
+    return this;
   }
 
   public getEndpoint (): Endpoint {
