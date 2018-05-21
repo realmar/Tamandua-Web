@@ -77,6 +77,7 @@ import { FormatLoglinePipe } from './search/search-results/search-result-details
 import { SearchStateService } from './search/search-state-service/search-state.service';
 import { SortPipe } from '../pipes/sort.pipe';
 import { DiagramPersistentSettingsService } from './settings/diagram-settings-service/diagram-persistent-settings.service';
+import { DirectedGraphComponent } from './directed_graph/directed-graph.component';
 
 @NgModule({
   declarations: [
@@ -105,7 +106,8 @@ import { DiagramPersistentSettingsService } from './settings/diagram-settings-se
     DashboardOverviewEditModalComponent,
     DashboardOverviewEditSearchmaskComponent,
     DiagramComponent,
-    SortPipe
+    SortPipe,
+    DirectedGraphComponent
   ],
   imports: [
     SearchMaskModule,
