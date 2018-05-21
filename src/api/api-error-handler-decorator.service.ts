@@ -9,7 +9,6 @@ import { ColumnsResponse } from './response/columns-response';
 import { RequestBuilder } from './request/request-builder';
 import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
 import { TagsResponse } from './response/tags-response';
-import { IntermediateExpressionRequest } from './request/intermediate-expression-request';
 import { CachedApiService } from './cached-api-service';
 import { ToastrUtils } from '../utils/toastr-utils';
 
@@ -49,15 +48,11 @@ export class ApiErrorHandlerDecoratorService implements CachedApiService {
   }
 
   public SubmitRequest<T extends ApiResponse> (request: ApiRequestData): Observable<T> {
-    return this.addGenericResponseHandling(request.accept(this));
+    return this.addGenericResponseHandling(this._apiService.SubmitRequest<T>(request));
   }
 
   public getRequestBuilder (): RequestBuilder {
     return this._apiService.getRequestBuilder();
-  }
-
-  public visitIE<T extends ApiResponse> (request: IntermediateExpressionRequest): Observable<T> {
-    return this._apiService.visitIE(request);
   }
 
   public invalidateAllCaches (): void {

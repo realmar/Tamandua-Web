@@ -1,6 +1,5 @@
 import { RequestBuilder, RequestBuilderConstructor } from './request/request-builder';
 import { ApiRequestData } from './request/request';
-import { IntermediateExpressionRequest } from './request/intermediate-expression-request';
 import { ColumnsResponse } from './response/columns-response';
 import { TagsResponse } from './response/tags-response';
 import { FieldChoicesResponse } from './response/field-choices-response';
@@ -26,6 +25,4 @@ export abstract class ApiService {
   abstract SubmitRequest<T extends ApiResponse> (request: ApiRequestData): Observable<T>;
 
   abstract getRequestBuilder (): RequestBuilder;
-
-  abstract visitIE<T extends ApiResponse> (request: IntermediateExpressionRequest): Observable<T>;
 }

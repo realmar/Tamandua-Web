@@ -1,6 +1,6 @@
 import { RequestBuilder } from './request-builder';
 import { Comparator } from './comparator';
-import { IntermediateExpressionRequest } from './intermediate-expression-request';
+import { GenericRequest } from './generic-request';
 import { ApiRequestData } from './request';
 import { isNullOrUndefined } from '../../utils/misc';
 import { Endpoint } from './endpoints/endpoint';
@@ -138,6 +138,6 @@ export class IntermediateExpressionRequestBuilder implements RequestBuilder {
       data.datetime[ 'end' ] = Converter.dateToString(this._endDatetime);
     }
 
-    return new IntermediateExpressionRequest(data, this._endpoint);
+    return new GenericRequest(data, this._endpoint);
   }
 }

@@ -5,11 +5,9 @@ import { ColumnsResponse } from './response/columns-response';
 import { TagsResponse } from './response/tags-response';
 import { FieldChoicesResponse } from './response/field-choices-response';
 import { RequestBuilder } from './request/request-builder';
-import { IntermediateExpressionRequest } from './request/intermediate-expression-request';
 import { ApiRequestData } from './request/request';
 import { ApiResponse } from './response/api-response';
 import { HttpClient } from '@angular/common/http';
-import { IntermediateExpressionRequestBuilder } from './request/intermediate-expression-request-builder';
 import { Endpoint } from './request/endpoints/endpoint';
 import { EndpointMethod } from './request/endpoints/endpoint-method.enum';
 import { SupportedFieldchoicesResponse } from './response/supported-fieldchoices-response';
@@ -103,14 +101,10 @@ export class TamanduaService implements ApiService {
   }
 
   public SubmitRequest<T extends ApiResponse> (request: ApiRequestData): Observable<T> {
-    return request.accept(this);
+    return this.makeRequest(request.endpoint, request.data);
   }
 
   public getRequestBuilder (): RequestBuilder {
     return new ApiService.RequestBuilderClass();
-  }
-
-  public visitIE<T extends ApiResponse> (request: IntermediateExpressionRequest): Observable<T> {
-    return this.makeRequest(request.endpoint, request.dataObject);
   }
 }

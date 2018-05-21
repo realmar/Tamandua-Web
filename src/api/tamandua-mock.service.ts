@@ -4,7 +4,6 @@ import { IntermediateExpressionRequestBuilder } from './request/intermediate-exp
 import { RequestBuilder } from './request/request-builder';
 import { of, Observable } from 'rxjs';
 import { ApiRequestData } from './request/request';
-import { IntermediateExpressionRequest } from './request/intermediate-expression-request';
 import { SearchResponse } from './response/search-reponse';
 import { CountResponse } from './response/count-response';
 import { AdvancedCountResponse } from './response/advanced-count-response';
@@ -94,25 +93,12 @@ export class TamanduaMockService extends ApiService {
   }
 
   public SubmitRequest<T extends ApiResponse> (request: ApiRequestData): Observable<T> {
-    return request.accept(this);
+    // TODO: fix dat if u wanna use dis class
+    return of(undefined);
   }
 
   public getRequestBuilder (): RequestBuilder {
     return new IntermediateExpressionRequestBuilder();
-  }
-
-  public visitIE<T extends ApiResponse> (request: IntermediateExpressionRequest): Observable<T> {
-    // TODO: fix dat if u wanna use dis class
-
-    /*if (request.endpoint instanceof SearchEndpoint) {
-      return this.search(request.data, request.endpoint) as any as Observable<T>;
-    } else if (request.endpoint instanceof CountEndpoint) {
-      return this.count(request.data, request.endpoint)  as any as Observable<T>;
-    } else if (request.endpoint instanceof AdvancedCountEndpoint) {
-      return this.advancedCount(request.data, request.endpoint) as any as Observable<T>;
-    }*/
-
-    return of(undefined);
   }
 
   public search (queryData: string, endpoint: Endpoint): Observable<SearchResponse> {
