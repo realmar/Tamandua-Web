@@ -1,3 +1,4 @@
+import { share } from 'rxjs/operators';
 import { throwError as observableThrowError, Observable, Subject, of } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { ApiService } from './api-service';
@@ -31,10 +32,19 @@ export class TamanduaService implements ApiService {
   }
 
   private makeRequest<T extends ApiResponse> (endpoint: Endpoint, data?: object): Observable<T> {
+    // About .pipe(share():
+    // https://www.learnrxjs.io/operators/multicasting/share.html
+    // https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/operators/share.md
+    // http://blog.novanet.no/angular-pitfall-multiple-http-requests-with-rxjs-and-observable-async/
+    //
+    // Because multiple clients subscribed to the returned observable the http request was emitted
+    // once for each each subscriber. With share() we share the underlying source with all subscribers.
+    // (And thus not making multiple HTTP requests to the server)
+
     if (endpoint.method === EndpointMethod.Get) {
-      return this._httpClient.get<T>(this.createFullUrl(endpoint.apiUrl));
+      return this._httpClient.get<T>(this.createFullUrl(endpoint.apiUrl)).pipe(share());
     } else if (endpoint.method === EndpointMethod.Post) {
-      return this._httpClient.post<T>(this.createFullUrl(endpoint.apiUrl), data);
+      return this._httpClient.post<T>(this.createFullUrl(endpoint.apiUrl), data).pipe(share());
     } else {
       throw new Error(`Endpoint method not supported: ${endpoint.method}`);
     }
