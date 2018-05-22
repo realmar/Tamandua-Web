@@ -19,7 +19,7 @@ import {
   MatNativeDateModule,
   MatOptionModule,
   MatPaginatorModule,
-  MatProgressBarModule,
+  MatProgressBarModule, MatProgressSpinnerModule,
   MatSelectModule,
   MatSlideToggleModule,
   MatSortModule,
@@ -142,6 +142,7 @@ import { DiagramPersistentSettingsService } from './settings/diagram-settings-se
     MatSlideToggleModule,
     MatSelectModule,
     MatOptionModule,
+    MatProgressSpinnerModule,
 
     TreeModule,
     NgxDnDModule,

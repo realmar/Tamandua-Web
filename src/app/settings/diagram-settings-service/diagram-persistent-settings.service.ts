@@ -23,13 +23,13 @@ export class DiagramPersistentSettingsService extends DiagramSettingsService {
       if (!isNullOrUndefined(value)) {
         setter(value);
       }
-    });
 
-    this._retrievedDataCount++;
-    if (this._retrievedDataCount === 3) {
-      this._isInitialized = true;
-      this.onFinishInitalizeSubject.next();
-    }
+      this._retrievedDataCount++;
+      if (this._retrievedDataCount === 3) {
+        this._isInitialized = true;
+        this.onFinishInitalizeSubject.next();
+      }
+    });
   }
 
   private deserializeTotalDuration (duration: number): void {

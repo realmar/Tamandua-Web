@@ -1,9 +1,8 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ɵPublicFeature } from '@angular/core';
 import * as moment from 'moment';
 import { Duration, Moment } from 'moment';
 import * as clone from 'clone';
 import { ApiService } from '../../api/api-service';
-import { AdvancedCountResponse } from '../../api/response/advanced-count-response';
 import { LineChartComponent } from '@swimlane/ngx-charts/release/line-chart/line-chart.component';
 import { isNullOrUndefined, toFloat } from '../../utils/misc';
 import * as d3 from 'd3';
@@ -15,20 +14,23 @@ import { DiagramInputData, DiagramStateService } from './diagram-state-service/d
 import { Subject, Observable, Subscription } from 'rxjs';
 import { SettingValidationResult } from '../settings/setting-validation-result';
 import { DiagramSettingsService } from '../settings/diagram-settings-service/diagram-settings.service';
-
-interface ResultWrapper {
-  readonly timepoint: Moment;
-  readonly data: AdvancedCountResponse;
-}
+import { unsubscribeIfDefined } from '../../utils/rxjs';
+import { createTrendEndpoint } from '../../api/request/endpoints/trend-endpoint';
+import { TrendResponse } from '../../api/response/trend-response';
+import { Converter } from '../../utils/converter';
+import { DashboardSettingsService } from '../settings/dashboard-settings-service/dashboard-settings.service';
+import { buildSpam } from '../dashboard/default-cards/spam';
+import { serialize } from 'class-transformer';
 
 interface ChartSeries {
-  name: Moment;
-  value: number;
+  readonly moment: Moment;
+  readonly name: string;
+  readonly value: number;
 }
 
 interface ChartItem {
-  name: string;
-  series: Array<ChartSeries>;
+  readonly name: string;
+  readonly series: Array<ChartSeries>;
 }
 
 type ChartData = Array<ChartItem>;
@@ -97,8 +99,8 @@ export class DiagramComponent extends RouteReenterListener {
     return isNullOrUndefined(this._chartData) ? [] : this._chartData;
   }
 
-  private _xAxisTicks: Array<Moment>;
-  public get xAxisTicks (): Array<Moment> {
+  private _xAxisTicks: Array<string>;
+  public get xAxisTicks (): Array<string> {
     return this._xAxisTicks;
   }
 
@@ -119,15 +121,14 @@ export class DiagramComponent extends RouteReenterListener {
     return isNullOrUndefined(this._isDoingRequest) ? false : this._isDoingRequest;
   }
 
-  private readonly _requestSubscriptions: Array<Subscription>;
-  private _requestIsCancled = false;
+  private _requestSubscription: Subscription;
 
   public constructor (private _apiService: ApiService,
                       private _diagramStateService: DiagramStateService,
                       private _diagramSettingsService: DiagramSettingsService,
+                      private _d: DashboardSettingsService,
                       router: Router) {
     super(router);
-    this._requestSubscriptions = [];
     this._chartData = [];
   }
 
@@ -140,8 +141,13 @@ export class DiagramComponent extends RouteReenterListener {
     }
   }
 
-  public xAxisTickFormatting (label: Moment): string {
-    return label.format('HH:mm:ss');
+  public ngOnDestroy (): void {
+    super.ngOnDestroy();
+    this.cancelRequests();
+  }
+
+  private xAxisTickFormatting (label: Moment): string {
+    return label.format('YYYY/MM/DD HH:mm:ss');
   }
 
   public yAxisTickFormatting (label: string): string {
@@ -153,101 +159,81 @@ export class DiagramComponent extends RouteReenterListener {
   }
 
   protected onRouteReenter (): void {
-    this.syncState();
+    if (this._diagramSettingsService.isInitialized) {
+      this.syncState();
+    }
   }
 
   private syncState (): void {
-    const data = this._diagramStateService.data;
+    this._inputData = {
+      requestBuilder: buildSpam(() => this._apiService.getRequestBuilder(), this._d).cardData[ 1 ].requestBuilder,
+      title: 'test'
+    };
+    this.collectData();
+
+    /*const data = this._diagramStateService.data;
     if (data !== this._inputData) {
       this._inputData = data;
       this.collectData();
-    }
-  }
-
-  private collectDataCallback (data: Array<ResultWrapper>): void {
-    if (this._requestIsCancled) {
-      return;
-    }
-
-    const map = new Map<string, ChartItem>();
-    data.forEach(value => {
-      value.data.items.forEach(x => {
-        const createSeriesItem = () => {
-          return {
-            name: value.timepoint,
-            value: x.value,
-          };
-        };
-
-        if (map.has(x.key)) {
-          map.get(x.key).series.push(createSeriesItem());
-        } else {
-          map.set(x.key, {
-            name: x.key,
-            series: [ createSeriesItem() ]
-          });
-        }
-      });
-    });
-
-    const dataArr = map.valuesToArray();
-    const uniqueXLabels = new Map<Moment, any>();
-    if (dataArr.length > 0) {
-      dataArr
-        .map(value => value.series)
-        .reduce((previousValue, currentValue) => previousValue.concat(currentValue))
-        .map(value => value.name)
-        .forEach(value => uniqueXLabels.set(value, null));
-    }
-    this._xAxisTicks = uniqueXLabels.keysToArray();
-
-    this._chartData = dataArr;
-    this._isDoingRequest = false;
+    }*/
   }
 
   public collectData (): void {
-    this._requestIsCancled = false;
     this._isDoingRequest = true;
-    this._requestSubscriptions.clear();
 
-    const results: Array<ResultWrapper> = [];
-    const sampleInterval = this.sampleInterval;
-    const duration = clone(this._diagramSettingsService.getTotalDuration());
-    const time = moment().subtract(duration.add(sampleInterval));
+    const rb = clone(this._inputData.requestBuilder);
+    const field = rb.getEndpoint().metadata.field;
+    const dataCount = rb.getEndpoint().metadata.length;
+    const sampleCount = this._diagramSettingsService.getSampleCount();
+    const sampleDuration = this._diagramSettingsService.getSampleDuration().asMinutes();
+    const totalDuration = this._diagramSettingsService.getTotalDuration().asHours();
 
-    for (let i = 0; i < this._diagramSettingsService.getSampleCount(); i++) {
-      // in momentjs 3.0.0 this stuff will get immutable, so then we dont need to clone it
-      // see: https://github.com/moment/moment/issues/1754
-      const startDate = clone(time).subtract(this._diagramSettingsService.getSampleDuration()).toDate();
-      const endDate = time.toDate();
-      const timepoint = clone(time);
+    const endpoint = createTrendEndpoint(field);
+    rb.setEndpoint(endpoint);
 
-      this._inputData.requestBuilder.setStartDatetime(startDate);
-      this._inputData.requestBuilder.setEndDatetime(endDate);
+    const request = rb.build();
+    request.data[ 'dataCount' ] = dataCount;
+    request.data[ 'sampleCount' ] = sampleCount;
+    request.data[ 'totalHours' ] = totalDuration;
+    request.data[ 'sampleDuration' ] = sampleDuration;
 
-      const request = this._inputData.requestBuilder.build();
-      this._requestSubscriptions.push(this._apiService.SubmitRequest<AdvancedCountResponse>(request).subscribe(value => {
-        results.push({
-          timepoint: timepoint,
-          data: value
+    this._requestSubscription = this._apiService.SubmitRequest<TrendResponse>(request).subscribe(value => {
+      const uniqueXLabels = new Map<number, ChartSeries>();
+      const resultMap = new Map<string, ChartItem>();
+
+      value.forEach(result => {
+        result.forEach(data => {
+          const m = moment(Converter.stringToDate(data.datetime));
+          const item = {
+            moment: m,
+            name: this.xAxisTickFormatting(m),
+            value: toFloat(data.value)
+          };
+          uniqueXLabels.set(item.moment.unix(), item);
+
+          if (!resultMap.has(data.key)) {
+            resultMap.set(data.key, {
+              name: data.key,
+              series: [ item ]
+            });
+          } else {
+            resultMap.get(data.key).series.push(item);
+          }
         });
-        if (results.length === this._diagramSettingsService.getSampleCount()) {
-          this.collectDataCallback(results);
-        }
-      }));
+      });
 
-      time.add(sampleInterval);
-    }
+      this._xAxisTicks = uniqueXLabels
+        .valuesToArray()
+        .sort((a, b) => a.moment.diff(b.moment))
+        .map(v => v.name);
+      this._chartData = resultMap.valuesToArray();
+
+      this._isDoingRequest = false;
+    });
   }
 
   public cancelRequests (): void {
-    this._requestIsCancled = true;
+    unsubscribeIfDefined(this._requestSubscription);
     this._isDoingRequest = false;
-    this._requestSubscriptions.forEach(sub => sub.unsubscribe());
-    this._requestSubscriptions.clear();
-  }
-
-  public modelSorter (a: any, b: any): number {
-    return b.value - a.value;
   }
 }
