@@ -12,12 +12,12 @@ import { debounceTime } from 'rxjs/operators';
 import { SearchResponse } from '../../../api/response/search-reponse';
 import { ApiService } from '../../../api/api-service';
 import { SearchSettingsService } from '../../settings/search-settings-service/search-settings.service';
-import { SaveObjectData } from '../../save-object/save-object-data';
-import { JsonSaveStrategy } from '../../save-object/strategies/json-save-strategy';
-import { YamlSaveStrategy } from '../../save-object/strategies/yaml-save-strategy';
 import { isNullOrUndefined } from '../../../utils/misc';
 import { Converter } from '../../../utils/converter';
 import { ColumnsResponse } from '../../../api/response/columns-response';
+import { YamlSaveStrategy } from '../../../save-object/strategies/yaml-save-strategy';
+import { JsonSaveStrategy } from '../../../save-object/strategies/json-save-strategy';
+import { SaveObjectData } from '../../../save-object/save-object-data';
 
 interface TypeComparatorArguments {
   key: string;

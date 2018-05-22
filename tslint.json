@@ -129,7 +129,8 @@
       [
         "app",
         "search-mask",
-        "question-modal"
+        "question-modal",
+        "save-object"
       ],
       "kebab-case"
     ],

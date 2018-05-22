@@ -1,14 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { SaveObjectData } from './save-object-data';
-import { isNullOrUndefined } from '../../utils/misc';
+import { isNullOrUndefined } from '../utils/misc';
 
 @Component({
-  selector: 'app-save-object',
+  selector: 'save-object',
   templateUrl: './save-object.component.html',
   styleUrls: [ './save-object.component.scss' ]
 })
-export class SaveObjectComponent implements OnInit {
-
+export class SaveObjectComponent {
   private _model: SaveObjectData;
 
   public get strategyNames (): Array<string> {
@@ -26,9 +25,6 @@ export class SaveObjectComponent implements OnInit {
 
   get disabled (): boolean {
     return this._disabled;
-  }
-
-  ngOnInit () {
   }
 
   public executeStrategyByName (name: string): void {

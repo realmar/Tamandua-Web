@@ -40,7 +40,6 @@ import { DashboardCardItemComponent } from './dashboard/dashboard-card-item/dash
 import { DashboardSettingsService } from './settings/dashboard-settings-service/dashboard-settings.service';
 import { DashboardOverviewCardComponent } from './dashboard/dashboard-overview-card/dashboard-overview-card.component';
 import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
-import { SaveObjectComponent } from './save-object/save-object.component';
 import { CustomReuseStrategy } from './routing/custom-reuse-strategy';
 import { RouteReuseStrategy } from '@angular/router';
 import { PersistentStorageService } from '../persistence/persistent-storage-service';
@@ -77,6 +76,7 @@ import { FormatLoglinePipe } from './search/search-results/search-result-details
 import { SearchStateService } from './search/search-state-service/search-state.service';
 import { SortPipe } from '../pipes/sort.pipe';
 import { TrendPersistentSettingsService } from './settings/trend-settings-service/trend-persistent-settings.service';
+import { SaveObjectModule } from '../save-object/save-object.module';
 
 @NgModule({
   declarations: [
@@ -92,7 +92,6 @@ import { TrendPersistentSettingsService } from './settings/trend-settings-servic
     DashboardCardItemComponent,
     DashboardOverviewCardComponent,
     SafeHtmlPipe,
-    SaveObjectComponent,
     SettingComponent,
     DashboardSettingsComponent,
     AboutComponent,
@@ -110,6 +109,7 @@ import { TrendPersistentSettingsService } from './settings/trend-settings-servic
   imports: [
     SearchMaskModule,
     QuestionModalModule,
+    SaveObjectModule,
 
     BrowserModule,
     AppRoutingModule,

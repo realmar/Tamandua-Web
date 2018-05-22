@@ -11,8 +11,8 @@
               class="add-columns-button">
         <mat-icon>tune</mat-icon>
       </button>
-      <app-save-object [data]="generateSaveDataObject()"
-                       [disabled]="!hasRows"></app-save-object>
+      <save-object [data]="generateSaveDataObject()"
+                   [disabled]="!hasRows"></save-object>
     </mat-header-cell>
     <mat-cell *matCellDef="let element" class="details-column">
       <button mat-icon-button (click)="showDetails(element)">

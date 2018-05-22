@@ -3,10 +3,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { HighlightedWords } from './highlighted-words';
 import { SearchRow, SearchRowValue } from '../../../../api/response/search-reponse';
 import { isNullOrUndefined } from '../../../../utils/misc';
-import { SaveObjectData } from '../../../save-object/save-object-data';
-import { JsonSaveStrategy } from '../../../save-object/strategies/json-save-strategy';
-import { YamlSaveStrategy } from '../../../save-object/strategies/yaml-save-strategy';
-import { PngSaveStrategy } from '../../../save-object/strategies/png-save-strategy';
+import { SaveObjectData } from '../../../../save-object/save-object-data';
+import { JsonSaveStrategy } from '../../../../save-object/strategies/json-save-strategy';
+import { PngSaveStrategy } from '../../../../save-object/strategies/png-save-strategy';
+import { YamlSaveStrategy } from '../../../../save-object/strategies/yaml-save-strategy';
 
 interface Row {
   key: string;
