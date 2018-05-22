@@ -8,7 +8,7 @@ import { isNullOrUndefined, toFloat } from '../../utils/misc';
 import * as d3 from 'd3';
 import { CurveFactory } from 'd3';
 import * as numeral from 'numeral';
-import { RouteReenterListener } from '../../base-classes/route-reenter-listener';
+import { RouteChangeListener } from '../../base-classes/route-change-listener';
 import { Router } from '@angular/router';
 import { TrendInputData, TrendStateService } from './trend-state-service/trend-state.service';
 import { Subject, Observable, Subscription } from 'rxjs';
@@ -39,7 +39,7 @@ type ChartData = Array<ChartItem>;
   templateUrl: './trend.component.html',
   styleUrls: [ './trend.component.scss' ]
 })
-export class TrendComponent extends RouteReenterListener {
+export class TrendComponent extends RouteChangeListener {
   @ViewChild(LineChartComponent) private _chart: LineChartComponent;
 
   private _totalDurationValidation = new Subject<SettingValidationResult>();
@@ -161,6 +161,9 @@ export class TrendComponent extends RouteReenterListener {
     if (this._trendSettingsService.isInitialized) {
       this.syncState();
     }
+  }
+
+  protected onRouteExit (): void {
   }
 
   private syncState (): void {

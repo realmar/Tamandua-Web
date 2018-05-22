@@ -9,7 +9,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { SearchFieldData } from '../../search-mask/search-field/search-field-data';
 import { SearchMaskResult } from '../../search-mask/search-mask-result';
 import { createSearchEndpoint } from '../../api/request/endpoints/search-endpoint';
-import { RouteReenterListener } from '../../base-classes/route-reenter-listener';
+import { RouteChangeListener } from '../../base-classes/route-change-listener';
 import { SearchStateService } from './search-state-service/search-state.service';
 
 @Component({
@@ -17,7 +17,7 @@ import { SearchStateService } from './search-state-service/search-state.service'
   templateUrl: './search.component.html',
   styleUrls: [ './search.component.scss' ]
 })
-export class SearchComponent extends RouteReenterListener implements OnInit {
+export class SearchComponent extends RouteChangeListener implements OnInit {
   private _startDateTime: Date;
   public set startDateTime (value: Date) {
     this._startDateTime = value;
@@ -60,6 +60,7 @@ export class SearchComponent extends RouteReenterListener implements OnInit {
   }
 
   public ngOnInit (): void {
+    super.ngOnInit();
     this.checkSearchState();
   }
 
@@ -74,6 +75,9 @@ export class SearchComponent extends RouteReenterListener implements OnInit {
 
   protected onRouteReenter (): void {
     this.checkSearchState();
+  }
+
+  protected onRouteExit (): void {
   }
 
   private restoreState (): void {
