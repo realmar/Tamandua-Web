@@ -1,4 +1,4 @@
-import { Component, ViewChild, ɵPublicFeature } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import * as moment from 'moment';
 import { Duration, Moment } from 'moment';
 import * as clone from 'clone';
@@ -23,7 +23,7 @@ import { buildSpam } from '../dashboard/default-cards/spam';
 
 interface ChartSeries {
   readonly moment: Moment;
-  readonly name: string;
+  readonly name: number;
   readonly value: number;
 }
 
@@ -98,8 +98,8 @@ export class TrendComponent extends RouteReenterListener {
     return isNullOrUndefined(this._chartData) ? [] : this._chartData;
   }
 
-  private _xAxisTicks: Array<string>;
-  public get xAxisTicks (): Array<string> {
+  private _xAxisTicks: Array<number>;
+  public get xAxisTicks (): Array<number> {
     return this._xAxisTicks;
   }
 
@@ -125,7 +125,7 @@ export class TrendComponent extends RouteReenterListener {
   public constructor (private _apiService: ApiService,
                       private _trendStateService: TrendStateService,
                       private _trendSettingsService: TrendSettingsService,
-                      private _d: DashboardSettingsService,
+                      /* private _d: DashboardSettingsService, // debug */
                       router: Router) {
     super(router);
     this._chartData = [];
@@ -145,8 +145,8 @@ export class TrendComponent extends RouteReenterListener {
     this.cancelRequests();
   }
 
-  private xAxisTickFormatting (label: Moment): string {
-    return label.format('YYYY/MM/DD HH:mm:ss');
+  public xAxisTickFormatting (label: number): string {
+    return moment.unix(label).format('YYYY/MM/DD HH:mm:ss');
   }
 
   public yAxisTickFormatting (label: string): string {
@@ -154,7 +154,7 @@ export class TrendComponent extends RouteReenterListener {
   }
 
   protected getRouteMatcher (): RegExp {
-    return new RegExp('^\/diagram', 'i');
+    return new RegExp('^\/trend', 'i');
   }
 
   protected onRouteReenter (): void {
@@ -164,17 +164,18 @@ export class TrendComponent extends RouteReenterListener {
   }
 
   private syncState (): void {
-    this._inputData = {
+    // debug
+    /*this._inputData = {
       requestBuilder: buildSpam(() => this._apiService.getRequestBuilder(), this._d).cardData[ 1 ].requestBuilder,
       title: 'test'
     };
-    this.collectData();
+    this.collectData();*/
 
-    /*const data = this._diagramStateService.data;
+    const data = this._trendStateService.data;
     if (data !== this._inputData) {
       this._inputData = data;
       this.collectData();
-    }*/
+    }
   }
 
   public collectData (): void {
@@ -205,10 +206,10 @@ export class TrendComponent extends RouteReenterListener {
             const m = moment(Converter.stringToDate(data.datetime));
             const item = {
               moment: m,
-              name: this.xAxisTickFormatting(m),
+              name: m.unix(),
               value: toFloat(data.value)
             };
-            uniqueXLabels.set(item.moment.unix(), item);
+            uniqueXLabels.set(item.name, item);
 
             if (!resultMap.has(data.key)) {
               resultMap.set(data.key, {
@@ -226,7 +227,6 @@ export class TrendComponent extends RouteReenterListener {
           .sort((a, b) => a.moment.diff(b.moment))
           .map(v => v.name);
         this._chartData = resultMap.valuesToArray();
-
         this._isDoingRequest = false;
       },
       () => this.cancelRequests());

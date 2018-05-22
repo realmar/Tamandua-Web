@@ -15,6 +15,8 @@ declare global {
     removeWhere (predicate: (value: T) => boolean): number;
 
     insert (index: number, value: T): void;
+
+    distinct (): Array<T>;
   }
 }
 
@@ -41,4 +43,13 @@ Array.prototype.removeWhere = function <T> (predicate: (value: T) => boolean): n
 
 Array.prototype.insert = function <T> (index: number, value: T): void {
   this.splice(index, 0, value);
+};
+
+Array.prototype.distinct = function <T> (): Array<T> {
+  const arr = [];
+  const set = new Set<T>(this);
+  set.forEach(value => arr.push(value));
+  this.clear();
+  this.push(...arr);
+  return this;
 };
