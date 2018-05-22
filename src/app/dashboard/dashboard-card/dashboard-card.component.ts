@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { DashboardCardData } from './dashboard-card-data';
 import { ApiService } from '../../../api/api-service';
 import { AdvancedCountResponse } from '../../../api/response/advanced-count-response';
@@ -13,13 +13,15 @@ import * as moment from 'moment';
 import { createAdvancedEndpoint } from '../../../api/request/endpoints/advanced-count-endpoint';
 import { TrendStateService } from '../../trend/trend-state-service/trend-state.service';
 import { SearchStateService } from '../../search/search-state-service/search-state.service';
+import { RouteChangeListener } from '../../../base-classes/route-change-listener';
+import { unsubscribeIfDefined } from '../../../utils/rxjs';
 
 @Component({
   selector: 'app-dashboard-card',
   templateUrl: './dashboard-card.component.html',
   styleUrls: [ './dashboard-card.component.scss' ]
 })
-export class DashboardCardComponent implements OnInit, OnDestroy {
+export class DashboardCardComponent extends RouteChangeListener {
   private _pastHoursChangeSubscription: Subscription;
   private _maxItemCountChangeSubscription: Subscription;
   private _refreshIntervalSubscription: Subscription;
@@ -55,18 +57,13 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
                       private _searchSettingsService: SearchSettingsService,
                       private _searchStateService: SearchStateService,
                       private _trendStateService: TrendStateService,
-                      private _router: Router) {
+                      router: Router) {
+    super(router);
     this._isDoingRequest = false;
-
-    this._pastHoursChangeSubscription =
-      this._dashboardSettingsService.pastHoursObservable.subscribe(this.onPastHoursChange.bind(this));
-    this._maxItemCountChangeSubscription =
-      this._dashboardSettingsService.maxItemCountObservable.subscribe(this.onMaxItemCountChange.bind(this));
-    this._refreshIntervalChangeSubscription =
-      this._dashboardSettingsService.refreshIntervalObservable.subscribe(this.onRefreshIntervalChange.bind(this));
   }
 
   public ngOnInit () {
+    super.ngOnInit();
     if (isNullOrUndefined(this._data.requestResult)) {
       this._data.requestResult = [];
     }
@@ -77,7 +74,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
       builder.setStartDatetime(this.createPastDate(this._dashboardSettingsService.getPastHours()));
       this._data.requestBuilder.getEndpoint().metadata.length = this._dashboardSettingsService.getMaxItemCountPerCard();
 
-      this.createRefreshIntervalSubscription();
+      this.createSubscriptions();
       this.getData();
     };
 
@@ -89,10 +86,46 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy (): void {
-    this._pastHoursChangeSubscription.unsubscribe();
-    this._maxItemCountChangeSubscription.unsubscribe();
-    this._refreshIntervalSubscription.unsubscribe();
-    this._refreshIntervalChangeSubscription.unsubscribe();
+    super.ngOnDestroy();
+    this.destroySubscriptions();
+  }
+
+  protected getRouteMatcher (): RegExp {
+    return new RegExp('^\/dashboard', 'i');
+  }
+
+  protected onRouteExit (): void {
+    super.onRouteExit();
+    this.destroySubscriptions();
+  }
+
+  protected onRouteReenter (): void {
+    this.createSubscriptions();
+
+    if (this._dashboardSettingsService.isInitialized) {
+      const diff = moment.duration(moment().diff(this.routeExitTime)).asSeconds() * 1000;
+      if (diff >= this._dashboardSettingsService.getRefreshInterval()) {
+        this.getData();
+      }
+    }
+  }
+
+  private createSubscriptions (): void {
+    this._pastHoursChangeSubscription =
+      this._dashboardSettingsService.pastHoursObservable.subscribe(this.onPastHoursChange.bind(this));
+    this._maxItemCountChangeSubscription =
+      this._dashboardSettingsService.maxItemCountObservable.subscribe(this.onMaxItemCountChange.bind(this));
+    this._refreshIntervalChangeSubscription =
+      this._dashboardSettingsService.refreshIntervalObservable.subscribe(this.onRefreshIntervalChange.bind(this));
+    this.createRefreshIntervalSubscription();
+  }
+
+  private destroySubscriptions (): void {
+    unsubscribeIfDefined(
+      this._pastHoursChangeSubscription,
+      this._maxItemCountChangeSubscription,
+      this._refreshIntervalSubscription,
+      this._refreshIntervalChangeSubscription);
   }
 
   private getData (): void {
@@ -135,7 +168,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
 
     this._searchStateService.doSearch = true;
 
-    this._router.navigate([ 'search' ])
+    this.router.navigate([ 'search' ])
       .then(result => result ? '' : console.log('Failed to navigate'));
   }
 
@@ -192,7 +225,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
       requestBuilder: this._data.requestBuilder
     };
 
-    this._router.navigate([ 'trend' ])
+    this.router.navigate([ 'trend' ])
       .then(result => result ? '' : console.log('Failed to navigate'));
   }
 }

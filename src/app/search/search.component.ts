@@ -77,9 +77,6 @@ export class SearchComponent extends RouteChangeListener implements OnInit {
     this.checkSearchState();
   }
 
-  protected onRouteExit (): void {
-  }
-
   private restoreState (): void {
     // restore state
     if (isNullOrUndefined(this._searchStateService.fields) || this._searchStateService.fields.length === 0) {

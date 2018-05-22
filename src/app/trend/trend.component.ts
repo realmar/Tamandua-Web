@@ -163,9 +163,6 @@ export class TrendComponent extends RouteChangeListener {
     }
   }
 
-  protected onRouteExit (): void {
-  }
-
   private syncState (): void {
     // debug
     /*this._inputData = {

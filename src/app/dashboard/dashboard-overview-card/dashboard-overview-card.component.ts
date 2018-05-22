@@ -19,13 +19,15 @@ import * as clone from 'clone';
 import { Composite, Item, SummaryItem } from './composite';
 import { MatDialog } from '@angular/material';
 import { DashboardOverviewEditModalComponent } from './dashboard-overview-edit-modal/dashboard-overview-edit-modal.component';
+import { RouteChangeListener } from '../../../base-classes/route-change-listener';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-overview-card',
   templateUrl: './dashboard-overview-card.component.html',
   styleUrls: [ './dashboard-overview-card.component.scss' ]
 })
-export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
+export class DashboardOverviewCardComponent extends RouteChangeListener {
   private _onPastHoursChangeSubscription: Subscription;
   private _intervalSubscription: Subscription;
   private _onIntervalChangeSubscription: Subscription;
@@ -110,8 +112,10 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   public constructor (private _dialog: MatDialog,
-                      private _dashboardState: DashboardSettingsService,
-                      private _apiService: ApiService) {
+                      private _dashboardSettingsService: DashboardSettingsService,
+                      private _apiService: ApiService,
+                      router: Router) {
+    super(router);
     this._hasErrors = false;
     this._colorRange = chroma.scale([ '#81D4FA', '#03A9F4' ]);
     this._restColorRange = chroma.scale([ '#E1F5FE', '#B3E5FC' ]);
@@ -121,16 +125,11 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit () {
-    this._onIntervalChangeSubscription =
-      this._dashboardState.refreshIntervalObservable.subscribe(() => this.createIntervalSubscription());
-
-    this._onPastHoursChangeSubscription =
-      this._dashboardState.pastHoursObservable.subscribe(() => this.onPastHoursChange());
-
+    super.ngOnInit();
     const isReadyCallback = () => {
-      this.createIntervalSubscription();
+      this.createSubscriptions();
 
-      const composites = this._dashboardState.getOverviewCard();
+      const composites = this._dashboardSettingsService.getOverviewCard();
       if (Array.isEmptyNullOrUndefined(composites)) {
         this.buildDefaultRequests();
       } else {
@@ -140,18 +139,58 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
       this.getData();
     };
 
-    if (!this._dashboardState.isInitialized) {
-      this._dashboardState.onFinishInitialize.subscribe(isReadyCallback);
+    if (!this._dashboardSettingsService.isInitialized) {
+      this._dashboardSettingsService.onFinishInitialize.subscribe(isReadyCallback);
     } else {
       isReadyCallback();
     }
   }
 
   public ngOnDestroy (): void {
-    unsubscribeIfDefined(
-      this._intervalSubscription,
+    super.ngOnDestroy();
+    this.destroySubscriptions();
+  }
+
+  protected getRouteMatcher (): RegExp {
+    return new RegExp('^\/dashboard', 'i');
+  }
+
+  protected onRouteExit (): void {
+    super.onRouteExit();
+    this.destroyIntervalSubscriptions();
+  }
+
+  protected onRouteReenter (): void {
+    this.createSubscriptions();
+
+    if (this._dashboardSettingsService.isInitialized) {
+      const diff = moment.duration(moment().diff(this.routeExitTime)).asSeconds() * 1000;
+      if (diff >= this._dashboardSettingsService.getRefreshInterval()) {
+        this.getData();
+      }
+    }
+  }
+
+  private createSubscriptions (): void {
+    this._onIntervalChangeSubscription =
+      this._dashboardSettingsService.refreshIntervalObservable.subscribe(() => this.createIntervalSubscription());
+    this._onPastHoursChangeSubscription =
+      this._dashboardSettingsService.pastHoursObservable.subscribe(() => this.onPastHoursChange());
+
+    if (this._dashboardSettingsService.isInitialized) {
+      this.createIntervalSubscription();
+    }
+  }
+
+  private destroyIntervalSubscriptions (): void {
+    unsubscribeIfDefined(this._intervalSubscription,
       this._onIntervalChangeSubscription,
-      this._onPastHoursChangeSubscription,
+      this._onPastHoursChangeSubscription);
+  }
+
+  private destroySubscriptions (): void {
+    this.destroyIntervalSubscriptions();
+    unsubscribeIfDefined(
       this._onResetSubscription,
       this._onEditSubscription,
       ...this._requestSubscriptions);
@@ -168,7 +207,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
 
   private createIntervalSubscription (): void {
     unsubscribeIfDefined(this._intervalSubscription);
-    this._intervalSubscription = interval(this._dashboardState.getRefreshInterval()).subscribe(() => this.getData());
+    this._intervalSubscription = interval(this._dashboardSettingsService.getRefreshInterval()).subscribe(() => this.getData());
   }
 
   private onPastHoursChange () {
@@ -184,11 +223,11 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private saveComposites (): void {
-    this._dashboardState.setOverviewCard(this._composites);
+    this._dashboardSettingsService.setOverviewCard(this._composites);
   }
 
   private applyLastHoursToBuilder (builder: RequestBuilder): void {
-    const startDate = moment().subtract(this._dashboardState.getPastHours(), 'hours').toDate();
+    const startDate = moment().subtract(this._dashboardSettingsService.getPastHours(), 'hours').toDate();
     const endDate = moment().add(1, 'hours').toDate();
 
     builder.setStartDatetime(startDate);
@@ -205,7 +244,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private buildDefaultRequests (): void {
-    if (!this._dashboardState.isInitialized) {
+    if (!this._dashboardSettingsService.isInitialized) {
       return;
     }
 
@@ -281,7 +320,7 @@ export class DashboardOverviewCardComponent implements OnInit, OnDestroy {
   }
 
   private getData (): void {
-    if (this._isDoingRequest || !this._dashboardState.isInitialized) {
+    if (this._isDoingRequest || !this._dashboardSettingsService.isInitialized) {
       return;
     }
 
