@@ -186,16 +186,16 @@ export class TrendComponent extends RouteChangeListener {
 
     const rb = clone(this._inputData.requestBuilder);
     const field = rb.getEndpoint().metadata.field;
-    const dataCount = rb.getEndpoint().metadata.length;
+    const dataCount = rb.getEndpoint().metadata.length as number;
+    const separator = rb.getEndpoint().metadata.separator as string;
     const sampleCount = this._trendSettingsService.getSampleCount();
     const sampleDuration = this._trendSettingsService.getSampleDuration().asMinutes();
     const totalDuration = this._trendSettingsService.getTotalDuration().asHours();
 
-    const endpoint = createTrendEndpoint(field);
+    const endpoint = createTrendEndpoint(field, dataCount, separator);
     rb.setEndpoint(endpoint);
 
     const request = rb.build();
-    request.data[ 'dataCount' ] = dataCount;
     request.data[ 'sampleCount' ] = sampleCount;
     request.data[ 'totalHours' ] = totalDuration;
     request.data[ 'sampleDuration' ] = sampleDuration;
