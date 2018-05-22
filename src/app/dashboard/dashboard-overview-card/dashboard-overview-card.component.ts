@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
 import { ApiService } from '../../../api/api-service';
 import { Comparator, ComparatorType } from '../../../api/request/comparator';
@@ -15,6 +15,7 @@ import { FlattenPipe } from '../../../pipes/flatten.pipe';
 import { Scale } from 'chroma-js';
 import * as chroma from 'chroma-js';
 import * as moment from 'moment';
+import { Moment } from 'moment';
 import * as clone from 'clone';
 import { Composite, Item, SummaryItem } from './composite';
 import { MatDialog } from '@angular/material';
@@ -33,6 +34,8 @@ export class DashboardOverviewCardComponent extends RouteChangeListener {
   private _onIntervalChangeSubscription: Subscription;
   private _onResetSubscription: Subscription;
   private _onEditSubscription: Subscription;
+
+  private _lastRefreshTime: Moment;
 
   private _isDoingRequest: boolean;
   public get isDoingRequest (): boolean {
@@ -156,7 +159,6 @@ export class DashboardOverviewCardComponent extends RouteChangeListener {
   }
 
   protected onRouteExit (): void {
-    super.onRouteExit();
     this.destroyIntervalSubscriptions();
   }
 
@@ -164,7 +166,11 @@ export class DashboardOverviewCardComponent extends RouteChangeListener {
     this.createSubscriptions();
 
     if (this._dashboardSettingsService.isInitialized) {
-      const diff = moment.duration(moment().diff(this.routeExitTime)).asSeconds() * 1000;
+      if (isNullOrUndefined(this._lastRefreshTime)) {
+        this.getData();
+      }
+
+      const diff = moment.duration(moment().diff(this._lastRefreshTime)).asSeconds() * 1000;
       if (diff >= this._dashboardSettingsService.getRefreshInterval()) {
         this.getData();
       }
@@ -323,6 +329,8 @@ export class DashboardOverviewCardComponent extends RouteChangeListener {
     if (this._isDoingRequest || !this._dashboardSettingsService.isInitialized) {
       return;
     }
+
+    this._lastRefreshTime = moment();
 
     this._isDoingRequest = true;
     this._apiService.SubmitRequest(this.createTotalCountBuilder().build())

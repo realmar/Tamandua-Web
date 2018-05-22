@@ -17,7 +17,7 @@ import { SearchStateService } from './search-state-service/search-state.service'
   templateUrl: './search.component.html',
   styleUrls: [ './search.component.scss' ]
 })
-export class SearchComponent extends RouteChangeListener implements OnInit {
+export class SearchComponent extends RouteChangeListener {
   private _startDateTime: Date;
   public set startDateTime (value: Date) {
     this._startDateTime = value;
@@ -75,6 +75,9 @@ export class SearchComponent extends RouteChangeListener implements OnInit {
 
   protected onRouteReenter (): void {
     this.checkSearchState();
+  }
+
+  protected onRouteExit (): void {
   }
 
   private restoreState (): void {

@@ -2,22 +2,11 @@ import { OnDestroy, OnInit } from '@angular/core';
 import { Event, NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs/index';
 import { unsubscribeIfDefined } from '../utils/rxjs';
-import * as moment from 'moment';
-import { Moment } from 'moment';
-import { isNullOrUndefined } from '../utils/misc';
 
 export abstract class RouteChangeListener implements OnInit, OnDestroy {
   private _routerEventSubscription: Subscription;
   private _routeMatcher: RegExp;
   private _isCurrentRoute: boolean;
-  private _routeExitTime: Moment;
-  protected get routeExitTime (): Moment {
-    if (isNullOrUndefined(this._routeExitTime)) {
-      return moment();
-    } else {
-      return this._routeExitTime;
-    }
-  }
 
   protected constructor (protected readonly router: Router) {
     this._isCurrentRoute = false;
@@ -37,9 +26,7 @@ export abstract class RouteChangeListener implements OnInit, OnDestroy {
 
   protected abstract onRouteReenter (): void;
 
-  protected onRouteExit (): void {
-    this._routeExitTime = moment();
-  }
+  protected abstract onRouteExit (): void;
 
   private onRouterEvents (event: Event): void {
     if (!(event instanceof NavigationEnd)) {

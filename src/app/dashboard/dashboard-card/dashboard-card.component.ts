@@ -10,6 +10,7 @@ import { DashboardSettingsService } from '../../settings/dashboard-settings-serv
 import { isNullOrUndefined } from '../../../utils/misc';
 import { HttpErrorResponse } from '@angular/common/http';
 import * as moment from 'moment';
+import { Moment } from 'moment';
 import { createAdvancedEndpoint } from '../../../api/request/endpoints/advanced-count-endpoint';
 import { TrendStateService } from '../../trend/trend-state-service/trend-state.service';
 import { SearchStateService } from '../../search/search-state-service/search-state.service';
@@ -26,6 +27,8 @@ export class DashboardCardComponent extends RouteChangeListener {
   private _maxItemCountChangeSubscription: Subscription;
   private _refreshIntervalSubscription: Subscription;
   private _refreshIntervalChangeSubscription: Subscription;
+
+  private _lastRefreshTime: Moment;
 
   private _isDoingRequest: boolean;
   public get isDoingRequest (): boolean {
@@ -95,7 +98,6 @@ export class DashboardCardComponent extends RouteChangeListener {
   }
 
   protected onRouteExit (): void {
-    super.onRouteExit();
     this.destroySubscriptions();
   }
 
@@ -103,7 +105,11 @@ export class DashboardCardComponent extends RouteChangeListener {
     this.createSubscriptions();
 
     if (this._dashboardSettingsService.isInitialized) {
-      const diff = moment.duration(moment().diff(this.routeExitTime)).asSeconds() * 1000;
+      if (isNullOrUndefined(this._lastRefreshTime)) {
+        this.getData();
+      }
+
+      const diff = moment.duration(moment().diff(this._lastRefreshTime)).asSeconds() * 1000;
       if (diff >= this._dashboardSettingsService.getRefreshInterval()) {
         this.getData();
       }
@@ -133,6 +139,7 @@ export class DashboardCardComponent extends RouteChangeListener {
       return;
     }
 
+    this._lastRefreshTime = moment();
     this._data.requestBuilder.setEndDatetime(moment().add(1, 'hours').toDate());
     const request = this._data.requestBuilder.build();
 
