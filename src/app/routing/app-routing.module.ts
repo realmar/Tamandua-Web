@@ -4,7 +4,7 @@ import { DashboardComponent } from '../dashboard/dashboard.component';
 import { SearchComponent } from '../search/search.component';
 import { AboutComponent } from '../about/about.component';
 import { NotFoundComponent } from '../not-found/not-found.component';
-import { DiagramComponent } from '../diagram/diagram.component';
+import { TrendComponent } from '../trend/trend.component';
 
 interface CachedRoute extends Route {
   isCached: boolean;
@@ -16,7 +16,7 @@ export const routes: CachedRoutes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full', isCached: true },
   { path: 'dashboard', component: DashboardComponent, isCached: true },
   { path: 'search', component: SearchComponent, isCached: true },
-  { path: 'diagram', component: DiagramComponent, isCached: true },
+  { path: 'trend', component: TrendComponent, isCached: true },
   { path: 'about', component: AboutComponent, isCached: true },
   { path: '**', component: NotFoundComponent, isCached: true },
 ];

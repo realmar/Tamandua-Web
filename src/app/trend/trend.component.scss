@@ -1,0 +1,35 @@
+mat-spinner {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.series-tooltip {
+  .table-row {
+    display: flex;
+    align-items: center;
+  }
+
+  $border-margin: 0.5rem;
+  .table-row:first-child {
+    margin-top: $border-margin;
+  }
+
+  .table-row:last-child {
+    margin-bottom: $border-margin;
+  }
+
+  .value {
+    margin-left: 0.5rem;
+  }
+
+  .table-cell {
+    text-align: left;
+  }
+
+  .color-box {
+    margin-right: 0.5rem;
+    border-radius: 0.2rem;
+    height: 1rem;
+    width: 1rem;
+  }
+}

@@ -1,12 +1,12 @@
 import { Injectable, OnInit, Type } from '@angular/core';
-import { DiagramSettingsService } from './diagram-settings.service';
+import { TrendSettingsService } from './trend-settings.service';
 import { SettingValidationResult } from '../setting-validation-result';
 import * as moment from 'moment';
 import { PersistentStorageService } from '../../../persistence/persistent-storage-service';
 import { isNullOrUndefined } from '../../../utils/misc';
 
 @Injectable()
-export class DiagramPersistentSettingsService extends DiagramSettingsService {
+export class TrendPersistentSettingsService extends TrendSettingsService {
   private _retrievedDataCount: number;
 
   public constructor (private _storage: PersistentStorageService) {

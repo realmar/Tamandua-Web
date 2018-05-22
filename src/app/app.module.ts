@@ -65,10 +65,10 @@ import { TreeModule } from 'angular-tree-component';
 import { SettingComponent } from './settings/setting-component/setting.component';
 import { QuestionModalModule } from '../question-modal/question-modal.module';
 import { QuestionModalComponent } from '../question-modal/question-modal.component';
-import { DiagramComponent } from './diagram/diagram.component';
+import { TrendComponent } from './trend/trend.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { DiagramStateService } from './diagram/diagram-state-service/diagram-state.service';
-import { DiagramSettingsService } from './settings/diagram-settings-service/diagram-settings.service';
+import { TrendStateService } from './trend/trend-state-service/trend-state.service';
+import { TrendSettingsService } from './settings/trend-settings-service/trend-settings.service';
 import { SearchResultsComponent } from './search/search-results/search-results.component';
 import { SearchResultAddColumnsModalComponent } from './search/search-results/search-result-add-columns/search-result-add-columns-modal.component';
 import { SearchResultTagsSelectionComponent } from './search/search-results/search-result-tags-selection/search-result-tags-selection.component';
@@ -76,7 +76,7 @@ import { SearchResultDetailsModalComponent } from './search/search-results/searc
 import { FormatLoglinePipe } from './search/search-results/search-result-details-modal/format-logline.pipe';
 import { SearchStateService } from './search/search-state-service/search-state.service';
 import { SortPipe } from '../pipes/sort.pipe';
-import { DiagramPersistentSettingsService } from './settings/diagram-settings-service/diagram-persistent-settings.service';
+import { TrendPersistentSettingsService } from './settings/trend-settings-service/trend-persistent-settings.service';
 
 @NgModule({
   declarations: [
@@ -104,7 +104,7 @@ import { DiagramPersistentSettingsService } from './settings/diagram-settings-se
     FlattenPipe,
     DashboardOverviewEditModalComponent,
     DashboardOverviewEditSearchmaskComponent,
-    DiagramComponent,
+    TrendComponent,
     SortPipe
   ],
   imports: [
@@ -160,8 +160,8 @@ import { DiagramPersistentSettingsService } from './settings/diagram-settings-se
     { provide: PersistentStorageService, useClass: IndexedDbService },
     { provide: SearchSettingsService, useClass: SearchPersistentSettingsService },
     { provide: DashboardSettingsService, useClass: DashboardPersistentSettingsService },
-    { provide: DiagramSettingsService, useClass: DiagramPersistentSettingsService },
-    DiagramStateService,
+    { provide: TrendSettingsService, useClass: TrendPersistentSettingsService },
+    TrendStateService,
     SearchStateService,
     HttpClientModule
   ],

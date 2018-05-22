@@ -11,7 +11,7 @@ import { isNullOrUndefined } from '../../../utils/misc';
 import { HttpErrorResponse } from '@angular/common/http';
 import * as moment from 'moment';
 import { createAdvancedEndpoint } from '../../../api/request/endpoints/advanced-count-endpoint';
-import { DiagramStateService } from '../../diagram/diagram-state-service/diagram-state.service';
+import { TrendStateService } from '../../trend/trend-state-service/trend-state.service';
 import { SearchStateService } from '../../search/search-state-service/search-state.service';
 
 @Component({
@@ -54,7 +54,7 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
                       private _dashboardSettingsService: DashboardSettingsService,
                       private _searchSettingsService: SearchSettingsService,
                       private _searchStateService: SearchStateService,
-                      private _diagramStateService: DiagramStateService,
+                      private _trendStateService: TrendStateService,
                       private _router: Router) {
     this._isDoingRequest = false;
 
@@ -187,12 +187,12 @@ export class DashboardCardComponent implements OnInit, OnDestroy {
   }
 
   public goToDiagramPage (): void {
-    this._diagramStateService.data = {
+    this._trendStateService.data = {
       title: this._data.title,
       requestBuilder: this._data.requestBuilder
     };
 
-    this._router.navigate([ 'diagram' ])
+    this._router.navigate([ 'trend' ])
       .then(result => result ? '' : console.log('Failed to navigate'));
   }
 }

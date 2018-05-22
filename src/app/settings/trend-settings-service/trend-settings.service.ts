@@ -8,7 +8,7 @@ import { SettingValidationResult } from '../setting-validation-result';
 import { Observable, Subject } from 'rxjs/index';
 
 @Injectable()
-export class DiagramSettingsService {
+export class TrendSettingsService {
   private _sampleCount: Setting<number>;
   private _sampleDuration: Setting<Duration>;
   private _totalDuration: Setting<Duration>;
