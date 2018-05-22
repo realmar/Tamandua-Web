@@ -30,7 +30,7 @@ export function isDefined<T> (formatter?: Formatter<T, T>): Validator<T> {
 
 export function isMin (min: number, formatter?: Formatter<number, number>): Validator<number> {
   return (data: number): SettingValidationResult => {
-    if (data < min) {
+    if (isNaN(data) || data < min) {
       return createResultUsingFormatter(data, false, d => formatter(d, min));
     }
 
