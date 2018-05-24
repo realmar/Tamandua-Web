@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { SettingValidationResult } from '../../settings/setting-validation-result';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
-import { Observable ,  Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { toFloat } from '../../../utils/misc';
 
 @Component({
   selector: 'app-dashboard-settings',
@@ -19,7 +20,7 @@ export class DashboardSettingsComponent implements OnInit {
   }
 
   public set pastHoursCount (value: number) {
-    this._pastHoursValidationSubject.next(this._dashboardSettingsService.setPastHours(value));
+    this._pastHoursValidationSubject.next(this._dashboardSettingsService.setPastHours(toFloat(value)));
   }
 
   public get maxItemCountPerCard (): number {
@@ -27,11 +28,7 @@ export class DashboardSettingsComponent implements OnInit {
   }
 
   public set maxItemCountPerCard (value: number) {
-    if (typeof value === 'string' && !String.isEmptyNullOrUndefined(value) && !isNaN(value)) {
-      value = parseInt(value, 10);
-    }
-
-    this._maxItemCountValidationSubject.next(this._dashboardSettingsService.setMaxItemCountPerCard(value));
+    this._maxItemCountValidationSubject.next(this._dashboardSettingsService.setMaxItemCountPerCard(toFloat(value)));
   }
 
   public get refreshInterval (): number {
@@ -39,7 +36,7 @@ export class DashboardSettingsComponent implements OnInit {
   }
 
   public set refreshInterval (value: number) {
-    this._intervalValidationSubject.next(this._dashboardSettingsService.setRefreshInterval(value * 1000));
+    this._intervalValidationSubject.next(this._dashboardSettingsService.setRefreshInterval(toFloat(value) * 1000));
   }
 
   public get pastHoursValidationObservable (): Observable<SettingValidationResult> {

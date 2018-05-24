@@ -218,13 +218,6 @@ export class DashboardOverviewCardComponent extends RouteChangeListener {
 
   private onPastHoursChange () {
     this._isDoingRequest = false;
-
-    this._composites.forEach(composite => {
-      for (const c of this.flattenComposite(composite)) {
-        this.applyLastHoursToBuilder(c.item.builder);
-      }
-    });
-
     this.getData();
   }
 
@@ -404,6 +397,7 @@ export class DashboardOverviewCardComponent extends RouteChangeListener {
 
       const localIndent = indentLevel;
       const item = composite.item;
+      this.applyLastHoursToBuilder(item.builder);
 
       this._requestSubscriptions.push(
         this._apiService

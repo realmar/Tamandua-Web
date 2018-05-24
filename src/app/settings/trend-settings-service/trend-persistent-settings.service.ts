@@ -4,32 +4,24 @@ import { SettingValidationResult } from '../setting-validation-result';
 import * as moment from 'moment';
 import { PersistentStorageService } from '../../../persistence/persistent-storage-service';
 import { isNullOrUndefined } from '../../../utils/misc';
+import { SettingsUtilsService } from '../settings-utils-service/settings-utils.service';
+import { InitializationCounter } from '../settings-utils-service/initialization-counter';
 
 @Injectable()
 export class TrendPersistentSettingsService extends TrendSettingsService {
-  private _retrievedDataCount: number;
+  private _gotAllData = false;
+  private readonly _initializationCounter: InitializationCounter;
 
-  public constructor (private _storage: PersistentStorageService) {
+  public constructor (private _storage: PersistentStorageService,
+                      private _utils: SettingsUtilsService) {
     super();
-    this._retrievedDataCount = 0;
-
-    this.getData('diagram_SampleCount', Number, super.setSampleCount.bind(this));
-    this.getData('diagram_SampleDuration', Number, value => this.deserializeSampleDuration(value as number));
-    this.getData('diagram_TotalDuration', Number, value => this.deserializeTotalDuration(value as number));
-  }
-
-  private getData<T> (key: string, type: Type<T>, setter: (value: T) => void): void {
-    this._storage.load(type, key).subscribe(value => {
-      if (!isNullOrUndefined(value)) {
-        setter(value);
-      }
-
-      this._retrievedDataCount++;
-      if (this._retrievedDataCount === 3) {
-        this._isInitialized = true;
-        this.onFinishInitalizeSubject.next();
-      }
+    this._initializationCounter = new InitializationCounter(3, () => {
+      this._gotAllData = true;
+      this.emitOnFinishInitialized();
     });
+    _utils.getData('diagram_SampleCount', Number, value => super.setSampleCount(value as number), this._initializationCounter);
+    _utils.getData('diagram_SampleDuration', Number, value => this.deserializeSampleDuration(value as number), this._initializationCounter);
+    _utils.getData('diagram_TotalDuration', Number, value => this.deserializeTotalDuration(value as number), this._initializationCounter);
   }
 
   private deserializeTotalDuration (duration: number): void {
@@ -37,14 +29,20 @@ export class TrendPersistentSettingsService extends TrendSettingsService {
   }
 
   private deserializeSampleDuration (duration: number): void {
-    super.setTotalDuration(moment.duration(duration, 'seconds'));
+    super.setSampleDuration(moment.duration(duration, 'seconds'));
   }
 
-  protected emitFinishInitialize (): void {
-    // do not emit
+  protected emitOnFinishInitialized (): void {
+    if (!isNullOrUndefined(this._gotAllData) && this._gotAllData) {
+      super.emitOnFinishInitialized();
+    }
   }
 
   public setSampleCount (value: number): SettingValidationResult {
+    if (!this.isInitialized) {
+      return new SettingValidationResult(true);
+    }
+
     const result = super.setSampleCount(value);
     if (result.isValid) {
       this._storage.save('diagram_SampleCount', value);
@@ -54,6 +52,10 @@ export class TrendPersistentSettingsService extends TrendSettingsService {
   }
 
   public setSampleDuration (value: moment.Duration): SettingValidationResult {
+    if (!this.isInitialized) {
+      return new SettingValidationResult(true);
+    }
+
     const result = super.setSampleDuration(value);
     if (result.isValid) {
       this._storage.save('diagram_SampleDuration', value.asSeconds());
@@ -63,6 +65,10 @@ export class TrendPersistentSettingsService extends TrendSettingsService {
   }
 
   public setTotalDuration (value: moment.Duration): SettingValidationResult {
+    if (!this.isInitialized) {
+      return new SettingValidationResult(true);
+    }
+
     const result = super.setTotalDuration(value);
     if (result.isValid) {
       this._storage.save('diagram_TotalDuration', value.asSeconds());

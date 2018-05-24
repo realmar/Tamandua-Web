@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
 import { Setting } from '../setting';
 import { isNullOrUndefined } from '../../../utils/misc';
 import { SettingValidationResult } from '../setting-validation-result';
 import { greaterThanZero, isDefined } from '../validators';
 import { greaterThanZeroFormatter } from '../formatters';
 import { SelectedTags } from '../../search/search-results/search-result-tags-selection/selected-tags';
+import { BaseSettingsService } from '../BaseSettingsService';
 
 @Injectable()
-export class SearchSettingsService {
+export class SearchSettingsService extends BaseSettingsService {
   // region Fields
 
   private _visibleColumns: Setting<Array<string>>;
@@ -17,16 +17,11 @@ export class SearchSettingsService {
   private _paginatorPageSize: Setting<number>;
   private _resultCount: Setting<number>;
 
-  protected onReadySubject: Subject<any>;
-
-  private _isReady: boolean;
-  public get isReady (): boolean {
-    return this._isReady;
-  }
-
 // endregion
 
   constructor () {
+    super();
+
     // default values
     this._paginatorPageSize = new Setting<number>(this._pageSizeOptions[ 0 ], greaterThanZero(greaterThanZeroFormatter));
     this._selectedTags = new Setting<SelectedTags>([], this.selectedTagsvalidator.bind(this));
@@ -37,9 +32,7 @@ export class SearchSettingsService {
       'tags'
     ], isDefined());
     this._resultCount = new Setting<number>(200, greaterThanZero(greaterThanZeroFormatter));
-
-    this.onReadySubject = new Subject<any>();
-    this.onReadyCallback();
+    this.emitOnFinishInitialized();
   }
 
   // region Validators
@@ -59,15 +52,6 @@ export class SearchSettingsService {
   }
 
   // endregions
-
-  protected onReadyCallback (): void {
-    this._isReady = true;
-    this.onReadySubject.next();
-  }
-
-  public onReady (): Observable<any> {
-    return this.onReadySubject.asObservable();
-  }
 
 // region Getters and Setter
 

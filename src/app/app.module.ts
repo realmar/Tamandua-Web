@@ -77,6 +77,7 @@ import { SearchStateService } from './search/search-state-service/search-state.s
 import { SortPipe } from '../pipes/sort.pipe';
 import { TrendPersistentSettingsService } from './settings/trend-settings-service/trend-persistent-settings.service';
 import { SaveObjectModule } from '../save-object/save-object.module';
+import { SettingsUtilsService } from './settings/settings-utils-service/settings-utils.service';
 
 @NgModule({
   declarations: [
@@ -163,6 +164,7 @@ import { SaveObjectModule } from '../save-object/save-object.module';
     { provide: TrendSettingsService, useClass: TrendPersistentSettingsService },
     TrendStateService,
     SearchStateService,
+    SettingsUtilsService,
     HttpClientModule
   ],
   bootstrap: [ AppComponent ],

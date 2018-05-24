@@ -20,34 +20,34 @@ export class SearchResultTagsSelectionComponent implements OnInit, OnDestroy {
   private _selectedTagsChangeSubscription: Subscription;
 
   public get selectedTags (): SelectedTags {
-    return this.searchSettingsService.getSelectedTags();
+    return this._searchSettingsService.getSelectedTags();
   }
 
   @Output() selectedTagsChange: EventEmitter<SelectedTags>;
 
-  constructor (private apiService: ApiService,
-               private searchSettingsService: SearchSettingsService) {
+  public constructor (private _apiService: ApiService,
+                      private _searchSettingsService: SearchSettingsService) {
     this.selectedTagsChange = new EventEmitter<SelectedTags>();
   }
 
-  ngOnInit () {
+  public ngOnInit (): void {
     const onReadyCallback = () => {
-      this.apiService.getTags().subscribe(
+      this._apiService.getTags().subscribe(
         data => {
           this.mergeSelectedTags(data);
         }
       );
-      this.selectedTagsChange.emit(this.searchSettingsService.getSelectedTags());
+      this.selectedTagsChange.emit(this._searchSettingsService.getSelectedTags());
     };
 
-    if (!this.searchSettingsService.isReady) {
-      this.searchSettingsService.onReady().subscribe(onReadyCallback);
+    if (!this._searchSettingsService.isInitialized) {
+      this._searchSettingsService.onFinishInitialize.subscribe(() => onReadyCallback());
     } else {
       onReadyCallback();
     }
   }
 
-  ngOnDestroy (): void {
+  public ngOnDestroy (): void {
     if (!isNullOrUndefined(this._selectedTagsChangeSubscription)) {
       this._selectedTagsChangeSubscription.unsubscribe();
     }
@@ -55,11 +55,11 @@ export class SearchResultTagsSelectionComponent implements OnInit, OnDestroy {
 
   public onSelectionChange (event: MatButtonToggleChange, tagIndex: number): void {
     this.selectedTags[ tagIndex ].selected = event.source.checked;
-    this.selectedTagsChange.emit(this.searchSettingsService.getSelectedTags());
+    this.selectedTagsChange.emit(this._searchSettingsService.getSelectedTags());
   }
 
   private mergeSelectedTags (tags: TagsResponse): void {
-    const selectedTags = this.searchSettingsService.getSelectedTags();
+    const selectedTags = this._searchSettingsService.getSelectedTags();
     const toRemove = [];
 
     // remove obsolete tags
@@ -80,13 +80,7 @@ export class SearchResultTagsSelectionComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.searchSettingsService.setSelectedTags(tags.sort().map(tag => {
-      return {
-        tag: tag,
-        selected: this.defaultNotSelectedTags.indexOf(tag) === -1
-      };
-    }));
-
-    this.selectedTagsChange.emit(this.searchSettingsService.getSelectedTags());
+    this._searchSettingsService.setSelectedTags(selectedTags);
+    this.selectedTagsChange.emit(this._searchSettingsService.getSelectedTags());
   }
 }

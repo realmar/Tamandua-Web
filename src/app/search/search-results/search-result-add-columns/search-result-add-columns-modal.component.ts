@@ -23,7 +23,7 @@ export class SearchResultAddColumnsModalComponent implements OnInit {
 
   constructor (private _dialogRef: MatDialogRef<SearchResultDetailsModalComponent>,
                @Inject(MAT_DIALOG_DATA) private _columnData: AddColumnsModalData,
-               private _searchState: SearchSettingsService) {
+               private _searchSettingsService: SearchSettingsService) {
     this._sortedColumns = this._columnData.allColumns.slice().sort();
   }
 
@@ -35,7 +35,7 @@ export class SearchResultAddColumnsModalComponent implements OnInit {
    * @param event
    */
   public onDropped (event: any): void {
-    this._searchState.setVisibleColumns(this._columnData.displayedColumns);
+    this._searchSettingsService.setVisibleColumns(this._columnData.displayedColumns);
   }
 
   public isDisplayed (column: string): boolean {
@@ -54,6 +54,6 @@ export class SearchResultAddColumnsModalComponent implements OnInit {
           1);
     }
 
-    this._searchState.setVisibleColumns(this._columnData.displayedColumns);
+    this._searchSettingsService.setVisibleColumns(this._columnData.displayedColumns);
   }
 }

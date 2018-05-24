@@ -1,7 +1,7 @@
 import { SettingValidationResult } from './setting-validation-result';
 
 export class Setting<T> {
-  private _validator: (data: T) => SettingValidationResult;
+  private readonly _validator: (data: T) => SettingValidationResult;
   private _data: T;
 
   constructor (data: T, validator: (data: T) => SettingValidationResult) {

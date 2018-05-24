@@ -133,6 +133,7 @@ export class TrendComponent extends RouteChangeListener {
 
   public ngOnInit (): void {
     super.ngOnInit();
+
     if (this._trendSettingsService.isInitialized) {
       this.syncState();
     } else {
@@ -181,7 +182,7 @@ export class TrendComponent extends RouteChangeListener {
     }
   }
 
-  public collectData (): void {
+  private collectData (): void {
     this._isDoingRequest = true;
 
     const rb = clone(this._inputData.requestBuilder);

@@ -4,7 +4,6 @@ import { ApiService } from '../../../api/api-service';
 import { AdvancedCountResponse } from '../../../api/response/advanced-count-response';
 import { Subscription, interval } from 'rxjs';
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
-import { SearchSettingsService } from '../../settings/search-settings-service/search-settings.service';
 import { Router } from '@angular/router';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
 import { isNullOrUndefined } from '../../../utils/misc';
@@ -57,7 +56,6 @@ export class DashboardCardComponent extends RouteChangeListener {
 
   public constructor (private _apiService: ApiService,
                       private _dashboardSettingsService: DashboardSettingsService,
-                      private _searchSettingsService: SearchSettingsService,
                       private _searchStateService: SearchStateService,
                       private _trendStateService: TrendStateService,
                       router: Router) {
@@ -82,7 +80,7 @@ export class DashboardCardComponent extends RouteChangeListener {
     };
 
     if (!this._dashboardSettingsService.isInitialized) {
-      this._dashboardSettingsService.onFinishInitialize.subscribe(isReadyCallback);
+      this._dashboardSettingsService.onFinishInitialize.subscribe(() => isReadyCallback());
     } else {
       isReadyCallback();
     }
@@ -140,7 +138,11 @@ export class DashboardCardComponent extends RouteChangeListener {
     }
 
     this._lastRefreshTime = moment();
-    this._data.requestBuilder.setEndDatetime(moment().add(1, 'hours').toDate());
+    const builder = this._data.requestBuilder;
+    builder.setEndDatetime(moment().add(1, 'hours').toDate());
+    builder.setStartDatetime(this.createPastDate(this._dashboardSettingsService.getPastHours()));
+    this.updateMaxFieldCount();
+
     const request = this._data.requestBuilder.build();
 
     this._isDoingRequest = true;
@@ -160,8 +162,9 @@ export class DashboardCardComponent extends RouteChangeListener {
   }
 
   private createRefreshIntervalSubscription () {
+    unsubscribeIfDefined(this._refreshIntervalSubscription);
     this._refreshIntervalSubscription =
-      interval(this._dashboardSettingsService.getRefreshInterval()).subscribe(this.getData.bind(this));
+      interval(this._dashboardSettingsService.getRefreshInterval()).subscribe(() => this.getData());
   }
 
   public onItemClick (data: DashboardCardItemData): void {
@@ -186,6 +189,16 @@ export class DashboardCardComponent extends RouteChangeListener {
     return date;
   }
 
+  private updateMaxFieldCount () {
+    const endpoint = this._data.requestBuilder.getEndpoint();
+
+    const field = endpoint.metadata.field;
+    const length = this._dashboardSettingsService.getMaxItemCountPerCard();
+    const separator = endpoint.metadata.separator;
+
+    this._data.requestBuilder.setEndpoint(createAdvancedEndpoint(field, length, separator));
+  }
+
   private cancelRequest (): void {
     if (!isNullOrUndefined(this._requestSubscription)) {
       this._requestSubscription.unsubscribe();
@@ -195,34 +208,20 @@ export class DashboardCardComponent extends RouteChangeListener {
   }
 
   private onPastHoursChange (value: number): void {
-    const builder = this._data.requestBuilder;
-    builder.setStartDatetime(this.createPastDate(value));
-
-    this.cancelRequest();
     this.getData();
   }
 
   private onMaxItemCountChange (value: number): void {
-    const endpoint = this._data.requestBuilder.getEndpoint();
-
-    const field = endpoint.metadata.field;
-    const length = value;
-    const separator = endpoint.metadata.separator;
-
-    this._data.requestBuilder.setEndpoint(createAdvancedEndpoint(field, length, separator));
-
     const oldLength = this._data.requestResult.length;
-    if (length > oldLength) {
+    this.updateMaxFieldCount();
+
+    if (value > oldLength) {
       this.cancelRequest();
       this.getData();
     }
   }
 
   private onRefreshIntervalChange (value: number): void {
-    if (!isNullOrUndefined(this._refreshIntervalSubscription)) {
-      this._refreshIntervalSubscription.unsubscribe();
-    }
-
     this.createRefreshIntervalSubscription();
   }
 

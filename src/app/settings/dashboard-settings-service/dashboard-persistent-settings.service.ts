@@ -1,51 +1,50 @@
-import { Injectable, Type } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { DashboardSettingsService } from './dashboard-settings.service';
 import { PersistentStorageService } from '../../../persistence/persistent-storage-service';
-import { isNullOrUndefined } from '../../../utils/misc';
 import { SettingValidationResult } from '../setting-validation-result';
 import { CardRow } from '../../dashboard/card-row';
 import { plainToClass } from 'class-transformer';
 import { DashboardCardData } from '../../dashboard/dashboard-card/dashboard-card-data';
 import { Composite } from '../../dashboard/dashboard-overview-card/composite';
+import { InitializationCounter } from '../settings-utils-service/initialization-counter';
+import { SettingsUtilsService } from '../settings-utils-service/settings-utils.service';
+import { isNullOrUndefined } from '../../../utils/misc';
 
 @Injectable()
 export class DashboardPersistentSettingsService extends DashboardSettingsService {
-  private _retrievedDataCount: number;
+  private _gotAllData = false;
+  private readonly _initializationCounter: InitializationCounter;
 
-  constructor (private _storage: PersistentStorageService) {
+  constructor (private _storage: PersistentStorageService,
+               private _utils: SettingsUtilsService) {
     super();
 
-    this._retrievedDataCount = 0;
-    this.getData('dashboard_Cards', Object, result => this.deserializeCards(result), () => {
+    this._initializationCounter = new InitializationCounter(5, () => {
+      this._gotAllData = true;
+      this.emitPastHours();
+      this.emitMaxItemsCount();
+      this.emitRefreshInterval();
+      this.emitOnFinishInitialized();
     });
-    this.getData('dashboard_OverviewCards', Composite, result => this.setOverviewCard(result), () => {
-    });
-    this.getData('dashboard_pastHours', Number, result => this.setPastHours(result), () => this.emitPastHours());
-    this.getData('dashboard_MaxItemCountPerCard', Number, result => this.setMaxItemCountPerCard(result), () => this.emitMaxItemsCount());
-    this.getData('dashboard_RefreshInterval', Number, result => this.setRefreshInterval(result), () => this.emitRefreshInterval());
+
+    this._utils.getData('dashboard_Cards', Object, result => this.deserializeCards(result as Array<CardRow>), this._initializationCounter);
+    this._utils.getData('dashboard_OverviewCards', Composite, result => super.setOverviewCard(result as any), this._initializationCounter);
+    this._utils.getData('dashboard_pastHours', Number, result => super.setPastHours(result as number), this._initializationCounter);
+    this._utils.getData('dashboard_MaxItemCountPerCard', Number, result => super.setMaxItemCountPerCard(result as number), this._initializationCounter);
+    this._utils.getData('dashboard_RefreshInterval', Number, result => super.setRefreshInterval(result as number), this._initializationCounter);
   }
 
-  private getData<T> (key: string, type: Type<T>, setter: (data: any) => void, callback: (data: any) => void) {
-    this._storage.load(type, key).subscribe(result => {
-      if (!isNullOrUndefined(result) /*&& result > 0*/) {
-        setter(result);
-      }
-
-      callback(result);
-
-      this._retrievedDataCount++;
-      if (this._retrievedDataCount === 3) {
-        this._isInitialized = true;
-        this.onFinishInitalizeSubject.next();
-      }
-    });
-  }
-
-  protected emitFinishInitialize (): void {
-    // do not emit
+  protected emitOnFinishInitialized (): void {
+    if (!isNullOrUndefined(this._gotAllData) && this._gotAllData) {
+      super.emitOnFinishInitialized();
+    }
   }
 
   public setPastHours (value: number): SettingValidationResult {
+    if (!this.isInitialized) {
+      return new SettingValidationResult(true);
+    }
+
     const result = super.setPastHours(value);
     if (result.isValid) {
       this._storage.save('dashboard_pastHours', value);
@@ -55,6 +54,10 @@ export class DashboardPersistentSettingsService extends DashboardSettingsService
   }
 
   public setMaxItemCountPerCard (value: number): SettingValidationResult {
+    if (!this.isInitialized) {
+      return new SettingValidationResult(true);
+    }
+
     const result = super.setMaxItemCountPerCard(value);
     if (result.isValid) {
       this._storage.save('dashboard_MaxItemCountPerCard', value);
@@ -64,6 +67,10 @@ export class DashboardPersistentSettingsService extends DashboardSettingsService
   }
 
   public setRefreshInterval (value: number): SettingValidationResult {
+    if (!this.isInitialized) {
+      return new SettingValidationResult(true);
+    }
+
     const result = super.setRefreshInterval(value);
     if (result.isValid) {
       this._storage.save('dashboard_RefreshInterval', value);
@@ -84,6 +91,10 @@ export class DashboardPersistentSettingsService extends DashboardSettingsService
   }
 
   public setCards (value: Array<CardRow>): SettingValidationResult {
+    if (!this.isInitialized) {
+      return new SettingValidationResult(true);
+    }
+
     const result = super.setCards(value);
     if (result.isValid) {
       this._storage.save('dashboard_Cards', value);
@@ -93,6 +104,10 @@ export class DashboardPersistentSettingsService extends DashboardSettingsService
   }
 
   public setOverviewCard (value: Array<Composite>): SettingValidationResult {
+    if (!this.isInitialized) {
+      return new SettingValidationResult(true);
+    }
+
     const result = super.setOverviewCard(value);
     if (result.isValid) {
       this._storage.save('dashboard_OverviewCards', value);

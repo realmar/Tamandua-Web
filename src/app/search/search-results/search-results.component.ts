@@ -111,9 +111,9 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     return value === filterTransformLambda(filter);
   }
 
-  constructor (private _apiService: ApiService,
-               private _searchSettingsService: SearchSettingsService,
-               private _dialog: MatDialog) {
+  public constructor (private _apiService: ApiService,
+                      private _searchSettingsService: SearchSettingsService,
+                      private _dialog: MatDialog) {
     this._onFilterChange = new Subject<any>();
     this._onFilterChange
       .asObservable()
@@ -124,11 +124,14 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     this._dataSource = new TamanduaTableDataSource();
     this._allRows = [];
     this._allColumns = [];
-
     this.clearFilters();
+
+    this._searchSettingsService.onFinishInitialize.subscribe(() => {
+      this.setSelectedTags(_searchSettingsService.getSelectedTags());
+    });
   }
 
-  ngOnInit () {
+  public ngOnInit () {
     this._apiService.getColumns().subscribe(
       data => {
         this.processColumns(data);
@@ -136,7 +139,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
     );
   }
 
-  ngAfterViewInit () {
+  public ngAfterViewInit () {
     this._sort.disableClear = true;
     this._dataSource.paginator = this._paginator;
     this._dataSource.sort = this._sort;
@@ -157,6 +160,10 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   }
 
   public addColumns (): void {
+    if (!this._searchSettingsService.isInitialized) {
+      return;
+    }
+
     this._dialog.open(SearchResultAddColumnsModalComponent, {
       data: {
         allColumns: this._allColumns,
@@ -359,10 +366,7 @@ export class SearchResultsComponent implements OnInit, AfterViewInit {
   private clearFilters (): void {
     this._filter = new Map<string, string>();
     this._filterAsRegex = new Map<string, RegExp>();
-
-    if (this._searchSettingsService.isReady) {
-      this.setSelectedTags(this._searchSettingsService.getSelectedTags());
-    }
+    this.setSelectedTags(this._searchSettingsService.getSelectedTags());
   }
 
   private processColumns (columns: ColumnsResponse): void {

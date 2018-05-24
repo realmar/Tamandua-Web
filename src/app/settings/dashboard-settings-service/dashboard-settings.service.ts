@@ -7,10 +7,11 @@ import { CardRow } from '../../dashboard/card-row';
 import { Composite } from '../../dashboard/dashboard-overview-card/composite';
 import { isMinAndDefined } from '../validators';
 import { isDefinedFormatter, isMinFormatter } from '../formatters';
+import { BaseSettingsService } from '../BaseSettingsService';
 
 @Injectable()
-export class DashboardSettingsService {
-  private _timeoutBeforeEmit: number;
+export class DashboardSettingsService extends BaseSettingsService {
+  private readonly _timeoutBeforeEmit: number;
 
   private _pastHours: Setting<number>;
   private _pastHoursSubject: Subject<number>;
@@ -24,20 +25,8 @@ export class DashboardSettingsService {
   private _cards: Setting<Array<CardRow>>;
   private _overviewCard: Setting<Array<Composite>>;
 
-  protected onFinishInitalizeSubject: Subject<any>;
-
-  public get onFinishInitialize (): Observable<any> {
-    return this.onFinishInitalizeSubject.asObservable();
-  }
-
-  protected _isInitialized: boolean;
-  public get isInitialized (): boolean {
-    return this._isInitialized;
-  }
-
   constructor () {
-    this.onFinishInitalizeSubject = new Subject<any>();
-    this._isInitialized = false;
+    super();
 
     this._pastHours = new Setting<number>(
       24,
@@ -70,13 +59,7 @@ export class DashboardSettingsService {
     this._overviewCard = new Setting<Array<Composite>>(undefined, data => new SettingValidationResult(true));
 
     this._timeoutBeforeEmit = 800;
-
-    this.emitFinishInitialize();
-  }
-
-  protected emitFinishInitialize (): void {
-    this._isInitialized = true;
-    this.onFinishInitalizeSubject.next();
+    this.emitOnFinishInitialized();
   }
 
   protected emitPastHours (): void {

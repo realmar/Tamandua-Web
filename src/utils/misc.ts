@@ -3,7 +3,10 @@ export function isNullOrUndefined<T> (value: T): boolean {
 }
 
 export function toFloat (value: string | number): number {
-  if (typeof value === 'string') {
+  if (
+    typeof value === 'string' &&
+    !String.isEmptyNullOrUndefined(value) &&
+    !isNaN(value as any)) {
     return parseFloat(value as string);
   }
 

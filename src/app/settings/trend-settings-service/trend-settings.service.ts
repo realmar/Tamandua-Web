@@ -6,25 +6,17 @@ import { durationMin, isMinAndDefined } from '../validators';
 import { durationMinFormatter, isDefinedFormatter, isMinFormatter } from '../formatters';
 import { SettingValidationResult } from '../setting-validation-result';
 import { Observable, Subject } from 'rxjs/index';
+import { BaseSettingsService } from '../BaseSettingsService';
 
 @Injectable()
-export class TrendSettingsService {
+export class TrendSettingsService extends BaseSettingsService {
   private _sampleCount: Setting<number>;
   private _sampleDuration: Setting<Duration>;
   private _totalDuration: Setting<Duration>;
 
-  protected onFinishInitalizeSubject = new Subject<number>();
-
-  public get onFinishInitialize (): Observable<any> {
-    return this.onFinishInitalizeSubject.asObservable();
-  }
-
-  protected _isInitialized: boolean;
-  public get isInitialized (): boolean {
-    return this._isInitialized;
-  }
-
   public constructor () {
+    super();
+
     this._sampleCount = new Setting<number>(
       40,
       isMinAndDefined(
@@ -43,12 +35,7 @@ export class TrendSettingsService {
         moment.duration(1, 'hours'),
         (value, min) => durationMinFormatter(value, min, d => d.asHours())));
 
-    this.emitFinishInitialize();
-  }
-
-  protected emitFinishInitialize (): void {
-    this._isInitialized = true;
-    this.onFinishInitalizeSubject.next();
+    this.emitOnFinishInitialized();
   }
 
   public getSampleCount (): number {
