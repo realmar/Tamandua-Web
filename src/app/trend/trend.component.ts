@@ -35,7 +35,7 @@ interface ChartItem {
 type ChartData = Array<ChartItem>;
 
 @Component({
-  selector: 'app-diagram',
+  selector: 'app-trend',
   templateUrl: './trend.component.html',
   styleUrls: [ './trend.component.scss' ]
 })
