@@ -4,5 +4,8 @@
   <nav class="row-value">
     <a mat-button routerLink="dashboard">Dashboard</a>
     <a mat-button routerLink="search">Search</a>
+    <a mat-icon-button routerLink="trend" id="trend-link" *ngIf="hasTrendData">
+      <mat-icon>show_chart</mat-icon>
+    </a>
   </nav>
 </mat-toolbar>
