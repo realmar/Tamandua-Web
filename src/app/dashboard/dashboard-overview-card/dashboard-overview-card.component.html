@@ -1,5 +1,7 @@
+<animation-left-to-right-pulse #loading_animation id="loading" class="stretch-loader"></animation-left-to-right-pulse>
+
 <ng-container *ngIf="isDoingRequest && data.length === 0;else data_container">
-  <mat-progress-bar mode="buffer"></mat-progress-bar>
+  <p class="mat-subheading-2">Loading ...</p>
 </ng-container>
 <p *ngIf="hasErrors && !isDoingRequest">No data found using the specified settings.</p>
 <ng-template #data_container>

@@ -1,4 +1,8 @@
+@import "../../../loading-animations/utils.scss";
+
 #heading {
+  position: relative;
+
   display: flex;
   align-items: center;
   margin-bottom: .5rem;

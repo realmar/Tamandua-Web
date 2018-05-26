@@ -1,0 +1,11 @@
+@import "../../styles/theme.scss";
+
+.loading {
+  display: inline-block;
+  height: 100%;
+
+  background: linear-gradient(
+      90deg,
+      $primary 0%,
+      rgba(0, 0, 0, 0) 100%);
+}

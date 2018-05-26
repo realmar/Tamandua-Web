@@ -130,7 +130,8 @@
         "app",
         "search-mask",
         "question-modal",
-        "save-object"
+        "save-object",
+        "animation"
       ],
       "kebab-case"
     ],

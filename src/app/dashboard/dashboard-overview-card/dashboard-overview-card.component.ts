@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
 import { ApiService } from '../../../api/api-service';
 import { Comparator, ComparatorType } from '../../../api/request/comparator';
@@ -22,13 +22,16 @@ import { MatDialog } from '@angular/material';
 import { DashboardOverviewEditModalComponent } from './dashboard-overview-edit-modal/dashboard-overview-edit-modal.component';
 import { RouteChangeListener } from '../../../base-classes/route-change-listener';
 import { Router } from '@angular/router';
+import { LeftToRightPulseComponent } from '../../../loading-animations/left-to-right-pulse/left-to-right-pulse.component';
 
 @Component({
   selector: 'app-dashboard-overview-card',
   templateUrl: './dashboard-overview-card.component.html',
   styleUrls: [ './dashboard-overview-card.component.scss' ]
 })
-export class DashboardOverviewCardComponent extends RouteChangeListener {
+export class DashboardOverviewCardComponent extends RouteChangeListener implements AfterViewInit {
+  @ViewChild('loading_animation') _loadingAnimation: LeftToRightPulseComponent;
+
   private _onPastHoursChangeSubscription: Subscription;
   private _intervalSubscription: Subscription;
   private _onIntervalChangeSubscription: Subscription;
@@ -40,6 +43,14 @@ export class DashboardOverviewCardComponent extends RouteChangeListener {
   private _isDoingRequest: boolean;
   public get isDoingRequest (): boolean {
     return this._isDoingRequest;
+  }
+
+  public set isDoingRequest (value: boolean) {
+    if (!isNullOrUndefined(this._loadingAnimation)) {
+      this._loadingAnimation.isLooping = value;
+    }
+
+    this._isDoingRequest = value;
   }
 
   private _totalResponse: CountResponse;
@@ -149,6 +160,12 @@ export class DashboardOverviewCardComponent extends RouteChangeListener {
     }
   }
 
+  public ngAfterViewInit (): void {
+    if (this.isDoingRequest) {
+      this._loadingAnimation.isLooping = true;
+    }
+  }
+
   public ngOnDestroy (): void {
     super.ngOnDestroy();
     this.destroySubscriptions();
@@ -217,7 +234,7 @@ export class DashboardOverviewCardComponent extends RouteChangeListener {
   }
 
   private onPastHoursChange () {
-    this._isDoingRequest = false;
+    this.isDoingRequest = false;
     this.getData();
   }
 
@@ -319,13 +336,13 @@ export class DashboardOverviewCardComponent extends RouteChangeListener {
   }
 
   private getData (): void {
-    if (this._isDoingRequest || !this._dashboardSettingsService.isInitialized) {
+    if (this.isDoingRequest || !this._dashboardSettingsService.isInitialized) {
       return;
     }
 
     this._lastRefreshTime = moment();
 
-    this._isDoingRequest = true;
+    this.isDoingRequest = true;
     this._apiService.SubmitRequest(this.createTotalCountBuilder().build())
       .subscribe(
         this.processSummaryTotal.bind(this),
@@ -333,7 +350,7 @@ export class DashboardOverviewCardComponent extends RouteChangeListener {
   }
 
   private processApiError (error: HttpErrorResponse): void {
-    this._isDoingRequest = false;
+    this.isDoingRequest = false;
     this._hasErrors = true;
   }
 
@@ -358,7 +375,7 @@ export class DashboardOverviewCardComponent extends RouteChangeListener {
     }
 
     if (dataCount === 0) {
-      this._isDoingRequest = false;
+      this.isDoingRequest = false;
       return;
     }
 
@@ -387,7 +404,7 @@ export class DashboardOverviewCardComponent extends RouteChangeListener {
         };
         processComposites(0, 0, this._composites);
 
-        this._isDoingRequest = false;
+        this.isDoingRequest = false;
       }
     };
 

@@ -78,6 +78,7 @@ import { SortPipe } from '../pipes/sort.pipe';
 import { TrendPersistentSettingsService } from './settings/trend-settings-service/trend-persistent-settings.service';
 import { SaveObjectModule } from '../save-object/save-object.module';
 import { SettingsUtilsService } from './settings/settings-utils-service/settings-utils.service';
+import { LoadingAnimationsModule } from '../loading-animations/loading-animations.module';
 
 @NgModule({
   declarations: [
@@ -108,17 +109,17 @@ import { SettingsUtilsService } from './settings/settings-utils-service/settings
     SortPipe
   ],
   imports: [
-    SearchMaskModule,
-    QuestionModalModule,
-    SaveObjectModule,
-
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
+
+    SearchMaskModule,
+    QuestionModalModule,
+    SaveObjectModule,
+    LoadingAnimationsModule,
 
     MatButtonModule,
     MatCardModule,

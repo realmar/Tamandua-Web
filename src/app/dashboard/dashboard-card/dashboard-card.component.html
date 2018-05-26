@@ -1,14 +1,12 @@
 <div id="heading">
+  <animation-left-to-right-pulse #loading_animation class="stretch-loader"></animation-left-to-right-pulse>
   <h2 class="mat-subheading-2 inline">{{data.title}}</h2>
   <button mat-icon-button (click)="goToDiagramPage()">
     <mat-icon>show_chart</mat-icon>
   </button>
 </div>
 
-<ng-container *ngIf="isDoingRequest && resultData.length === 0;else data_container">
-  <mat-progress-bar mode="buffer"></mat-progress-bar>
-</ng-container>
-<ng-template #data_container>
+<ng-container *ngIf="!isDoingRequest || resultData.length !== 0">
   <app-dashboard-card-item
     *ngFor="let item of resultData"
     [data]="item"
@@ -17,4 +15,4 @@
   <div *ngIf="resultData.length === 0">
     No data found using the specified settings.
   </div>
-</ng-template>
+</ng-container>
