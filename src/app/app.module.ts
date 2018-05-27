@@ -79,6 +79,7 @@ import { TrendPersistentSettingsService } from './settings/trend-settings-servic
 import { SaveObjectModule } from '../save-object/save-object.module';
 import { SettingsUtilsService } from './settings/settings-utils-service/settings-utils.service';
 import { LoadingAnimationsModule } from '../loading-animations/loading-animations.module';
+import { SafeStylePipe } from '../pipes/safe-style.pipe';
 
 @NgModule({
   declarations: [
@@ -94,6 +95,7 @@ import { LoadingAnimationsModule } from '../loading-animations/loading-animation
     DashboardCardItemComponent,
     DashboardOverviewCardComponent,
     SafeHtmlPipe,
+    SafeStylePipe,
     SettingComponent,
     DashboardSettingsComponent,
     AboutComponent,

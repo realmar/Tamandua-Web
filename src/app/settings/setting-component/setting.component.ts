@@ -10,11 +10,21 @@ import { SettingValidationResult } from '../setting-validation-result';
   styleUrls: [ './setting.component.scss' ]
 })
 export class SettingComponent implements OnInit {
+  private _ngStyle: any;
   private _placeholder: string;
   private _type: string;
   private _lastEmittedData: string | number;
   private _data: string | number;
   private _dataFormControl: FormControl;
+
+  public get ngStyle (): any {
+    return this._ngStyle;
+  }
+
+  @Input()
+  public set ngStyle (value: any) {
+    this._ngStyle = value;
+  }
 
   public get placeholder (): string {
     return this._placeholder;
