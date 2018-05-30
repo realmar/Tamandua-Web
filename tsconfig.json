@@ -5,8 +5,15 @@
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "emitBOM": true,
+    "alwaysStrict": true,
+    "forceConsistentCasingInFileNames": true,
+    "stripInternal": true,
+    "diagnostics": true,
+    "pretty": true,
+    "newLine": "lf",
     "target": "es5",
     "typeRoots": [
       "node_modules/@types"
