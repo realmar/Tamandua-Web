@@ -7,7 +7,7 @@ import * as escapeStringRegexp from 'escape-string-regexp';
 })
 export class FormatLoglinePipe implements PipeTransform {
   private escapeDiamonds (value: string): string {
-    return value.replace(/</g, '&lt;')
+    return value.toString().replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
   }
 
