@@ -46,7 +46,9 @@ export class DashboardOverviewCardComponent extends RouteChangeListener implemen
   }
 
   public set isDoingRequest (value: boolean) {
-    if (!isNullOrUndefined(this._loadingAnimation)) {
+    const loadingAnimationIsDefined = !isNullOrUndefined(this._loadingAnimation);
+
+    if (loadingAnimationIsDefined && (!value || !this.hasData)) {
       this._loadingAnimation.isLooping = value;
     }
 
@@ -107,6 +109,10 @@ export class DashboardOverviewCardComponent extends RouteChangeListener implemen
           this.getData();
         });
     });
+  }
+
+  public get hasData (): boolean {
+    return this.totalResponse > 0;
   }
 
   public get formattedTotalResponse (): string {

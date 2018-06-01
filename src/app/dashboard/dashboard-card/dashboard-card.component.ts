@@ -39,7 +39,10 @@ export class DashboardCardComponent extends RouteChangeListener implements After
   }
 
   public set isDoingRequest (value: boolean) {
-    if (!isNullOrUndefined(this._loadingAnimation)) {
+    const loadingAnimationIsDefined = !isNullOrUndefined(this._loadingAnimation);
+    const hasItems = this.resultData.length > 0;
+
+    if (loadingAnimationIsDefined && (!value || !hasItems)) {
       this._loadingAnimation.isLooping = value;
     }
     this._isDoingRequest = value;
@@ -57,6 +60,10 @@ export class DashboardCardComponent extends RouteChangeListener implements After
   }
 
   public get resultData (): Array<DashboardCardItemData> {
+    if (isNullOrUndefined(this._data) || isNullOrUndefined(this._data.requestResult)) {
+      return [];
+    }
+
     const length = this._data.requestResult.length;
     const endpoint = this._data.requestBuilder.getEndpoint();
 

@@ -1,11 +1,11 @@
 <animation-left-to-right-pulse #loading_animation id="loading" class="stretch-loader"></animation-left-to-right-pulse>
 
-<ng-container *ngIf="isDoingRequest && data.length === 0;else data_container">
+<ng-container *ngIf="isDoingRequest && !hasData;else data_container">
   <p class="mat-subheading-2">Loading ...</p>
 </ng-container>
-<p *ngIf="hasErrors && !isDoingRequest">No data found using the specified settings.</p>
+<p *ngIf="(hasErrors || !hasData) && !isDoingRequest">No data found using the specified settings.</p>
 <ng-template #data_container>
-  <ng-container *ngIf="!hasErrors">
+  <ng-container *ngIf="!hasErrors && hasData">
     <p id="total" class="mat-subheading-2">Total: {{formattedTotalResponse}}</p>
     <ng-container *ngFor="let item of data">
       <app-dashboard-card-item [indentLevel]="item.indentLevel"
