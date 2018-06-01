@@ -67,15 +67,18 @@ export class TrendComponent extends RouteChangeListener {
   }
 
   public get formattedDurationDelta (): string {
-    const total = this._trendSettingsService.getTotalDuration().asMinutes();
+    const total = this._trendSettingsService.getTotalDuration().asSeconds();
     const count = this._trendSettingsService.getSampleCount();
 
     let delta = total / count;
-    let suffix = 'min';
+    let suffix = 's';
 
-    if (delta >= 60) {
-      delta /= 60;
+    if (delta >= 60 * 60) {
+      delta /= 60 * 60;
       suffix = 'h';
+    } else if (delta >= 60 * 2) {
+      delta /= 60;
+      suffix = 'min';
     }
 
     return numeral(delta).format('0.0') + suffix;
