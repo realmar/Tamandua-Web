@@ -40,6 +40,7 @@ export class DashboardOverviewCardComponent extends RouteChangeListener implemen
 
   private _lastRefreshTime: Moment;
 
+  private _settingsChanged = false;
   private _isDoingRequest: boolean;
   public get isDoingRequest (): boolean {
     return this._isDoingRequest;
@@ -48,10 +49,11 @@ export class DashboardOverviewCardComponent extends RouteChangeListener implemen
   public set isDoingRequest (value: boolean) {
     const loadingAnimationIsDefined = !isNullOrUndefined(this._loadingAnimation);
 
-    if (loadingAnimationIsDefined && (!value || !this.hasData)) {
+    if (loadingAnimationIsDefined && (!value || !this.hasData || this._settingsChanged)) {
       this._loadingAnimation.isLooping = value;
     }
 
+    this._settingsChanged = false;
     this._isDoingRequest = value;
   }
 
@@ -241,6 +243,7 @@ export class DashboardOverviewCardComponent extends RouteChangeListener implemen
 
   private onPastHoursChange () {
     this.isDoingRequest = false;
+    this._settingsChanged = true;
     this.getData();
   }
 

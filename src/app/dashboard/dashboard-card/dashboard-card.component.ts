@@ -33,6 +33,7 @@ export class DashboardCardComponent extends RouteChangeListener implements After
 
   private _lastRefreshTime: Moment;
 
+  private _settingsChanged = false;
   private _isDoingRequest: boolean;
   public get isDoingRequest (): boolean {
     return this._isDoingRequest;
@@ -42,9 +43,11 @@ export class DashboardCardComponent extends RouteChangeListener implements After
     const loadingAnimationIsDefined = !isNullOrUndefined(this._loadingAnimation);
     const hasItems = this.resultData.length > 0;
 
-    if (loadingAnimationIsDefined && (!value || !hasItems)) {
+    if (loadingAnimationIsDefined && (!value || !hasItems || this._settingsChanged)) {
       this._loadingAnimation.isLooping = value;
     }
+
+    this._settingsChanged = false;
     this._isDoingRequest = value;
   }
 
@@ -232,6 +235,7 @@ export class DashboardCardComponent extends RouteChangeListener implements After
   }
 
   private onPastHoursChange (value: number): void {
+    this._settingsChanged = true;
     this.getData();
   }
 
