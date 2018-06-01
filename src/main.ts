@@ -6,6 +6,7 @@ import { environment } from './environments/environment';
 
 // import augmentations
 import './augmentations/array';
+import './augmentations/set';
 import './augmentations/map';
 import './augmentations/string';
 
