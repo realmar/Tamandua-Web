@@ -11,7 +11,6 @@ import { BaseSettingsService } from '../BaseSettingsService';
 @Injectable()
 export class TrendSettingsService extends BaseSettingsService {
   private _sampleCount: Setting<number>;
-  private _sampleDuration: Setting<Duration>;
   private _totalDuration: Setting<Duration>;
 
   public constructor () {
@@ -23,11 +22,6 @@ export class TrendSettingsService extends BaseSettingsService {
         4,
         isDefinedFormatter,
         isMinFormatter));
-    this._sampleDuration = new Setting<Duration>(
-      moment.duration(60, 'minutes'),
-      durationMin(
-        moment.duration(1, 'minutes'),
-        (value, min) => durationMinFormatter(value, min, d => d.asMinutes())));
 
     this._totalDuration = new Setting<Duration>(
       moment.duration(4, 'hours'),
@@ -44,14 +38,6 @@ export class TrendSettingsService extends BaseSettingsService {
 
   public setSampleCount (value: number): SettingValidationResult {
     return this._sampleCount.setData(value);
-  }
-
-  public getSampleDuration (): Duration {
-    return this._sampleDuration.getData();
-  }
-
-  public setSampleDuration (value: Duration): SettingValidationResult {
-    return this._sampleDuration.setData(value);
   }
 
   public getTotalDuration (): Duration {

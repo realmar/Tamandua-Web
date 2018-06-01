@@ -1,22 +1,17 @@
-<p>Note: I'm currently prototyping this page!</p>
-
 <div>
+  <p>Time Delta: {{formattedDurationDelta}}</p>
+
   <app-setting placeholder="Sample Count"
                type="number"
                [validationResultObservable]="sampleCountValidationObservable"
-               [(data)]="sampleCount"></app-setting>
+               [(data)]="sampleCount"
+               [ngStyle]="settingNgStyle"></app-setting>
 
-  <app-setting placeholder="Sample Duration [min]"
-               type="number"
-               [validationResultObservable]="sampleDurationValidationObservable"
-               [(data)]="sampleDuration"></app-setting>
-  <span>[min]</span>
-
-  <app-setting placeholder="Total Timespan [h]"
+  <app-setting placeholder="Timespan [H]"
                type="number"
                [validationResultObservable]="totalDurationValidationObservable"
-               [(data)]="totalDuration"></app-setting>
-  <span>[h]</span>
+               [(data)]="totalDuration"
+               [ngStyle]="settingNgStyle"></app-setting>
 
   <button mat-button
           *ngIf="canSearch"
@@ -37,39 +32,29 @@
 
 <div *ngIf="hasData">
   <h1 class="mat-title">{{title}}</h1>
-  <ngx-charts-line-chart [results]="chartData"
-                         [view]="[1000, 600]"
-                         [autoScale]="true"
-                         [curve]="curve"
-                         [gradient]="true"
-                         [legend]="true"
-                         [xAxis]="true"
-                         [yAxis]="true"
-                         xAxisLabel="Datetime"
-                         yAxisLabel="Mail Count"
-                         [xAxisTicks]="xAxisTicks"
-                         [xAxisTickFormatting]="xAxisTickFormatting"
-                         [yAxisTickFormatting]="yAxisTickFormatting">
-    <ng-template #seriesTooltipTemplate let-model="model">
-      <div class="table series-tooltip">
-        <div class="table-body">
-          <ng-container *ngFor="let item of model | sort: modelSorter">
-            <div class="table-row">
-              <div class="table-cell">
-                <div [style.background-color]="item.color" class="color-box"></div>
-              </div>
-              <div class="table-cell">
-                {{item.series}}:
-              </div>
-              <div class="table-cell">
-                <span class="value">{{item.value}}</span>
-              </div>
-            </div>
-          </ng-container>
-        </div>
-      </div>
+
+  <ngx-charts-bar-vertical-stacked #chart
+                                   [results]="chartData"
+                                   [view]="[1000, 600]"
+                                   [gradient]="false"
+                                   [legend]="true"
+                                   [xAxis]="true"
+                                   [yAxis]="true"
+                                   xAxisLabel="Datetime"
+                                   yAxisLabel="Mail Count"
+                                   [xAxisTicks]="xAxisTicks"
+                                   [xAxisTickFormatting]="xAxisTickFormatting"
+                                   [yAxisTickFormatting]="yAxisTickFormatting">
+    <ng-template #tooltipTemplate let-model="model">
+      <p class="tooltip">
+        <span class="tooltip-date">{{xAxisTickFormatting(model.series)}}</span>
+        <!-- Fullwidth Vertical Line: https://www.compart.com/en/unicode/U+FF5C -->
+        <span> &#xFF5C; </span>
+        <span class="tooltip-name">{{model.name}}</span>
+      </p>
+      <p class="tooltip-value">{{model.value}}</p>
     </ng-template>
-  </ngx-charts-line-chart>
+  </ngx-charts-bar-vertical-stacked>
 </div>
 
 <p *ngIf="!hasData && !isDoingRequest">No data found.</p>

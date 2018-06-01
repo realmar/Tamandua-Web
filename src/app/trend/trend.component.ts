@@ -1,9 +1,8 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import * as moment from 'moment';
 import { Duration, Moment } from 'moment';
 import * as clone from 'clone';
 import { ApiService } from '../../api/api-service';
-import { LineChartComponent } from '@swimlane/ngx-charts/release/line-chart/line-chart.component';
 import { isNullOrUndefined, toFloat } from '../../utils/misc';
 import * as d3 from 'd3';
 import { CurveFactory } from 'd3';
@@ -18,17 +17,17 @@ import { unsubscribeIfDefined } from '../../utils/rxjs';
 import { createTrendEndpoint } from '../../api/request/endpoints/trend-endpoint';
 import { TrendResponse } from '../../api/response/trend-response';
 import { Converter } from '../../utils/converter';
-import { DashboardSettingsService } from '../settings/dashboard-settings-service/dashboard-settings.service';
 import { buildSpam } from '../dashboard/default-cards/spam';
+import { DashboardSettingsService } from '../settings/dashboard-settings-service/dashboard-settings.service';
 
 interface ChartSeries {
   readonly moment: Moment;
-  readonly name: number;
+  readonly name: string;
   readonly value: number;
 }
 
 interface ChartItem {
-  readonly name: string;
+  readonly name: number;
   readonly series: Array<ChartSeries>;
 }
 
@@ -40,18 +39,11 @@ type ChartData = Array<ChartItem>;
   styleUrls: [ './trend.component.scss' ]
 })
 export class TrendComponent extends RouteChangeListener {
-  @ViewChild(LineChartComponent) private _chart: LineChartComponent;
-
   private _totalDurationValidation = new Subject<SettingValidationResult>();
-  private _sampleDurationValidation = new Subject<SettingValidationResult>();
   private _sampleCountValidation = new Subject<SettingValidationResult>();
 
   public get totalDurationValidationObservable (): Observable<SettingValidationResult> {
     return this._totalDurationValidation.asObservable();
-  }
-
-  public get sampleDurationValidationObservable (): Observable<SettingValidationResult> {
-    return this._sampleDurationValidation.asObservable();
   }
 
   public get sampleCountValidationObservable (): Observable<SettingValidationResult> {
@@ -66,20 +58,27 @@ export class TrendComponent extends RouteChangeListener {
     this._totalDurationValidation.next(this._trendSettingsService.setTotalDuration(moment.duration(toFloat(value), 'hours')));
   }
 
-  public get sampleDuration (): number {
-    return this._trendSettingsService.getSampleDuration().asMinutes();
-  }
-
-  public set sampleDuration (value: number) {
-    this._sampleDurationValidation.next(this._trendSettingsService.setSampleDuration(moment.duration(toFloat(value), 'minutes')));
-  }
-
   public get sampleCount (): number {
     return this._trendSettingsService.getSampleCount();
   }
 
   public set sampleCount (value: number) {
     this._sampleCountValidation.next(this._trendSettingsService.setSampleCount(toFloat(value)));
+  }
+
+  public get formattedDurationDelta (): string {
+    const total = this._trendSettingsService.getTotalDuration().asMinutes();
+    const count = this._trendSettingsService.getSampleCount();
+
+    let delta = total / count;
+    let suffix = 'min';
+
+    if (delta >= 60) {
+      delta /= 60;
+      suffix = 'h';
+    }
+
+    return numeral(delta).format('0.0') + suffix;
   }
 
   private _inputData: TrendInputData;
@@ -120,6 +119,12 @@ export class TrendComponent extends RouteChangeListener {
     return isNullOrUndefined(this._isDoingRequest) ? false : this._isDoingRequest;
   }
 
+  public get settingNgStyle (): { [ key: string ]: string } {
+    return {
+      width: '6rem'
+    };
+  }
+
   private _requestSubscription: Subscription;
 
   public constructor (private _apiService: ApiService,
@@ -150,7 +155,7 @@ export class TrendComponent extends RouteChangeListener {
     return moment.unix(label).format('YYYY/MM/DD HH:mm:ss');
   }
 
-  public yAxisTickFormatting (label: string): string {
+  public yAxisTickFormatting (label: string | number): string {
     return numeral(label).format('0');
   }
 
@@ -190,7 +195,6 @@ export class TrendComponent extends RouteChangeListener {
     const dataCount = rb.getEndpoint().metadata.length as number;
     const separator = rb.getEndpoint().metadata.separator as string;
     const sampleCount = this._trendSettingsService.getSampleCount();
-    const sampleDuration = this._trendSettingsService.getSampleDuration().asMinutes();
     const totalDuration = this._trendSettingsService.getTotalDuration().asHours();
 
     const endpoint = createTrendEndpoint(field, dataCount, separator);
@@ -199,29 +203,31 @@ export class TrendComponent extends RouteChangeListener {
     const request = rb.build();
     request.data[ 'sampleCount' ] = sampleCount;
     request.data[ 'totalHours' ] = totalDuration;
-    request.data[ 'sampleDuration' ] = sampleDuration;
 
     this._requestSubscription = this._apiService.SubmitRequest<TrendResponse>(request).subscribe(value => {
         const uniqueXLabels = new Map<number, ChartSeries>();
-        const resultMap = new Map<string, ChartItem>();
+        const resultMap = new Map<number, ChartItem>();
 
         value.forEach(result => {
           result.forEach(data => {
-            const m = moment(Converter.stringToDate(data.datetime));
+            const momentTime = moment(Converter.stringToDate(data.datetime));
+            const unixTime = momentTime.unix();
+
             const item = {
-              moment: m,
-              name: m.unix(),
+              moment: momentTime,
+              name: data.key,
               value: toFloat(data.value)
             };
-            uniqueXLabels.set(item.name, item);
+            uniqueXLabels.set(unixTime, item);
+            legend.add(data.key);
 
-            if (!resultMap.has(data.key)) {
-              resultMap.set(data.key, {
-                name: data.key,
+            if (!resultMap.has(unixTime)) {
+              resultMap.set(unixTime, {
+                name: unixTime,
                 series: [ item ]
               });
             } else {
-              resultMap.get(data.key).series.push(item);
+              resultMap.get(unixTime).series.push(item);
             }
           });
         });
@@ -229,7 +235,7 @@ export class TrendComponent extends RouteChangeListener {
         this._xAxisTicks = uniqueXLabels
           .valuesToArray()
           .sort((a, b) => a.moment.diff(b.moment))
-          .map(v => v.name);
+          .map(v => v.moment.unix());
         this._chartData = resultMap.valuesToArray();
         this._isDoingRequest = false;
       },
@@ -239,9 +245,5 @@ export class TrendComponent extends RouteChangeListener {
   public cancelRequests (): void {
     unsubscribeIfDefined(this._requestSubscription);
     this._isDoingRequest = false;
-  }
-
-  public modelSorter (a: any, b: any): number {
-    return b.value - a.value;
   }
 }
