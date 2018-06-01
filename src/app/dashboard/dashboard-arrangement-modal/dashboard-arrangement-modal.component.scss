@@ -1,6 +1,9 @@
-@import '~@swimlane/ngx-dnd/release/index.css';
+@import "~dragula/dist/dragula.css";
 
 mat-icon {
   vertical-align: middle;
+}
+
+.item {
   cursor: pointer;
 }

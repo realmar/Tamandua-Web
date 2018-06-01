@@ -46,7 +46,6 @@ import { PersistentStorageService } from '../persistence/persistent-storage-serv
 import { DashboardPersistentSettingsService } from './settings/dashboard-settings-service/dashboard-persistent-settings.service';
 import { SearchPersistentSettingsService } from './settings/search-settings-service/search-persistent-settings.service';
 import { IndexedDbService } from '../persistence/indexed-db.service';
-import { NgxDnDModule } from '@swimlane/ngx-dnd';
 import { DashboardSettingsComponent } from './dashboard/dashboard-settings/dashboard-settings.component';
 import { AboutComponent } from './about/about.component';
 import { FooterComponent } from './footer/footer.component';
@@ -80,6 +79,7 @@ import { SaveObjectModule } from '../save-object/save-object.module';
 import { SettingsUtilsService } from './settings/settings-utils-service/settings-utils.service';
 import { LoadingAnimationsModule } from '../loading-animations/loading-animations.module';
 import { SafeStylePipe } from '../pipes/safe-style.pipe';
+import { DragulaModule } from 'ng2-dragula';
 
 @NgModule({
   declarations: [
@@ -149,7 +149,7 @@ import { SafeStylePipe } from '../pipes/safe-style.pipe';
     MatProgressSpinnerModule,
 
     TreeModule,
-    NgxDnDModule,
+    DragulaModule,
     NgxChartsModule,
     ToastrModule.forRoot({
       timeOut: 5000,

@@ -13,14 +13,10 @@
     </mat-tab>
 
     <mat-tab label="Edit Order">
-      <div ngxDroppable
-           [model]="displayedColumns"
-           (drop)="onDropped($event)"
+      <div [dragula]="'bag'" [dragulaModel]="displayedColumns"
            class="tab-content">
-        <div ngxDraggable
-             *ngFor="let column of displayedColumns"
-             [model]="column">
-          <mat-icon ngxDragHandle>drag_handle</mat-icon>
+        <div *ngFor="let column of displayedColumns">
+          <mat-icon>drag_handle</mat-icon>
           <span class="mat-checkbox mat-accent">{{column}}</span>
         </div>
       </div>

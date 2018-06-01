@@ -1,8 +1,8 @@
 <mat-dialog-content>
-  <div ngxDroppable (drop)="onDropped($event)" [model]="cards">
-    <div *ngFor="let card of cards"
-         ngxDraggable [model]="card">
-      <mat-icon ngxDragHandle>drag_handle</mat-icon>
+  <div [dragula]="'bag'"
+       [dragulaModel]="cards">
+    <div class="item" *ngFor="let card of cards">
+      <mat-icon>drag_handle</mat-icon>
       <span class="mat-body-1">{{card.title}}</span>
     </div>
   </div>

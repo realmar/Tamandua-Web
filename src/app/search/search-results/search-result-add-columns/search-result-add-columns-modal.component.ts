@@ -1,16 +1,19 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatCheckboxChange, MatDialogRef } from '@angular/material';
 import { SearchResultDetailsModalComponent } from '../search-result-details-modal/search-result-details-modal.component';
 import { AddColumnsModalData } from './add-columns-modal-data';
 import { SearchSettingsService } from '../../../settings/search-settings-service/search-settings.service';
+import { DragulaService } from 'ng2-dragula';
+import { Subscription } from 'rxjs';
+import { unsubscribeIfDefined } from '../../../../utils/rxjs';
 
 @Component({
   selector: 'app-search-add-columns',
   templateUrl: './search-result-add-columns-modal.component.html',
   styleUrls: [ './search-result-add-columns-modal.component.scss' ]
 })
-export class SearchResultAddColumnsModalComponent implements OnInit {
-
+export class SearchResultAddColumnsModalComponent implements OnInit, OnDestroy {
+  private _onDropSubscription: Subscription;
   private _sortedColumns: Array<string>;
 
   public get columns (): Array<string> {
@@ -23,18 +26,20 @@ export class SearchResultAddColumnsModalComponent implements OnInit {
 
   constructor (private _dialogRef: MatDialogRef<SearchResultDetailsModalComponent>,
                @Inject(MAT_DIALOG_DATA) private _columnData: AddColumnsModalData,
-               private _searchSettingsService: SearchSettingsService) {
+               private _searchSettingsService: SearchSettingsService,
+               private _dragulaService: DragulaService) {
     this._sortedColumns = this._columnData.allColumns.slice().sort();
   }
 
-  ngOnInit () {
+  public ngOnInit (): void {
+    this._onDropSubscription = this._dragulaService.drop.subscribe(() => this.onDropped());
   }
 
-  /**
-   * Called when the user drops a dragged item
-   * @param event
-   */
-  public onDropped (event: any): void {
+  public ngOnDestroy (): void {
+    unsubscribeIfDefined(this._onDropSubscription);
+  }
+
+  public onDropped (): void {
     this._searchSettingsService.setVisibleColumns(this._columnData.displayedColumns);
   }
 
