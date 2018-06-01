@@ -4,8 +4,6 @@ import { Duration, Moment } from 'moment';
 import * as clone from 'clone';
 import { ApiService } from '../../api/api-service';
 import { isNullOrUndefined, toFloat } from '../../utils/misc';
-import * as d3 from 'd3';
-import { CurveFactory } from 'd3';
 import * as numeral from 'numeral';
 import { RouteChangeListener } from '../../base-classes/route-change-listener';
 import { Router } from '@angular/router';
@@ -103,10 +101,6 @@ export class TrendComponent extends RouteChangeListener {
   private _xAxisTicks: Array<number>;
   public get xAxisTicks (): Array<number> {
     return this._xAxisTicks;
-  }
-
-  public get curve (): CurveFactory {
-    return d3.curveMonotoneX;
   }
 
   public get hasData (): boolean {
@@ -222,7 +216,6 @@ export class TrendComponent extends RouteChangeListener {
               value: toFloat(data.value)
             };
             uniqueXLabels.set(unixTime, item);
-            legend.add(data.key);
 
             if (!resultMap.has(unixTime)) {
               resultMap.set(unixTime, {
