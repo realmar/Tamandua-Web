@@ -6,7 +6,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build-prod": "ng build --prod --configuration=production",
-    "build-stage": "ng build --prod --configuration=stage --base-href=/stage/",
+    "build-stage": "ng build --prod --configuration=stage",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
