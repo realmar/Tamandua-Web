@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { DashboardSettingsService } from './dashboard-settings.service';
 import { PersistentStorageService } from '../../../persistence/persistent-storage-service';
 import { SettingValidationResult } from '../setting-validation-result';
-import { CardRow } from '../../dashboard/card-row';
 import { plainToClass } from 'class-transformer';
 import { DashboardCardData } from '../../dashboard/dashboard-card/dashboard-card-data';
 import { Composite } from '../../dashboard/dashboard-overview-card/composite';
 import { InitializationCounter } from '../settings-utils-service/initialization-counter';
 import { SettingsUtilsService } from '../settings-utils-service/settings-utils.service';
 import { isNullOrUndefined } from '../../../utils/misc';
+import { CardRowWrapper } from '../../dashboard/card-row-wrapper';
 
 @Injectable()
 export class DashboardPersistentSettingsService extends DashboardSettingsService {
@@ -27,7 +27,7 @@ export class DashboardPersistentSettingsService extends DashboardSettingsService
       this.emitOnFinishInitialized();
     });
 
-    this._utils.getData('dashboard_Cards', Object, result => this.deserializeCards(result as Array<CardRow>), this._initializationCounter);
+    this._utils.getData('dashboard_Cards', Object, result => this.deserializeCards(result as Array<CardRowWrapper>), this._initializationCounter);
     this._utils.getData('dashboard_OverviewCards', Composite, result => super.setOverviewCard(result as any), this._initializationCounter);
     this._utils.getData('dashboard_pastHours', Number, result => super.setPastHours(result as number), this._initializationCounter);
     this._utils.getData('dashboard_MaxItemCountPerCard', Number, result => super.setMaxItemCountPerCard(result as number), this._initializationCounter);
@@ -79,18 +79,21 @@ export class DashboardPersistentSettingsService extends DashboardSettingsService
     return result;
   }
 
-  private deserializeCards (value: Array<CardRow>): void {
+  private deserializeCards (value: Array<CardRowWrapper>): void {
     value = value.map(card => {
       return {
-        title: card.title,
-        cardData: card.cardData.map(data => plainToClass(DashboardCardData, data))
+        isSummaryCard: card.isSummaryCard,
+        cardRow: isNullOrUndefined(card.cardRow) ? undefined : {
+          title: card.cardRow.title,
+          cardData: card.cardRow.cardData.map(data => plainToClass(DashboardCardData, data))
+        }
       };
     });
 
     super.setCards(value);
   }
 
-  public setCards (value: Array<CardRow>): SettingValidationResult {
+  public setCards (value: Array<CardRowWrapper>): SettingValidationResult {
     if (!this.isInitialized) {
       return new SettingValidationResult(true);
     }

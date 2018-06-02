@@ -54,7 +54,6 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { CachedApiService } from '../api/cached-api-service';
 import { SearchMaskModule } from '../search-mask/search-mask.module';
 import { DashboardCardModalComponent } from './dashboard/dashboard-add-card-modal/dashboard-card-modal.component';
-import { DashboardArrangementModalComponent } from './dashboard/dashboard-arrangement-modal/dashboard-arrangement-modal.component';
 import { apiFactory } from '../api/di-factory';
 import { FlattenPipe } from '../pipes/flatten.pipe';
 import { DashboardOverviewEditModalComponent } from './dashboard/dashboard-overview-card/dashboard-overview-edit-modal/dashboard-overview-edit-modal.component';
@@ -103,7 +102,6 @@ import { DragulaModule } from 'ng2-dragula';
     FormatLoglinePipe,
     NotFoundComponent,
     DashboardCardModalComponent,
-    DashboardArrangementModalComponent,
     FlattenPipe,
     DashboardOverviewEditModalComponent,
     DashboardOverviewEditSearchmaskComponent,
@@ -175,7 +173,6 @@ import { DragulaModule } from 'ng2-dragula';
     SearchResultDetailsModalComponent,
     SearchResultAddColumnsModalComponent,
     DashboardCardModalComponent,
-    DashboardArrangementModalComponent,
     DashboardOverviewEditModalComponent,
     DashboardOverviewEditSearchmaskComponent,
     QuestionModalComponent

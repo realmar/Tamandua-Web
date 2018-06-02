@@ -8,6 +8,7 @@ import { Composite } from '../../dashboard/dashboard-overview-card/composite';
 import { isMinAndDefined } from '../validators';
 import { isDefinedFormatter, isMinFormatter } from '../formatters';
 import { BaseSettingsService } from '../BaseSettingsService';
+import { CardRowWrapper } from '../../dashboard/card-row-wrapper';
 
 @Injectable()
 export class DashboardSettingsService extends BaseSettingsService {
@@ -22,7 +23,7 @@ export class DashboardSettingsService extends BaseSettingsService {
   private _refreshInterval: Setting<number>;
   private _refreshIntervalSubject: Subject<number>;
 
-  private _cards: Setting<Array<CardRow>>;
+  private _cards: Setting<Array<CardRowWrapper>>;
   private _overviewCard: Setting<Array<Composite>>;
 
   constructor () {
@@ -55,7 +56,7 @@ export class DashboardSettingsService extends BaseSettingsService {
     );
     this._refreshIntervalSubject = new Subject<number>();
 
-    this._cards = new Setting<Array<CardRow>>([], data => new SettingValidationResult(true));
+    this._cards = new Setting<Array<CardRowWrapper>>([], data => new SettingValidationResult(true));
     this._overviewCard = new Setting<Array<Composite>>(undefined, data => new SettingValidationResult(true));
 
     this._timeoutBeforeEmit = 800;
@@ -116,11 +117,11 @@ export class DashboardSettingsService extends BaseSettingsService {
     return result;
   }
 
-  public getCards (): Array<CardRow> {
+  public getCards (): Array<CardRowWrapper> {
     return this._cards.getData();
   }
 
-  public setCards (value: Array<CardRow>): SettingValidationResult {
+  public setCards (value: Array<CardRowWrapper>): SettingValidationResult {
     return this._cards.setData(value);
   }
 

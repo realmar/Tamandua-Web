@@ -9,12 +9,14 @@ import { buildDelivered } from './default-cards/delivered';
 import { DashboardCardModalComponent } from './dashboard-add-card-modal/dashboard-card-modal.component';
 import { MatDialog } from '@angular/material';
 import { isNullOrUndefined } from '../../utils/misc';
-import { DashboardArrangementModalComponent } from './dashboard-arrangement-modal/dashboard-arrangement-modal.component';
 import { Subscription, Subject, Observable } from 'rxjs';
 import { createAdvancedEndpoint } from '../../api/request/endpoints/advanced-count-endpoint';
 import { unsubscribeIfDefined } from '../../utils/rxjs';
 import { createNoAction, createYesAction } from '../../question-modal/question-modal-utils';
 import { QuestionModalComponent } from '../../question-modal/question-modal.component';
+import { DragulaService } from 'ng2-dragula';
+import { defaultDragulaOptions } from '../../utils/dragula';
+import { CardRowWrapper } from './card-row-wrapper';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,8 +24,18 @@ import { QuestionModalComponent } from '../../question-modal/question-modal.comp
   styleUrls: [ './dashboard.component.scss' ]
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  private _cards: Array<CardRow>;
-  public get cards (): Array<CardRow> {
+  private _onCardDropSubscription: Subscription;
+
+  public get bagName (): string {
+    return 'dashboard-card-bag';
+  }
+
+  public get dragulaOptions (): any {
+    return defaultDragulaOptions;
+  }
+
+  private _cards: Array<CardRowWrapper>;
+  public get cards (): Array<CardRowWrapper> {
     return this._cards;
   }
 
@@ -42,7 +54,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public constructor (private _apiService: ApiService,
                       private _dashboardSettingsService: DashboardSettingsService,
-                      private _dialog: MatDialog) {
+                      private _dialog: MatDialog,
+                      private _dragulaService: DragulaService) {
     this._cards = [];
     this._resetOverviewCardSubject = new Subject<any>();
     this._editOverciewCardSubject = new Subject<any>();
@@ -59,7 +72,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy (): void {
-    unsubscribeIfDefined(this._maxItemCountChangeSubscription);
+    unsubscribeIfDefined(this._maxItemCountChangeSubscription, this._onCardDropSubscription);
   }
 
   private onSettingsInitialized (): void {
@@ -74,13 +87,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this._maxItemCountChangeSubscription =
       this._dashboardSettingsService.maxItemCountObservable.subscribe(this.onMaxItemCountChange.bind(this));
+    this._onCardDropSubscription =
+      this._dragulaService.drop.subscribe(() => this.onCardDrop());
+  }
+
+  private buildCardWrapper (isSummaryCard: boolean, cardRow?: CardRow) {
+    return {
+      isSummaryCard: isSummaryCard,
+      cardRow: cardRow
+    };
   }
 
   private buildDefaultCards (): void {
-    this._cards.push(buildRejected(this._apiService.getRequestBuilder(), this._dashboardSettingsService));
-    this._cards.push(buildGreylisted(() => this._apiService.getRequestBuilder(), this._dashboardSettingsService));
-    this._cards.push(buildSpam(() => this._apiService.getRequestBuilder(), this._dashboardSettingsService));
-    this._cards.push(buildDelivered(() => this._apiService.getRequestBuilder(), this._dashboardSettingsService));
+    this._cards.push(this.buildCardWrapper(true));
+    this._cards.push(this.buildCardWrapper(false, buildRejected(this._apiService.getRequestBuilder(), this._dashboardSettingsService)));
+    this._cards.push(this.buildCardWrapper(false, buildGreylisted(() => this._apiService.getRequestBuilder(), this._dashboardSettingsService)));
+    this._cards.push(this.buildCardWrapper(false, buildSpam(() => this._apiService.getRequestBuilder(), this._dashboardSettingsService)));
+    this._cards.push(this.buildCardWrapper(false, buildDelivered(() => this._apiService.getRequestBuilder(), this._dashboardSettingsService)));
 
     this.saveCards();
   }
@@ -90,12 +113,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private getIndexOfCard (card: CardRow): number {
-    return this._cards.findIndex(value => value === card);
+    return this._cards.findIndex(value => value.cardRow === card);
   }
 
   private onMaxItemCountChange (value: number): void {
     this._cards.forEach(card => {
-      card.cardData.forEach(data => {
+      if (isNullOrUndefined(card.cardRow)) {
+        return;
+      }
+
+      card.cardRow.cardData.forEach(data => {
         const endpoint = data.requestBuilder.getEndpoint();
 
         const field = endpoint.metadata.field;
@@ -106,6 +133,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
     });
 
+    this.saveCards();
+  }
+
+  private onCardDrop (): void {
     this.saveCards();
   }
 
@@ -151,22 +182,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
           const index = this.getIndexOfCard(existingCard);
           if (index >= 0) {
             pushCard = false;
-            this._cards[ index ] = result;
+            this._cards[ index ].cardRow = result;
           }
         }
 
         if (pushCard) {
-          this._cards.push(result as CardRow);
+          this._cards.push(this.buildCardWrapper(false, result));
         }
 
         this.saveCards();
       });
-  }
-
-  public rearrangeCards (): void {
-    const dialogRef = this._dialog.open(DashboardArrangementModalComponent, {
-      data: this._cards
-    });
   }
 
   public restoreDefaultCards (): void {

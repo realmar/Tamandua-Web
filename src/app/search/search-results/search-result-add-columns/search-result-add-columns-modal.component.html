@@ -13,10 +13,12 @@
     </mat-tab>
 
     <mat-tab label="Edit Order">
-      <div [dragula]="'bag'" [dragulaModel]="displayedColumns"
+      <div [dragula]="bagName"
+           [dragulaModel]="displayedColumns"
+           [dragulaOptions]="dragulaOptions"
            class="tab-content">
         <div *ngFor="let column of displayedColumns">
-          <mat-icon>drag_handle</mat-icon>
+          <mat-icon class="drag-handle">drag_handle</mat-icon>
           <span class="mat-checkbox mat-accent">{{column}}</span>
         </div>
       </div>

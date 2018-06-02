@@ -6,6 +6,7 @@ import { SearchSettingsService } from '../../../settings/search-settings-service
 import { DragulaService } from 'ng2-dragula';
 import { Subscription } from 'rxjs';
 import { unsubscribeIfDefined } from '../../../../utils/rxjs';
+import { defaultDragulaOptions } from '../../../../utils/dragula';
 
 @Component({
   selector: 'app-search-add-columns',
@@ -15,6 +16,14 @@ import { unsubscribeIfDefined } from '../../../../utils/rxjs';
 export class SearchResultAddColumnsModalComponent implements OnInit, OnDestroy {
   private _onDropSubscription: Subscription;
   private _sortedColumns: Array<string>;
+
+  public get bagName (): string {
+    return 'search-table-settings-bag';
+  }
+
+  public get dragulaOptions (): any {
+    return defaultDragulaOptions;
+  }
 
   public get columns (): Array<string> {
     return this._sortedColumns;

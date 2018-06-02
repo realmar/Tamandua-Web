@@ -1,3 +1,9 @@
+@import "~dragula/dist/dragula.css";
+
+@mixin light-color() {
+  color: #757575;
+}
+
 app-dashboard-card {
   vertical-align: top;
 }
@@ -5,6 +11,19 @@ app-dashboard-card {
 mat-card {
   display: inline-block;
   margin: 1rem 1rem 0 0;
+}
+
+.drag-handle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+
+  margin-left: auto;
+  margin-right: auto;
+
+  cursor: pointer;
+  @include light-color();
 }
 
 .mat-title {
@@ -28,7 +47,7 @@ mat-card {
   margin-right: 0.5rem;
   align-self: center;
 
-  color: #757575;
+  @include light-color();
 }
 
 #flex-container {
