@@ -112,8 +112,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this._dashboardSettingsService.setCards(this._cards);
   }
 
-  private getIndexOfCard (card: CardRow): number {
-    return this._cards.findIndex(value => value.cardRow === card);
+  private getIndexOfCard (card: CardRowWrapper): number {
+    return this._cards.findIndex(value => value.cardRow === card.cardRow);
   }
 
   private onMaxItemCountChange (value: number): void {
@@ -140,14 +140,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.saveCards();
   }
 
-  public addOrModifyCard (existingCard?: CardRow): void {
+  public addOrModifyCard (existingCard?: CardRowWrapper): void {
     const config = {
       minWidth: '30%',
       minHeight: '60%',
     };
 
     if (!isNullOrUndefined(existingCard)) {
-      config[ 'data' ] = existingCard;
+      config[ 'data' ] = existingCard.cardRow;
     }
 
     const dialogRef = this._dialog.open(DashboardCardModalComponent, config);
@@ -210,11 +210,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  public deleteCard (card: CardRow): void {
+  public deleteCard (card: CardRowWrapper): void {
     this._dialog.open(QuestionModalComponent, {
       data: {
         title: 'Delete?',
-        text: `Do you really want to delete the card: ${card.title}?`,
+        text: `Do you really want to delete the card: ${card.cardRow.title}?`,
         actions: [
           createYesAction(() => {
             const index = this.getIndexOfCard(card);
@@ -230,7 +230,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  public editCard (card: CardRow): void {
+  public editCard (card: CardRowWrapper): void {
     this.addOrModifyCard(card);
   }
 
