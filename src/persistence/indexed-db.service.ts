@@ -20,6 +20,28 @@ class TamanduaDexie extends Dexie {
     this.version(1).stores({
       store: 'key'
     });
+
+    this.version(2).stores({
+      store: 'key'
+    }).upgrade(trans => {
+      (trans as any).store.toCollection().modify(obj => {
+        if (obj.key === 'dashboard_Cards') {
+          const data = obj.obj;
+          const upgraded = data.map(value => {
+            return {
+              isSummaryCard: false,
+              cardRow: value
+            };
+          });
+          upgraded.insert(0, {
+            isSummaryCard: true,
+            cardRow: undefined
+          });
+
+          Object.assign(obj.obj, upgraded);
+        }
+      });
+    });
   }
 }
 
