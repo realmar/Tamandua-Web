@@ -16,7 +16,7 @@
      [dragulaModel]="cards"
      [dragulaOptions]="dragulaOptions">
   <div *ngFor="let row of cards"
-       class="inline">
+       class="card-wrapper">
     <ng-container *ngIf="row.isSummaryCard; else card">
       <mat-card id="summary-card">
         <mat-card-header>

@@ -13,6 +13,10 @@ mat-card {
   margin: 1rem 1rem 0 0;
 }
 
+.card-wrapper {
+  display: flex;
+}
+
 .drag-handle {
   position: absolute;
   left: 0;
@@ -53,6 +57,7 @@ mat-card {
 #flex-container {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 #settings {
