@@ -27,28 +27,28 @@ export class ApiErrorHandlerDecoratorService implements CachedApiService {
     return observable;
   }
 
-  public getColumns (): Observable<ColumnsResponse> {
-    return this.addGenericResponseHandling(this._apiService.getColumns());
+  public getColumns (cancellationToken?: Observable<any>): Observable<ColumnsResponse> {
+    return this.addGenericResponseHandling(this._apiService.getColumns(cancellationToken));
   }
 
-  public getTags (): Observable<TagsResponse> {
-    return this.addGenericResponseHandling(this._apiService.getTags());
+  public getTags (cancellationToken?: Observable<any>): Observable<TagsResponse> {
+    return this.addGenericResponseHandling(this._apiService.getTags(cancellationToken));
   }
 
-  public getFieldChoices (field: string, limit?: number): Observable<FieldChoicesResponse> {
-    return this.addGenericResponseHandling(this._apiService.getFieldChoices(field, limit));
+  public getFieldChoices (field: string, limit?: number, cancellationToken?: Observable<any>): Observable<FieldChoicesResponse> {
+    return this.addGenericResponseHandling(this._apiService.getFieldChoices(field, limit, cancellationToken));
   }
 
-  public getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse> {
-    return this.addGenericResponseHandling(this._apiService.getSupportedFieldChoices());
+  public getSupportedFieldChoices (cancellationToken?: Observable<any>): Observable<SupportedFieldchoicesResponse> {
+    return this.addGenericResponseHandling(this._apiService.getSupportedFieldChoices(cancellationToken));
   }
 
-  public getAllSupportedFieldChoices (limit?: number): Observable<Map<string, FieldChoicesResponse>> {
-    return this.addGenericResponseHandling(this._apiService.getAllSupportedFieldChoices(limit));
+  public getAllSupportedFieldChoices (limit?: number, cancellationToken?: Observable<any>): Observable<Map<string, FieldChoicesResponse>> {
+    return this.addGenericResponseHandling(this._apiService.getAllSupportedFieldChoices(limit, cancellationToken));
   }
 
-  public SubmitRequest<T extends ApiResponse> (request: ApiRequestData): Observable<T> {
-    return this.addGenericResponseHandling(this._apiService.SubmitRequest<T>(request));
+  public SubmitRequest<T extends ApiResponse> (request: ApiRequestData, cancellationToken?: Observable<any>): Observable<any> {
+    return this.addGenericResponseHandling(this._apiService.SubmitRequest<T>(request, cancellationToken));
   }
 
   public getRequestBuilder (): RequestBuilder {

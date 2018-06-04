@@ -12,17 +12,17 @@ export abstract class ApiService {
   public static readonly defaultFieldChoicesLimit = 10;
   public static readonly RequestBuilderClass: RequestBuilderConstructor = IntermediateExpressionRequestBuilder;
 
-  abstract getColumns (): Observable<ColumnsResponse>;
+  public abstract getColumns (cancellationToken?: Observable<any>): Observable<ColumnsResponse>;
 
-  abstract getTags (): Observable<TagsResponse>;
+  public abstract getTags (cancellationToken?: Observable<any>): Observable<TagsResponse>;
 
-  abstract getFieldChoices (field: string, limit?: number): Observable<FieldChoicesResponse>;
+  public abstract getFieldChoices (field: string, limit?: number, cancellationToken?: Observable<any>): Observable<FieldChoicesResponse>;
 
-  abstract getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse>;
+  public abstract getSupportedFieldChoices (cancellationToken?: Observable<any>): Observable<SupportedFieldchoicesResponse>;
 
-  abstract getAllSupportedFieldChoices (limit?: number): Observable<Map<string, FieldChoicesResponse>>;
+  public abstract getAllSupportedFieldChoices (limit?: number, cancellationToken?: Observable<any>): Observable<Map<string, FieldChoicesResponse>>;
 
-  abstract SubmitRequest<T extends ApiResponse> (request: ApiRequestData): Observable<T>;
+  public abstract SubmitRequest<T extends ApiResponse> (request: ApiRequestData, cancellationToken?: Observable<any>): Observable<any>;
 
-  abstract getRequestBuilder (): RequestBuilder;
+  public abstract getRequestBuilder (): RequestBuilder;
 }

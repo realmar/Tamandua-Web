@@ -8,10 +8,9 @@ import * as numeral from 'numeral';
 import { RouteChangeListener } from '../../base-classes/route-change-listener';
 import { Router } from '@angular/router';
 import { TrendInputData, TrendStateService } from './trend-state-service/trend-state.service';
-import { Subject, Observable, Subscription } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { SettingValidationResult } from '../settings/setting-validation-result';
 import { TrendSettingsService } from '../settings/trend-settings-service/trend-settings.service';
-import { unsubscribeIfDefined } from '../../utils/rxjs';
 import { createTrendEndpoint } from '../../api/request/endpoints/trend-endpoint';
 import { TrendResponse } from '../../api/response/trend-response';
 import { Converter } from '../../utils/converter';
@@ -37,6 +36,8 @@ type ChartData = Array<ChartItem>;
   styleUrls: [ './trend.component.scss' ]
 })
 export class TrendComponent extends RouteChangeListener {
+  private readonly _cancellationToken = new Subject<any>();
+
   private _totalDurationValidation = new Subject<SettingValidationResult>();
   private _sampleCountValidation = new Subject<SettingValidationResult>();
 
@@ -122,8 +123,6 @@ export class TrendComponent extends RouteChangeListener {
     };
   }
 
-  private _requestSubscription: Subscription;
-
   public constructor (private _apiService: ApiService,
                       private _trendStateService: TrendStateService,
                       private _trendSettingsService: TrendSettingsService,
@@ -145,7 +144,7 @@ export class TrendComponent extends RouteChangeListener {
 
   public ngOnDestroy (): void {
     super.ngOnDestroy();
-    this.cancelRequests();
+    this.cancelRequest();
   }
 
   public xAxisTickFormatting (label: number): string {
@@ -201,7 +200,7 @@ export class TrendComponent extends RouteChangeListener {
     request.data[ 'sampleCount' ] = sampleCount;
     request.data[ 'totalHours' ] = totalDuration;
 
-    this._requestSubscription = this._apiService.SubmitRequest<TrendResponse>(request).subscribe(value => {
+    this._apiService.SubmitRequest<TrendResponse>(request, this._cancellationToken).subscribe(value => {
         const uniqueXLabels = new Map<number, ChartSeries>();
         const resultMap = new Map<number, ChartItem>();
 
@@ -235,11 +234,11 @@ export class TrendComponent extends RouteChangeListener {
         this._chartData = resultMap.valuesToArray();
         this._isDoingRequest = false;
       },
-      () => this.cancelRequests());
+      () => this.cancelRequest());
   }
 
-  public cancelRequests (): void {
-    unsubscribeIfDefined(this._requestSubscription);
+  public cancelRequest (): void {
+    this._cancellationToken.next();
     this._isDoingRequest = false;
   }
 }

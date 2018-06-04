@@ -16,7 +16,7 @@ import { ApiResponse } from './response/api-response';
 
 @Injectable()
 export class TamanduaMockService extends ApiService {
-  public getColumns (): Observable<ColumnsResponse> {
+  public getColumns (cancellationToken?: Observable<any>): Observable<ColumnsResponse> {
     return of([
       'action',
       'connectclient',
@@ -55,7 +55,7 @@ export class TamanduaMockService extends ApiService {
     ]);
   }
 
-  public getTags (): Observable<TagsResponse> {
+  public getTags (cancellationToken?: Observable<any>): Observable<TagsResponse> {
     return of([
       'spam',
       'reject',
@@ -69,12 +69,12 @@ export class TamanduaMockService extends ApiService {
       'hold' ]);
   }
 
-  public getFieldChoices (field: string, limit?: number): Observable<FieldChoicesResponse> {
+  public getFieldChoices (field: string, limit?: number, cancellationToken?: Observable<any>): Observable<FieldChoicesResponse> {
     return of([ 'a', 'b', 'c' ]);
   }
 
 
-  getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse> {
+  getSupportedFieldChoices (cancellationToken?: Observable<any>): Observable<SupportedFieldchoicesResponse> {
     return of([
       'action',
       'deliverystatus',
@@ -88,11 +88,11 @@ export class TamanduaMockService extends ApiService {
     ]);
   }
 
-  getAllSupportedFieldChoices (limit?: number): Observable<Map<string, FieldChoicesResponse>> {
+  getAllSupportedFieldChoices (limit?: number, cancellationToken?: Observable<any>): Observable<Map<string, FieldChoicesResponse>> {
     return of(new Map<string, FieldChoicesResponse>());
   }
 
-  public SubmitRequest<T extends ApiResponse> (request: ApiRequestData): Observable<T> {
+  public SubmitRequest<T extends ApiResponse> (request: ApiRequestData, cancellationToken?: Observable<any>): Observable<any> {
     // TODO: fix dat if u wanna use dis class
     return of(undefined);
   }

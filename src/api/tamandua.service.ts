@@ -1,4 +1,4 @@
-import { share } from 'rxjs/operators';
+import { share, takeUntil } from 'rxjs/operators';
 import { throwError as observableThrowError, Observable, Subject, of } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { ApiService } from './api-service';
@@ -31,7 +31,7 @@ export class TamanduaService implements ApiService {
     return [ this._apiRoot, apiUrl ].join('/');
   }
 
-  private makeRequest<T extends ApiResponse> (endpoint: Endpoint, data?: object): Observable<T> {
+  private makeRequest<T extends ApiResponse> (endpoint: Endpoint, data?: object, cancellationToken?: Observable<any>): Observable<T> {
     // About .pipe(share():
     // https://www.learnrxjs.io/operators/multicasting/share.html
     // https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/operators/share.md
@@ -41,36 +41,44 @@ export class TamanduaService implements ApiService {
     // once for each each subscriber. With share() we share the underlying source with all subscribers.
     // (And thus not making multiple HTTP requests to the server)
 
+    let request: Observable<T>;
+
     if (endpoint.method === EndpointMethod.Get) {
-      return this._httpClient.get<T>(this.createFullUrl(endpoint.apiUrl)).pipe(share());
+      request = this._httpClient.get<T>(this.createFullUrl(endpoint.apiUrl));
     } else if (endpoint.method === EndpointMethod.Post) {
-      return this._httpClient.post<T>(this.createFullUrl(endpoint.apiUrl), data).pipe(share());
+      request = this._httpClient.post<T>(this.createFullUrl(endpoint.apiUrl), data);
     } else {
       throw new Error(`Endpoint method not supported: ${endpoint.method}`);
     }
+
+    if (!isNullOrUndefined(cancellationToken)) {
+      request = request.pipe(takeUntil(cancellationToken));
+    }
+
+    return request.pipe(share());
   }
 
-  public getColumns (): Observable<ColumnsResponse> {
-    return this.makeRequest(createColumnsEndpoint());
+  public getColumns (cancellationToken?: Observable<any>): Observable<ColumnsResponse> {
+    return this.makeRequest(createColumnsEndpoint(), cancellationToken);
   }
 
-  public getTags (): Observable<TagsResponse> {
-    return this.makeRequest(createTagsEndpoint());
+  public getTags (cancellationToken?: Observable<any>): Observable<TagsResponse> {
+    return this.makeRequest(createTagsEndpoint(), cancellationToken);
   }
 
-  public getFieldChoices (field: string, limit?: number): Observable<FieldChoicesResponse> {
+  public getFieldChoices (field: string, limit?: number, cancellationToken?: Observable<any>): Observable<FieldChoicesResponse> {
     if (isNullOrUndefined(limit)) {
       limit = ApiService.defaultFieldChoicesLimit;
     }
 
-    return this.makeRequest(createFieldchoicesEndpoint(field, limit));
+    return this.makeRequest(createFieldchoicesEndpoint(field, limit), cancellationToken);
   }
 
-  public getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse> {
-    return this.makeRequest(createSupportedFieldchoicesEndpoint());
+  public getSupportedFieldChoices (cancellationToken?: Observable<any>): Observable<SupportedFieldchoicesResponse> {
+    return this.makeRequest(createSupportedFieldchoicesEndpoint(), cancellationToken);
   }
 
-  public getAllSupportedFieldChoices (limit?: number): Observable<Map<string, FieldChoicesResponse>> {
+  public getAllSupportedFieldChoices (limit?: number, cancellationToken?: Observable<any>): Observable<Map<string, FieldChoicesResponse>> {
     if (isNullOrUndefined(limit)) {
       limit = ApiService.defaultFieldChoicesLimit;
     }
@@ -81,25 +89,26 @@ export class TamanduaService implements ApiService {
     let errorObj: any;
     let responsesLength = 0;
 
-    this.getSupportedFieldChoices().subscribe(response => {
-      responsesLength = response.length;
+    this.getSupportedFieldChoices(cancellationToken)
+      .subscribe(response => {
+        responsesLength = response.length;
 
-      response.forEach(choice => {
-        this.getFieldChoices(choice, limit).subscribe(
-          result => {
-            choicesMap.set(choice, result);
-            if (!hasErrors && choicesMap.size === response.length) {
-              subject.next(choicesMap);
+        response.forEach(choice => {
+          this.getFieldChoices(choice, limit).subscribe(
+            result => {
+              choicesMap.set(choice, result);
+              if (!hasErrors && choicesMap.size === response.length) {
+                subject.next(choicesMap);
+              }
+            },
+            error => {
+              errorObj = error;
+              hasErrors = true;
+              subject.thrownError(error);
             }
-          },
-          error => {
-            errorObj = error;
-            hasErrors = true;
-            subject.thrownError(error);
-          }
-        );
+          );
+        });
       });
-    });
 
     if (!hasErrors && choicesMap.size === responsesLength) {
       return of(choicesMap);
@@ -110,8 +119,8 @@ export class TamanduaService implements ApiService {
     }
   }
 
-  public SubmitRequest<T extends ApiResponse> (request: ApiRequestData): Observable<T> {
-    return this.makeRequest(request.endpoint, request.data);
+  public SubmitRequest<T extends ApiResponse> (request: ApiRequestData, cancellationToken?: Observable<any>): Observable<any> {
+    return this.makeRequest(request.endpoint, request.data, cancellationToken);
   }
 
   public getRequestBuilder (): RequestBuilder {

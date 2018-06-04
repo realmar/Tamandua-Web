@@ -127,15 +127,15 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
     this.fieldChoiceCaches = fieldChoicesMap;
   }
 
-  public getColumns (): Observable<ColumnsResponse> {
-    return this.getData(CachedKeys.Columns, () => this.columnsCache, super.getColumns.bind(this));
+  public getColumns (cancellationToken?: Observable<any>): Observable<ColumnsResponse> {
+    return this.getData(CachedKeys.Columns, () => this.columnsCache, () => super.getColumns(cancellationToken));
   }
 
-  public getTags (): Observable<TagsResponse> {
-    return this.getData(CachedKeys.Tags, () => this.tagsCache, super.getTags.bind(this));
+  public getTags (cancellationToken?: Observable<any>): Observable<TagsResponse> {
+    return this.getData(CachedKeys.Tags, () => this.tagsCache, () => super.getTags(cancellationToken));
   }
 
-  public getFieldChoices (field: string, limit?: number): Observable<FieldChoicesResponse> {
+  public getFieldChoices (field: string, limit?: number, cancellationToken?: Observable<any>): Observable<FieldChoicesResponse> {
     const subject = new Subject<FieldChoicesResponse>();
     let resultObservable: Observable<FieldChoicesResponse>;
 
@@ -147,7 +147,7 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
         needsPersistence = true;
       }
 
-      const result = super.getFieldChoices(field, limit);
+      const result = super.getFieldChoices(field, limit, cancellationToken);
       resultObservable = result;
 
       result.subscribe(data => {
@@ -172,8 +172,11 @@ export class PersistentCachedTamanduaService extends CachedTamanduaService {
     return isNullOrUndefined(resultObservable) ? subject.asObservable() : resultObservable;
   }
 
-  public getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse> {
-    return this.getData(CachedKeys.SupportedFieldChoices, () => this.supportedFieldChoicesCache, super.getSupportedFieldChoices.bind(this));
+  public getSupportedFieldChoices (cancellationToken?: Observable<any>): Observable<SupportedFieldchoicesResponse> {
+    return this.getData(
+      CachedKeys.SupportedFieldChoices,
+      () => this.supportedFieldChoicesCache,
+      () => super.getSupportedFieldChoices(cancellationToken));
   }
 
   public invalidateAllCaches (): void {

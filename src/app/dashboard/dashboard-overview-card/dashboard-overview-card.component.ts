@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
-import { Subscription, interval } from 'rxjs';
+import { Subscription, Subject, interval } from 'rxjs';
 import { ApiService } from '../../../api/api-service';
 import { Comparator, ComparatorType } from '../../../api/request/comparator';
 import { CountResponse } from '../../../api/response/count-response';
@@ -60,7 +60,7 @@ export class DashboardOverviewCardComponent extends RouteChangeListener implemen
   private _totalResponse: CountResponse;
 
   private _composites: Array<Composite>;
-  private readonly _requestSubscriptions: Array<Subscription>;
+  private readonly _cancellationToken = new Subject<any>();
 
   private _data: Array<SummaryItem> = [];
   public get data (): Array<SummaryItem> {
@@ -143,7 +143,6 @@ export class DashboardOverviewCardComponent extends RouteChangeListener implemen
     this._restColorRange = chroma.scale([ '#E1F5FE', '#B3E5FC' ]);
 
     this._composites = [];
-    this._requestSubscriptions = [];
   }
 
   public ngOnInit () {
@@ -176,6 +175,7 @@ export class DashboardOverviewCardComponent extends RouteChangeListener implemen
 
   public ngOnDestroy (): void {
     super.ngOnDestroy();
+    this.cancelRequests();
     this.destroySubscriptions();
   }
 
@@ -223,8 +223,7 @@ export class DashboardOverviewCardComponent extends RouteChangeListener implemen
     this.destroyIntervalSubscriptions();
     unsubscribeIfDefined(
       this._onResetSubscription,
-      this._onEditSubscription,
-      ...this._requestSubscriptions);
+      this._onEditSubscription);
   }
 
   private flattenComposite (composite: Composite): Array<Composite> {
@@ -242,7 +241,7 @@ export class DashboardOverviewCardComponent extends RouteChangeListener implemen
   }
 
   private onPastHoursChange () {
-    this.isDoingRequest = false;
+    this.cancelRequests();
     this._settingsChanged = true;
     this.getData();
   }
@@ -344,6 +343,11 @@ export class DashboardOverviewCardComponent extends RouteChangeListener implemen
     this.saveComposites();
   }
 
+  private cancelRequests (): void {
+    this._cancellationToken.next();
+    this.isDoingRequest = false;
+  }
+
   private getData (): void {
     if (this.isDoingRequest || !this._dashboardSettingsService.isInitialized) {
       return;
@@ -352,7 +356,7 @@ export class DashboardOverviewCardComponent extends RouteChangeListener implemen
     this._lastRefreshTime = moment();
 
     this.isDoingRequest = true;
-    this._apiService.SubmitRequest(this.createTotalCountBuilder().build())
+    this._apiService.SubmitRequest(this.createTotalCountBuilder().build(), this._cancellationToken)
       .subscribe(
         this.processSummaryTotal.bind(this),
         this.processApiError.bind(this));
@@ -369,9 +373,6 @@ export class DashboardOverviewCardComponent extends RouteChangeListener implemen
 
   private processSummaryTotal (result: CountResponse): void {
     this.resetError();
-
-    unsubscribeIfDefined(...this._requestSubscriptions);
-    this._requestSubscriptions.clear();
 
     this._totalResponse = result;
     let receivedDataCount = 0;
@@ -425,21 +426,20 @@ export class DashboardOverviewCardComponent extends RouteChangeListener implemen
       const item = composite.item;
       this.applyLastHoursToBuilder(item.builder);
 
-      this._requestSubscriptions.push(
-        this._apiService
-          .SubmitRequest<CountResponse>(item.builder.build())
-          .subscribe(response => {
-              item.response = {
-                indentLevel: localIndent,
-                data: new DashboardCardItemData(item.name, response as number, totalResponses, this._colorRange)
-              };
+      this._apiService
+        .SubmitRequest<CountResponse>(item.builder.build(), this._cancellationToken)
+        .subscribe(response => {
+            item.response = {
+              indentLevel: localIndent,
+              data: new DashboardCardItemData(item.name, response as number, totalResponses, this._colorRange)
+            };
 
-              composite.composites.forEach(
-                c => processComposite(c, response as number, indentLevel + 1));
+            composite.composites.forEach(
+              c => processComposite(c, response as number, indentLevel + 1));
 
-              processDataCount();
-            },
-            () => processDataCount()));
+            processDataCount();
+          },
+          () => processDataCount());
     };
 
     this._composites.forEach(composite => processComposite(composite, this._totalResponse as number));

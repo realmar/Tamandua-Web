@@ -94,15 +94,15 @@ export class CachedTamanduaService extends TamanduaService implements CachedApiS
     return cache;
   }
 
-  public getColumns (): Observable<ColumnsResponse> {
-    return this.cacheGeneric(this._columnsCache, super.getColumns.bind(this));
+  public getColumns (cancellationToken?: Observable<any>): Observable<ColumnsResponse> {
+    return this.cacheGeneric(this._columnsCache, () => super.getColumns(cancellationToken));
   }
 
-  public getTags (): Observable<TagsResponse> {
-    return this.cacheGeneric(this._tagsCache, super.getTags.bind(this));
+  public getTags (cancellationToken?: Observable<any>): Observable<TagsResponse> {
+    return this.cacheGeneric(this._tagsCache, () => super.getTags(cancellationToken));
   }
 
-  public getFieldChoices (field: string, limit?: number): Observable<FieldChoicesResponse> {
+  public getFieldChoices (field: string, limit?: number, cancellationToken?: Observable<any>): Observable<FieldChoicesResponse> {
     const cache = this.getOrCreateFieldChoiceCache(field);
 
     if (isNullOrUndefined(cache.data) || cache.data.field !== field || cache.data.limit !== limit) {
@@ -112,7 +112,7 @@ export class CachedTamanduaService extends TamanduaService implements CachedApiS
     if (cache.isValid) {
       return of(cache.data.response);
     } else {
-      const result = super.getFieldChoices(field, limit);
+      const result = super.getFieldChoices(field, limit, cancellationToken);
 
       result.subscribe(response => cache.data = { limit: limit, field: field, response: response });
 
@@ -120,8 +120,8 @@ export class CachedTamanduaService extends TamanduaService implements CachedApiS
     }
   }
 
-  public getSupportedFieldChoices (): Observable<SupportedFieldchoicesResponse> {
-    return this.cacheGeneric(this._supportedFieldChoicesCache, super.getSupportedFieldChoices.bind(this));
+  public getSupportedFieldChoices (cancellationToken?: Observable<any>): Observable<SupportedFieldchoicesResponse> {
+    return this.cacheGeneric(this._supportedFieldChoicesCache, () => super.getSupportedFieldChoices(cancellationToken));
   }
 
   public invalidateAllCaches (): void {

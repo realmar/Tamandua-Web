@@ -2,7 +2,7 @@ import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
 import { DashboardCardData } from './dashboard-card-data';
 import { ApiService } from '../../../api/api-service';
 import { AdvancedCountResponse } from '../../../api/response/advanced-count-response';
-import { Subscription, interval } from 'rxjs';
+import { Subscription, Subject, interval } from 'rxjs';
 import { DashboardCardItemData } from '../dashboard-card-item/dashboard-card-item-data';
 import { Router } from '@angular/router';
 import { DashboardSettingsService } from '../../settings/dashboard-settings-service/dashboard-settings.service';
@@ -30,6 +30,8 @@ export class DashboardCardComponent extends RouteChangeListener implements After
   private _maxItemCountChangeSubscription: Subscription;
   private _refreshIntervalSubscription: Subscription;
   private _refreshIntervalChangeSubscription: Subscription;
+
+  private readonly _cancellationToken = new Subject<any>();
 
   private _lastRefreshTime: Moment;
 
@@ -73,8 +75,6 @@ export class DashboardCardComponent extends RouteChangeListener implements After
     return this._data.requestResult.slice(0, endpoint.metadata.length > length ? length : endpoint.metadata.length);
   }
 
-  private _requestSubscription: Subscription;
-
   public constructor (private _apiService: ApiService,
                       private _dashboardSettingsService: DashboardSettingsService,
                       private _searchStateService: SearchStateService,
@@ -115,6 +115,7 @@ export class DashboardCardComponent extends RouteChangeListener implements After
 
   public ngOnDestroy (): void {
     super.ngOnDestroy();
+    this.cancelRequest();
     this.destroySubscriptions();
   }
 
@@ -173,7 +174,7 @@ export class DashboardCardComponent extends RouteChangeListener implements After
     const request = this._data.requestBuilder.build();
 
     this.isDoingRequest = true;
-    this._requestSubscription = this._apiService.SubmitRequest(request).subscribe(
+    this._apiService.SubmitRequest(request, this._cancellationToken).subscribe(
       this.processApiResponse.bind(this),
       this.processApiError.bind(this));
   }
@@ -184,7 +185,7 @@ export class DashboardCardComponent extends RouteChangeListener implements After
   }
 
   private processApiError (error: HttpErrorResponse): void {
-    this.isDoingRequest = false;
+    this.cancelRequest();
     this._data.requestResult = [];
   }
 
@@ -227,15 +228,13 @@ export class DashboardCardComponent extends RouteChangeListener implements After
   }
 
   private cancelRequest (): void {
-    if (!isNullOrUndefined(this._requestSubscription)) {
-      this._requestSubscription.unsubscribe();
-    }
-
+    this._cancellationToken.next();
     this.isDoingRequest = false;
   }
 
   private onPastHoursChange (value: number): void {
     this._settingsChanged = true;
+    this.cancelRequest();
     this.getData();
   }
 
