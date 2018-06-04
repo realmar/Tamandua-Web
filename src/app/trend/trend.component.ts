@@ -170,20 +170,26 @@ export class TrendComponent extends RouteChangeListener {
 
   private syncState (): void {
     // debug
-    /*this._inputData = {
+    /* this._inputData = {
       requestBuilder: buildSpam(() => this._apiService.getRequestBuilder(), this._d).cardData[ 1 ].requestBuilder,
       title: 'test'
     };
-    this.collectData();*/
+    this.cancelRequest();
+    this.collectData(); */
 
     const data = this._trendStateService.data;
     if (data !== this._inputData) {
       this._inputData = data;
+      this.cancelRequest();
       this.collectData();
     }
   }
 
   private collectData (): void {
+    if (this._isDoingRequest || !this._trendSettingsService.isInitialized) {
+      return;
+    }
+
     this._isDoingRequest = true;
 
     const rb = clone(this._inputData.requestBuilder);
