@@ -22,7 +22,7 @@ import { MatDialog } from '@angular/material';
 import { DashboardOverviewEditModalComponent } from './dashboard-overview-edit-modal/dashboard-overview-edit-modal.component';
 import { RouteChangeListener } from '../../../base-classes/route-change-listener';
 import { Router } from '@angular/router';
-import { LeftToRightPulseComponent } from '../../../loading-animations/left-to-right-pulse/left-to-right-pulse.component';
+import { LoopingAnimation } from '../../../loading-animations/looping-animation';
 
 @Component({
   selector: 'app-dashboard-overview-card',
@@ -30,7 +30,7 @@ import { LeftToRightPulseComponent } from '../../../loading-animations/left-to-r
   styleUrls: [ './dashboard-overview-card.component.scss' ]
 })
 export class DashboardOverviewCardComponent extends RouteChangeListener implements AfterViewInit {
-  @ViewChild('loading_animation') _loadingAnimation: LeftToRightPulseComponent;
+  @ViewChild('loading_animation') _loadingAnimation: LoopingAnimation;
 
   private _onPastHoursChangeSubscription: Subscription;
   private _intervalSubscription: Subscription;

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { LoopingAnimation } from '../looping-animation';
 
 @Component({
   selector: 'animation-left-to-right-pulse',
@@ -23,7 +24,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
     ])
   ]
 })
-export class LeftToRightPulseComponent {
+export class LeftToRightPulseComponent implements LoopingAnimation {
   private _isLooping = false;
   public get isLooping (): boolean {
     return this._isLooping;

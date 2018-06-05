@@ -15,7 +15,7 @@ import { TrendStateService } from '../../trend/trend-state-service/trend-state.s
 import { SearchStateService } from '../../search/search-state-service/search-state.service';
 import { RouteChangeListener } from '../../../base-classes/route-change-listener';
 import { unsubscribeIfDefined } from '../../../utils/rxjs';
-import { LeftToRightPulseComponent } from '../../../loading-animations/left-to-right-pulse/left-to-right-pulse.component';
+import { LoopingAnimation } from '../../../loading-animations/looping-animation';
 
 @Component({
   selector: 'app-dashboard-card',
@@ -24,7 +24,7 @@ import { LeftToRightPulseComponent } from '../../../loading-animations/left-to-r
 })
 
 export class DashboardCardComponent extends RouteChangeListener implements AfterViewInit {
-  @ViewChild('loading_animation') _loadingAnimation: LeftToRightPulseComponent;
+  @ViewChild('loading_animation') _loadingAnimation: LoopingAnimation;
 
   private _pastHoursChangeSubscription: Subscription;
   private _maxItemCountChangeSubscription: Subscription;
