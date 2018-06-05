@@ -233,8 +233,8 @@ export class DashboardCardComponent extends RouteChangeListener implements After
   }
 
   private onPastHoursChange (value: number): void {
-    this._settingsChanged = true;
     this.cancelRequest();
+    this._settingsChanged = true;
     this.getData();
   }
 
