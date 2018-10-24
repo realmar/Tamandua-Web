@@ -31,6 +31,13 @@ html, body, app-root {
   align-items: center;
 }
 
+// Highlight action buttons
+.mat-button {
+  background-color: rgb(148, 176, 255);
+  border-radius: 30px !important;
+  margin-left: 6px !important;
+}
+
 .inline {
   display: inline-block;
 }
