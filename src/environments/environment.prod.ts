@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiRoot: 'https://tamandua.ethz.ch/api'
+  apiRoot: '/api'
 };
